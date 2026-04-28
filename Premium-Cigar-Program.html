@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Resnick Distributors — Premium Cigar Program: Year One</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-deep: #1a120b;
+    --bg-warm: #241810;
+    --bg-card: #2c1f15;
+    --bg-card-2: #3a2818;
+    --ink-cream: #f4ead5;
+    --ink-soft: #d4c4a3;
+    --ink-mute: #8a7558;
+    --ink-faint: #5a4a35;
+    --gold: #d4a14a;
+    --gold-bright: #f5c267;
+    --oxblood: #8b2e1c;
+    --tobacco: #7a4a26;
+    --leaf: #4a6b3a;
+    --rust: #b8552c;
+    --grain: rgba(244, 234, 213, 0.025);
+  }
+
+  html, body {
+    background: var(--bg-deep);
+    color: var(--ink-cream);
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  body {
+    background-image:
+      radial-gradient(ellipse at top right, rgba(212, 161, 74, 0.08), transparent 50%),
+      radial-gradient(ellipse at bottom left, rgba(139, 46, 28, 0.06), transparent 50%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' /%3E%3CfeColorMatrix values='0 0 0 0 0.96 0 0 0 0 0.92 0 0 0 0 0.83 0 0 0 0.04 0' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .display { font-family: 'Fraunces', Georgia, serif; font-weight: 400; letter-spacing: -0.02em; }
+  .mono { font-family: 'JetBrains Mono', monospace; font-feature-settings: 'tnum'; }
+
+  .page { max-width: 1400px; margin: 0 auto; padding: 60px 60px 120px; }
+
+  /* ===== MASTHEAD ===== */
+  .masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--ink-faint);
+    margin-bottom: 80px;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand-mark {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--leaf), #2d4a25);
+    clip-path: polygon(50% 8%, 100% 92%, 0% 92%);
+    position: relative;
+  }
+  .brand-mark::after {
+    content: ''; position: absolute; inset: 4px;
+    background: var(--bg-deep);
+    clip-path: polygon(50% 14%, 92% 86%, 8% 86%);
+  }
+  .brand-text { font-family: 'Fraunces', serif; font-weight: 600; font-size: 18px; letter-spacing: 0.02em; }
+  .brand-text small { display: block; color: var(--ink-mute); font-family: 'Inter Tight'; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.18em; margin-top: 2px; }
+
+  .pub-meta { text-align: right; color: var(--ink-mute); font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; }
+  .pub-meta strong { display: block; color: var(--gold); margin-bottom: 4px; }
+
+  /* ===== HERO ===== */
+  .hero { display: grid; grid-template-columns: 1.4fr 1fr; gap: 80px; margin-bottom: 100px; align-items: end; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    color: var(--gold);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    font-weight: 600;
+    margin-bottom: 28px;
+  }
+  .eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--gold); }
+  .headline {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(48px, 6vw, 88px);
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+    margin-bottom: 32px;
+  }
+  .headline em { font-style: italic; color: var(--gold-bright); font-weight: 400; }
+  .headline .accent { color: var(--rust); font-weight: 600; }
+  .dek {
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    max-width: 540px;
+    font-weight: 300;
+  }
+
+  .hero-stat {
+    border-left: 1px solid var(--gold);
+    padding-left: 28px;
+  }
+  .hero-stat-label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 16px; font-weight: 600; }
+  .hero-stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(80px, 10vw, 140px);
+    line-height: 0.85;
+    color: var(--gold-bright);
+    font-weight: 300;
+    letter-spacing: -0.04em;
+    margin-bottom: 8px;
+  }
+  .hero-stat-currency { font-size: 0.45em; vertical-align: top; color: var(--gold); margin-right: 4px; }
+  .hero-stat-sub { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-soft); letter-spacing: 0.05em; }
+  .hero-stat-sub .arrow { color: var(--leaf); }
+
+  /* ===== KPI STRIP ===== */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--ink-faint); margin-bottom: 100px; border: 1px solid var(--ink-faint); }
+  .kpi {
+    background: var(--bg-warm);
+    padding: 36px 32px;
+    position: relative;
+    transition: background 0.3s;
+  }
+  .kpi:hover { background: var(--bg-card); }
+  .kpi-label { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 18px; font-weight: 600; }
+  .kpi-value {
+    font-family: 'Fraunces', serif;
+    font-size: 52px;
+    font-weight: 400;
+    line-height: 1;
+    margin-bottom: 12px;
+    letter-spacing: -0.025em;
+  }
+  .kpi-value.gold { color: var(--gold-bright); }
+  .kpi-detail { font-size: 12px; color: var(--ink-soft); }
+
+  /* ===== SECTION ===== */
+  .section { margin-bottom: 110px; }
+  .section-head {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 32px;
+    margin-bottom: 56px;
+    align-items: baseline;
+  }
+  .section-num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 64px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .section-title-wrap { padding-top: 8px; }
+  .section-eyebrow { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 12px; font-weight: 600; }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 42px;
+    line-height: 1.05;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    margin-bottom: 14px;
+    max-width: 800px;
+  }
+  .section-title em { font-style: italic; color: var(--gold-bright); }
+  .section-lede { font-size: 15px; color: var(--ink-soft); max-width: 680px; line-height: 1.6; }
+
+  /* ===== STORY (prior vs current) ===== */
+  .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .story-card {
+    background: var(--bg-warm);
+    border: 1px solid var(--ink-faint);
+    padding: 40px;
+    position: relative;
+  }
+  .story-card.now { border-color: var(--gold); background: linear-gradient(135deg, var(--bg-card), var(--bg-warm)); }
+  .story-card-label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 8px; font-weight: 600; }
+  .story-card-period { font-size: 13px; color: var(--ink-soft); margin-bottom: 24px; font-family: 'JetBrains Mono'; }
+  .story-card-value {
+    font-family: 'Fraunces', serif;
+    font-size: 64px;
+    line-height: 1;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+  }
+  .story-card.now .story-card-value { color: var(--gold-bright); }
+  .story-card-bar {
+    height: 6px;
+    background: var(--bg-deep);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .story-card-bar-fill { height: 100%; background: linear-gradient(90deg, var(--tobacco), var(--gold)); transition: width 1.4s cubic-bezier(.2,.7,.2,1); width: 0; }
+  .story-card.now .story-card-bar-fill { background: linear-gradient(90deg, var(--gold), var(--gold-bright)); }
+  .story-card-foot { font-size: 12px; color: var(--ink-soft); }
+
+  .story-arrow {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin: -10px 0;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--gold);
+  }
+
+  /* ===== BAR CHART ===== */
+  .chart-wrap {
+    background: var(--bg-warm);
+    border: 1px solid var(--ink-faint);
+    padding: 48px 40px;
+  }
+  .chart-controls { display: flex; gap: 4px; margin-bottom: 32px; flex-wrap: wrap; }
+  .chip {
+    background: transparent;
+    border: 1px solid var(--ink-faint);
+    color: var(--ink-soft);
+    padding: 8px 16px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-family: 'Inter Tight';
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .chip:hover { color: var(--ink-cream); border-color: var(--ink-mute); }
+  .chip.active { background: var(--gold); border-color: var(--gold); color: var(--bg-deep); font-weight: 600; }
+
+  .bars { display: flex; flex-direction: column; gap: 4px; }
+  .bar-row {
+    display: grid;
+    grid-template-columns: 280px 1fr 140px;
+    gap: 20px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(90, 74, 53, 0.3);
+    transition: background 0.2s;
+  }
+  .bar-row:hover { background: rgba(212, 161, 74, 0.04); }
+  .bar-row .bar-name { font-size: 13px; color: var(--ink-cream); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar-row .bar-track { height: 22px; background: var(--bg-deep); position: relative; }
+  .bar-row .bar-fill {
+    position: absolute; top: 0; left: 0; height: 100%;
+    background: linear-gradient(90deg, var(--tobacco) 0%, var(--gold) 100%);
+    transition: width 0.8s cubic-bezier(.2,.7,.2,1);
+    width: 0;
+  }
+  .bar-row.declining .bar-fill { background: linear-gradient(90deg, var(--oxblood), var(--rust)); }
+  .bar-row .bar-val { font-family: 'JetBrains Mono'; font-size: 13px; color: var(--gold); text-align: right; font-weight: 500; }
+  .bar-row.declining .bar-val { color: var(--rust); }
+  .bar-row .bar-detail { font-size: 11px; color: var(--ink-mute); margin-top: 4px; }
+
+  /* ===== SPLIT (donut + bullets) ===== */
+  .split-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 60px; align-items: center; }
+  .donut-wrap { position: relative; aspect-ratio: 1; max-width: 380px; margin: 0 auto; }
+  .donut-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+  }
+  .donut-center-label { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 8px; }
+  .donut-center-value { font-family: 'Fraunces', serif; font-size: 56px; line-height: 1; color: var(--gold-bright); font-weight: 300; }
+  .donut-center-sub { font-size: 12px; color: var(--ink-soft); margin-top: 8px; font-family: 'JetBrains Mono'; }
+
+  .legend { display: flex; flex-direction: column; gap: 24px; }
+  .legend-item { display: grid; grid-template-columns: 12px 1fr auto; gap: 18px; align-items: start; padding: 20px 0; border-bottom: 1px solid rgba(90, 74, 53, 0.4); }
+  .legend-item:last-child { border-bottom: none; }
+  .legend-swatch { width: 12px; height: 12px; margin-top: 6px; }
+  .legend-label { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 400; line-height: 1.3; }
+  .legend-detail { font-size: 13px; color: var(--ink-soft); margin-top: 6px; line-height: 1.5; }
+  .legend-amount { font-family: 'JetBrains Mono'; font-size: 16px; color: var(--gold); font-weight: 500; text-align: right; }
+  .legend-pct { font-size: 11px; color: var(--ink-mute); margin-top: 4px; text-align: right; letter-spacing: 0.1em; }
+
+  /* ===== TABLE ===== */
+  .table-controls { display: flex; gap: 24px; margin-bottom: 24px; align-items: center; flex-wrap: wrap; }
+  .search {
+    flex: 1; max-width: 360px;
+    background: var(--bg-warm);
+    border: 1px solid var(--ink-faint);
+    color: var(--ink-cream);
+    padding: 12px 18px;
+    font-family: 'Inter Tight';
+    font-size: 14px;
+  }
+  .search:focus { outline: none; border-color: var(--gold); }
+  .search::placeholder { color: var(--ink-mute); }
+
+  .ctable { width: 100%; border-collapse: collapse; background: var(--bg-warm); border: 1px solid var(--ink-faint); }
+  .ctable thead { background: var(--bg-card); }
+  .ctable th {
+    text-align: left;
+    padding: 16px 20px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 600;
+    border-bottom: 1px solid var(--ink-faint);
+    cursor: pointer;
+    user-select: none;
+  }
+  .ctable th:hover { color: var(--gold); }
+  .ctable th.sorted { color: var(--gold); }
+  .ctable th.num { text-align: right; }
+  .ctable td { padding: 14px 20px; border-bottom: 1px solid rgba(90, 74, 53, 0.25); font-size: 14px; }
+  .ctable td.num { font-family: 'JetBrains Mono'; text-align: right; }
+  .ctable tr:hover td { background: rgba(212, 161, 74, 0.04); }
+  .ctable .pos { color: var(--gold); }
+  .ctable .neg { color: var(--rust); }
+  .ctable .neutral { color: var(--ink-mute); }
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid;
+    font-weight: 600;
+  }
+  .tag.new { color: var(--gold); border-color: var(--gold); }
+  .tag.grow { color: var(--leaf); border-color: var(--leaf); }
+  .tag.decl { color: var(--rust); border-color: var(--rust); }
+  .table-foot { padding: 16px 20px; font-size: 12px; color: var(--ink-mute); text-align: center; border-top: 1px solid var(--ink-faint); background: var(--bg-warm); }
+
+  /* ===== ALERT (Circus Wines callout) ===== */
+  .alert {
+    background: linear-gradient(135deg, rgba(139, 46, 28, 0.15), rgba(184, 85, 44, 0.05));
+    border-left: 3px solid var(--rust);
+    padding: 36px 40px;
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .alert-eyebrow { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--rust); font-weight: 700; margin-bottom: 12px; }
+  .alert-title { font-family: 'Fraunces', serif; font-size: 28px; line-height: 1.2; margin-bottom: 12px; font-weight: 400; }
+  .alert-body { font-size: 14px; color: var(--ink-soft); line-height: 1.6; }
+  .alert-table { width: 100%; font-size: 12px; }
+  .alert-table td { padding: 6px 0; border-bottom: 1px solid rgba(184, 85, 44, 0.2); }
+  .alert-table td:last-child { font-family: 'JetBrains Mono'; text-align: right; color: var(--rust); }
+  .alert-table tr:last-child td { border-bottom: none; }
+
+  /* ===== KEY TAKEAWAYS ===== */
+  .takeaways {
+    background: var(--bg-warm);
+    border: 1px solid var(--gold);
+    padding: 60px;
+    position: relative;
+  }
+  .takeaways::before {
+    content: '';
+    position: absolute; top: -1px; left: -1px; right: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .take-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 36px 60px; margin-top: 40px; }
+  .take {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 20px;
+  }
+  .take-num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 32px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .take-title { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 500; margin-bottom: 8px; line-height: 1.3; }
+  .take-body { font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    margin-top: 100px;
+    padding-top: 32px;
+    border-top: 1px solid var(--ink-faint);
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink-mute);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 980px) {
+    .page { padding: 32px 24px 80px; }
+    .hero { grid-template-columns: 1fr; gap: 48px; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .story-grid { grid-template-columns: 1fr; }
+    .split-grid { grid-template-columns: 1fr; gap: 40px; }
+    .alert { grid-template-columns: 1fr; }
+    .take-list { grid-template-columns: 1fr; }
+    .section-head { grid-template-columns: 60px 1fr; gap: 16px; }
+    .section-num { font-size: 44px; }
+    .section-title { font-size: 28px; }
+    .bar-row { grid-template-columns: 140px 1fr 90px; gap: 12px; font-size: 12px; }
+    .bar-row .bar-name { font-size: 11px; }
+    .bar-row .bar-val { font-size: 11px; }
+    .takeaways { padding: 32px 24px; }
+    .ctable th, .ctable td { padding: 10px 12px; font-size: 12px; }
+    .chart-wrap { padding: 24px 16px; }
+  }
+
+  /* Subtle reveal animation */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.8s, transform 0.8s; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-text">
+        Resnick Distributors
+        <small>Marketing & Business Development</small>
+      </div>
+    </div>
+    <div class="pub-meta">
+      <strong>Internal Briefing</strong>
+      Vol. 1 — April 2026
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Premium Cigar Program — Year One</div>
+      <h1 class="headline display">
+        How <em>one program</em> grew premium cigar sales by <span class="accent">458%</span>.
+      </h1>
+      <p class="dek">
+        In April 2025 we launched a Premium Cigar Program built around our humidor SKU set.
+        Twelve months later, the data is in. This briefing walks through what moved, who moved it,
+        and what we should do about the accounts that didn't.
+      </p>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-label">Net Sales Variance</div>
+      <div class="hero-stat-value display">
+        <span class="hero-stat-currency">$</span><span id="heroNum">267,056</span>
+      </div>
+      <div class="hero-stat-sub">
+        <span>$58,255</span> <span class="arrow">→</span> <span>$325,311</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- KPI STRIP -->
+  <section class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Variance</div>
+      <div class="kpi-value gold display">+$267K</div>
+      <div class="kpi-detail">vs. prior twelve months</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Growth Rate</div>
+      <div class="kpi-value display">458%</div>
+      <div class="kpi-detail">5.6× the prior-year base</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">New Cigar Buyers</div>
+      <div class="kpi-value display">215</div>
+      <div class="kpi-detail">accounts at $0 last year</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Active Accounts</div>
+      <div class="kpi-value display">258</div>
+      <div class="kpi-detail">buying premium cigars in YR1</div>
+    </div>
+  </section>
+
+  <!-- SECTION 1: THE MOVE -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num display">01</div>
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">The Move</div>
+        <h2 class="section-title display">Premium cigar sales went from a <em>side category</em> to a meaningful revenue line.</h2>
+        <p class="section-lede">
+          We compared the twelve months before the program (April 2024 – April 2025) against the twelve months after (April 2025 – April 2026).
+          Same SKU category. Same sales team. The program changed the slope.
+        </p>
+      </div>
+    </div>
+
+    <div class="story-grid">
+      <div class="story-card">
+        <div class="story-card-label">Before the Program</div>
+        <div class="story-card-period">Apr 2024 — Apr 2025</div>
+        <div class="story-card-value display">$58,255</div>
+        <div class="story-card-bar"><div class="story-card-bar-fill" data-w="18"></div></div>
+        <div class="story-card-foot">A scattered, opportunistic set of cigar buys. No structure.</div>
+      </div>
+      <div class="story-card now">
+        <div class="story-card-label">After the Program</div>
+        <div class="story-card-period">Apr 2025 — Apr 2026</div>
+        <div class="story-card-value display">$325,311</div>
+        <div class="story-card-bar"><div class="story-card-bar-fill" data-w="100"></div></div>
+        <div class="story-card-foot">Premium cigars are now a real category for 258 active accounts.</div>
+      </div>
+      <div class="story-arrow display">— a $267,056 swing —</div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: TOP DRIVERS -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num display">02</div>
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">The Drivers</div>
+        <h2 class="section-title display">A handful of accounts moved <em>most of the needle</em>.</h2>
+        <p class="section-lede">
+          The top 10 accounts alone delivered $97,323 — about 36% of the entire variance.
+          Toggle the chart below to see the biggest growth, the biggest declines, or accounts that grew on top of an existing base.
+        </p>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <div class="chart-controls">
+        <button class="chip active" data-mode="top">Top 20 Growers</button>
+        <button class="chip" data-mode="existing">Existing Accounts that Grew</button>
+        <button class="chip" data-mode="decline">Top Decliners</button>
+      </div>
+      <div class="bars" id="bars"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: NEW VS EXISTING -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num display">03</div>
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">The Anatomy</div>
+        <h2 class="section-title display">90% of the growth came from accounts that <em>weren't buying cigars</em> at all.</h2>
+        <p class="section-lede">
+          The program didn't just lift existing cigar customers — it converted accounts that had been buying everything but cigars from us into cigar customers.
+          That's the most actionable finding here.
+        </p>
+      </div>
+    </div>
+
+    <div class="split-grid">
+      <div class="donut-wrap">
+        <svg viewBox="0 0 200 200" id="donut" width="100%" height="100%"></svg>
+        <div class="donut-center">
+          <div class="donut-center-label">Total Variance</div>
+          <div class="donut-center-value display">$267K</div>
+          <div class="donut-center-sub">3 sources of growth</div>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-swatch" style="background: var(--gold-bright)"></span>
+          <div>
+            <div class="legend-label">New Cigar Customers</div>
+            <div class="legend-detail">215 accounts that bought $0 in premium cigars the prior year. They contributed almost the entire net swing.</div>
+          </div>
+          <div>
+            <div class="legend-amount">$239,883</div>
+            <div class="legend-pct">89.8%</div>
+          </div>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch" style="background: var(--leaf)"></span>
+          <div>
+            <div class="legend-label">Existing Accounts Grew</div>
+            <div class="legend-detail">43 accounts that already bought some cigars expanded their volume. J. Tobacco LLC alone added $13.6K.</div>
+          </div>
+          <div>
+            <div class="legend-amount">$44,899</div>
+            <div class="legend-pct">16.8%</div>
+          </div>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch" style="background: var(--rust)"></span>
+          <div>
+            <div class="legend-label">Decliners (Offset)</div>
+            <div class="legend-detail">51 accounts spent less on cigars year-over-year, partially offsetting the gains.</div>
+          </div>
+          <div>
+            <div class="legend-amount">−$17,726</div>
+            <div class="legend-pct">−6.6%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: ACCOUNT EXPLORER -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num display">04</div>
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">The Detail</div>
+        <h2 class="section-title display">Every account, <em>searchable</em>.</h2>
+        <p class="section-lede">
+          Filter by status, search by name, sort any column. Useful for following up on specific accounts during the meeting or after.
+        </p>
+      </div>
+    </div>
+
+    <div class="table-controls">
+      <input type="text" id="search" class="search" placeholder="Search account name…" />
+      <div class="chart-controls" style="margin: 0;">
+        <button class="chip active" data-filter="all">All</button>
+        <button class="chip" data-filter="new">New</button>
+        <button class="chip" data-filter="grow">Growers</button>
+        <button class="chip" data-filter="decl">Decliners</button>
+      </div>
+    </div>
+
+    <table class="ctable" id="ctable">
+      <thead>
+        <tr>
+          <th data-sort="name">Account</th>
+          <th data-sort="status">Status</th>
+          <th class="num" data-sort="prior">Prior Year</th>
+          <th class="num" data-sort="current">Current Year</th>
+          <th class="num sorted" data-sort="variance">Variance ↓</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="table-foot" id="tfoot"></div>
+  </section>
+
+  <!-- SECTION 5: THE WATCHLIST -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num display">05</div>
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">The Watchlist</div>
+        <h2 class="section-title display">Where we lost ground — and the <em>chain that needs attention</em>.</h2>
+        <p class="section-lede">
+          Decliners cost us $17,726. The pattern worth flagging: six Circus Wines locations net out at −$1,687, with three locations dropping to zero. That's a chain-level issue, not a category issue.
+        </p>
+      </div>
+    </div>
+
+    <div class="alert">
+      <div>
+        <div class="alert-eyebrow">⚠ Account Watchlist</div>
+        <div class="alert-title display">Circus Wines — chain-level deterioration.</div>
+        <div class="alert-body">
+          Three of six Circus Wines locations went from active cigar buyers to zero. Two grew. The pattern doesn't look like a category problem — it looks like store-level operations or staff turnover. Worth a direct call with their buyer before we lose the rest.
+        </div>
+      </div>
+      <table class="alert-table">
+        <tr><td>Broad St Red Bank</td><td>$1,697 → $0</td></tr>
+        <tr><td>Middletown</td><td>$2,086 → $1,075</td></tr>
+        <tr><td>Port Monmouth</td><td>$539 → $0</td></tr>
+        <tr><td>Lincroft</td><td>$902 → $530</td></tr>
+        <tr><td>Sea Girt</td><td>$3,227 → $3,588</td></tr>
+        <tr><td>Red Bank</td><td>$788 → $2,359</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- TAKEAWAYS -->
+  <section class="section">
+    <div class="takeaways">
+      <div class="section-eyebrow" style="margin-bottom: 12px;">In Summary</div>
+      <h2 class="section-title display" style="margin-bottom: 0;">Five things <em>worth saying out loud.</em></h2>
+
+      <div class="take-list">
+        <div class="take">
+          <div class="take-num display">i.</div>
+          <div>
+            <div class="take-title">The program worked.</div>
+            <div class="take-body">+$267K in net variance, 458% growth, with the same SKU category and team. This is now a real category for us.</div>
+          </div>
+        </div>
+        <div class="take">
+          <div class="take-num display">ii.</div>
+          <div>
+            <div class="take-title">It's a customer-acquisition story.</div>
+            <div class="take-body">90% of the growth came from 215 brand-new cigar buyers — accounts that already trusted us for other categories.</div>
+          </div>
+        </div>
+        <div class="take">
+          <div class="take-num display">iii.</div>
+          <div>
+            <div class="take-title">Concentration is a risk.</div>
+            <div class="take-body">Top 10 accounts = 36% of the variance. Smokers Heaven alone is $26K. We need to deepen the long tail.</div>
+          </div>
+        </div>
+        <div class="take">
+          <div class="take-num display">iv.</div>
+          <div>
+            <div class="take-title">Krauszers chain leaned in.</div>
+            <div class="take-body">22 Krauszers locations contributed $15K in variance — proof the program scales across a chain when execution is consistent.</div>
+          </div>
+        </div>
+        <div class="take">
+          <div class="take-num display">v.</div>
+          <div>
+            <div class="take-title">Circus Wines is a separate problem.</div>
+            <div class="take-body">Half the chain went dark on cigars. Likely not category-related. Schedule a buyer conversation before we lose more locations.</div>
+          </div>
+        </div>
+        <div class="take">
+          <div class="take-num display">vi.</div>
+          <div>
+            <div class="take-title">Year Two opportunity.</div>
+            <div class="take-body">If we convert another 200 of our non-cigar-buying accounts at the same average, we double again. The playbook exists — replicate it.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div>Resnick Distributors • Premium Cigar Program • Year One Review</div>
+    <div>Source: Internal Variance Report, 4/27/2026</div>
+  </footer>
+
+</div>
+
+<script>
+const DATA = [{"n":"SMOKERS HEAVEN","v":26063.49,"c":26063.49,"p":0.0},{"n":"J. TOBACCO LLC","v":13636.73,"c":15756.72,"p":2119.99},{"n":"MOE TOBACCO SHOP","v":11484.03,"c":11484.03,"p":0.0},{"n":"MAYWOOD SUNOCO (NEW)","v":11129.62,"c":11129.62,"p":0.0},{"n":"DISCOUNT LIQUORS - WALDWICK","v":7833.12,"c":7833.12,"p":0.0},{"n":"CROWN CIGAR & SMOKE","v":6542.59,"c":6542.59,"p":0.0},{"n":"MILFORD MARKET","v":6317.48,"c":6317.48,"p":0.0},{"n":"DT VAPOR AND CIGAR INC.","v":5316.59,"c":5316.59,"p":0.0},{"n":"KRAUSZERS LAKE HIAWATHA","v":4661.18,"c":4661.18,"p":0.0},{"n":"BRISTOL BEER","v":4338.57,"c":4338.57,"p":0.0},{"n":"SMOKE SCENE N VAPE CORP.","v":4090.41,"c":4090.41,"p":0.0},{"n":"EXPRESS FUEL & MART","v":3803.78,"c":3803.78,"p":0.0},{"n":"COUNTRY FARMS - FORDS","v":3772.4,"c":3772.4,"p":0.0},{"n":"KRAUSZERS CRANFORD","v":3634.85,"c":3634.85,"p":0.0},{"n":"IN & OUT LEDGEWOOD","v":3631.52,"c":3631.52,"p":0.0},{"n":"VILLAGE STORE","v":3517.53,"c":3517.53,"p":0.0},{"n":"POPS LIQUORS","v":3368.56,"c":3368.56,"p":0.0},{"n":"V&V FUEL","v":3275.86,"c":3275.86,"p":0.0},{"n":"LEGACY SMOKE SHOP","v":3264.68,"c":3264.68,"p":0.0},{"n":"HAMMONTON GAS & DIESEL","v":2872.8,"c":2872.8,"p":0.0},{"n":"SILVER STAR BAGEL","v":2808.22,"c":2808.22,"p":0.0},{"n":"LIQUOR CITY","v":2768.2,"c":2768.2,"p":0.0},{"n":"PHILLIPSBURG SHELL","v":2728.55,"c":2728.55,"p":0.0},{"n":"GERBRON WHOLESALE","v":2709.91,"c":6774.6,"p":4064.69},{"n":"COLES FAIRFIELD MARKET","v":2680.31,"c":2680.31,"p":0.0},{"n":"BUSY BEE ASBURY","v":2565.5,"c":2565.5,"p":0.0},{"n":"SALTWATER LIQUORS","v":2524.5,"c":2524.5,"p":0.0},{"n":"Q & S FOOD STORE","v":2509.49,"c":2509.49,"p":0.0},{"n":"A ONE WHOLESALE- OTP","v":2499.04,"c":2499.04,"p":0.0},{"n":"ROSELAND CONV STORE","v":2462.85,"c":2485.01,"p":22.16},{"n":"CORNER STORE MANAHAWKIN","v":2424.79,"c":7367.99,"p":4943.2},{"n":"MILFORD GREEN FOOD STORE","v":2388.81,"c":2388.81,"p":0.0},{"n":"QUICK MART FOOD STORE","v":2329.83,"c":2329.83,"p":0.0},{"n":"HORSHAM SUNOCO","v":2285.59,"c":2285.59,"p":0.0},{"n":"LIQUOR FACTORY SPARTA","v":2112.43,"c":2112.43,"p":0.0},{"n":"SCOTT EXXON","v":1994.84,"c":1994.84,"p":0.0},{"n":"7 ELEVEN - LAKE COMO","v":1948.84,"c":1948.84,"p":0.0},{"n":"PLUMSTED WINE & LIQUORS","v":1902.35,"c":2896.07,"p":993.72},{"n":"ANDY'S SMOKE","v":1842.91,"c":1965.02,"p":122.11},{"n":"CASHES STATIONARY","v":1802.3,"c":1802.3,"p":0.0},{"n":"MAIN STREET SHELL ANSONIA","v":1798.27,"c":1798.27,"p":0.0},{"n":"THE HOWELL CORNER STORE","v":1739.4,"c":2305.44,"p":566.04},{"n":"BIRDSBORO BEVERAGE","v":1732.62,"c":2435.64,"p":703.02},{"n":"COUNTRY FARMS-MORRISVILLE PA.","v":1644.85,"c":1987.41,"p":342.56},{"n":"CIRCUS WINES - RED BANK","v":1570.58,"c":2358.72,"p":788.14},{"n":"ARLOS COUNTRY STORE","v":1538.74,"c":1538.74,"p":0.0},{"n":"TOBACCO PLUS","v":1521.8,"c":1521.8,"p":0.0},{"n":"EZ &GO TOBACCO SHOP","v":1497.34,"c":1497.34,"p":0.0},{"n":"SESSIONS SMOKE SHOP HAMILTON","v":1463.99,"c":1463.99,"p":0.0},{"n":"WILLOW GROVE BEVERAGES","v":1447.32,"c":1447.32,"p":0.0},{"n":"MONMOUTH BEACH SUPERMARKET","v":1405.65,"c":1405.65,"p":0.0},{"n":"ZEN BEER AND SODA","v":1399.25,"c":1527.06,"p":127.81},{"n":"MERRITT SMOKE SHOP","v":1384.75,"c":1384.75,"p":0.0},{"n":"SUNSET FOOD MARKET","v":1327.48,"c":1327.48,"p":0.0},{"n":"LIQUOR FACTORY LAKE HOPATCONG","v":1302.29,"c":1302.29,"p":0.0},{"n":"SMOKERS PARADISE 1 (FORM GO 24","v":1259.06,"c":1259.06,"p":0.0},{"n":"HIGH CLOUDS SMOKE & SLOTS","v":1245.16,"c":1245.16,"p":0.0},{"n":"PANDY STORE","v":1214.8,"c":1214.8,"p":0.0},{"n":"LAHASA MART","v":1161.01,"c":1161.01,"p":0.0},{"n":"Fresh Mart Scotch Plains","v":1159.64,"c":1304.77,"p":145.13},{"n":"CONOCO EAST MEADOW","v":1149.0,"c":1149.0,"p":0.0},{"n":"GLEN GARDNER LIQUORS","v":1131.98,"c":1131.98,"p":0.0},{"n":"KRAUSZERS LITTLE FALLS","v":1119.7,"c":1119.7,"p":0.0},{"n":"KRAUSZERS FOOD - NORTH HALEDON","v":1108.16,"c":1372.93,"p":264.77},{"n":"HAMPTON WINE & SPIRIT","v":1099.33,"c":1099.33,"p":0.0},{"n":"EQUILIBRO PRODUCTION","v":1093.08,"c":1093.08,"p":0.0},{"n":"BOTTLE & BARREL","v":1062.44,"c":1062.44,"p":0.0},{"n":"SHOPRITE WINE & SPIRITS","v":1046.95,"c":1046.95,"p":0.0},{"n":"TREVOSE BEER & SODA","v":1039.9,"c":1039.9,"p":0.0},{"n":"ROUTE 18 VAPE & TCB SHOP","v":1039.79,"c":1039.79,"p":0.0},{"n":"US GAS MAPLE SHADE","v":996.55,"c":996.55,"p":0.0},{"n":"MORGANVILLE LIQUOR & DELI","v":991.35,"c":991.35,"p":0.0},{"n":"CRAVE DELI MART","v":986.76,"c":986.76,"p":0.0},{"n":"JERSEY SMOKE EAST WINDSOR","v":979.39,"c":3726.82,"p":2747.43},{"n":"SMITTY'S LIQUORS & DELI","v":973.34,"c":973.34,"p":0.0},{"n":"CIRCLE A POMPTON LAKES","v":956.47,"c":956.47,"p":0.0},{"n":"SMOKE N VAPE SCENE CORP","v":952.02,"c":952.02,"p":0.0},{"n":"KRAUSZERS 525 AVENEL","v":939.59,"c":939.59,"p":0.0},{"n":"KRAUSZER'S WOODBRIDGE","v":905.58,"c":905.58,"p":0.0},{"n":"quick shop","v":868.42,"c":868.42,"p":0.0},{"n":"SUNRISE CONV HACKETSTOWN","v":832.31,"c":832.31,"p":0.0},{"n":"RINGOES COUNTRY DELI-RINGOES","v":831.88,"c":831.88,"p":0.0},{"n":"EZ GOING SOMERVILLE","v":824.75,"c":824.75,"p":0.0},{"n":"GEMCO SUPPLIES","v":821.8,"c":821.8,"p":0.0},{"n":"LIQUOR WORKS JACKSON","v":801.39,"c":801.39,"p":0.0},{"n":"FORDS FOOD MARKET","v":771.99,"c":771.99,"p":0.0},{"n":"UPSCALE CIGARS","v":759.06,"c":759.06,"p":0.0},{"n":"LAKEVIEW CONVENIENCE","v":754.25,"c":754.25,"p":0.0},{"n":"ROTONDO LIQUORS","v":724.93,"c":724.93,"p":0.0},{"n":"ROYAL MINI MART","v":723.3,"c":723.3,"p":0.0},{"n":"DEPTFORD ROAD TRIP","v":699.32,"c":699.32,"p":0.0},{"n":"BOTTLE AND CAN","v":695.68,"c":2163.22,"p":1467.54},{"n":"FIVE CORNER CONVENIENCE","v":688.01,"c":688.01,"p":0.0},{"n":"WHITE DEER INN","v":687.65,"c":1181.81,"p":494.16},{"n":"SPEEDY MART HACKETTOWN","v":664.51,"c":664.51,"p":0.0},{"n":"CBS SUPERMARKET","v":644.58,"c":644.58,"p":0.0},{"n":"FREDDIE'S CORNER","v":611.44,"c":799.67,"p":188.23},{"n":"BRIDGE CONVENIENCE INC","v":609.94,"c":609.94,"p":0.0},{"n":"634 SMOKE SHOP INC","v":606.66,"c":606.66,"p":0.0},{"n":"Tropicana Mini Mart","v":594.57,"c":594.57,"p":0.0},{"n":"OAKDALE FUEL & GROCERY","v":586.3,"c":822.28,"p":235.98},{"n":"BASKET OF CHEER","v":583.53,"c":583.53,"p":0.0},{"n":"KEANS KORNER MOBIL","v":580.01,"c":580.01,"p":0.0},{"n":"BEACH TOBACCO CIGAR CONVEN","v":577.28,"c":577.28,"p":0.0},{"n":"HARMONY DISCOUNT LIQUORS","v":572.67,"c":572.67,"p":0.0},{"n":"HARLEYSVILLE VAPE","v":568.35,"c":568.35,"p":0.0},{"n":"LUCKY 7 DELI - NUTLEY","v":558.78,"c":558.78,"p":0.0},{"n":"AB FUEL","v":558.22,"c":558.22,"p":0.0},{"n":"Smokers Market","v":556.67,"c":556.67,"p":0.0},{"n":"COUNTRY CONVENIENCE","v":548.49,"c":548.49,"p":0.0},{"n":"NEWS STAND NUTELY","v":548.49,"c":548.49,"p":0.0},{"n":"SPIRITS WAREHOUSE","v":544.28,"c":1022.64,"p":478.36},{"n":"KWIK KORNER LONG VALLEY","v":543.24,"c":543.24,"p":0.0},{"n":"UNIVERSITY NEWS","v":536.27,"c":536.27,"p":0.0},{"n":"QUICK MART OF LAWRENCE","v":535.39,"c":535.39,"p":0.0},{"n":"SHELL-NEW FOUNDLAND","v":535.39,"c":535.39,"p":0.0},{"n":"Pit Stop Food Store","v":535.17,"c":535.17,"p":0.0},{"n":"STADIUM GRILL","v":525.72,"c":525.72,"p":0.0},{"n":"THEGREENRUSH","v":522.75,"c":522.75,"p":0.0},{"n":"Krauszers Edison","v":513.83,"c":513.83,"p":0.0},{"n":"SUPER 7 EWING","v":504.92,"c":504.92,"p":0.0},{"n":"HC GOOD NEIGHBOR PHARMACY","v":497.88,"c":497.88,"p":0.0},{"n":"A ONE WHOLESALE","v":495.76,"c":495.76,"p":0.0},{"n":"SEVEN DAYS MINI MART","v":493.92,"c":493.92,"p":0.0},{"n":"THE RIGHT BOTTLE","v":489.56,"c":871.84,"p":382.28},{"n":"KRAUSZERS VERONA BLOOMFIELD AV","v":487.91,"c":719.98,"p":232.07},{"n":"FIRST STOP TOBACCO SHOP","v":486.01,"c":486.01,"p":0.0},{"n":"7 DAYS FOOD STORE","v":475.84,"c":475.84,"p":0.0},{"n":"E.H.T. TOBACCO & CONVENIENCE","v":464.49,"c":464.49,"p":0.0},{"n":"SMOKERS AT TREVOSE","v":448.07,"c":448.07,"p":0.0},{"n":"KENVIL LIQUORS","v":441.76,"c":441.76,"p":0.0},{"n":"SEA SIDE CONVENIENCE","v":428.95,"c":428.95,"p":0.0},{"n":"ACE TOBACCO TOWN","v":425.92,"c":425.92,"p":0.0},{"n":"VALERO FOOD MART CUTCHOGUE","v":423.31,"c":700.82,"p":277.51},{"n":"IN & OUT CONVENIENCE STORE","v":421.79,"c":421.79,"p":0.0},{"n":"DELTA GAS & CONV","v":420.48,"c":420.48,"p":0.0},{"n":"OXFORD SMOKE","v":418.15,"c":915.89,"p":497.74},{"n":"PREMIUM BEVERAGES","v":417.0,"c":417.0,"p":0.0},{"n":"BIT SMOKE AND MART","v":415.18,"c":415.18,"p":0.0},{"n":"BOUND BROOK CIGAR & VAPE","v":412.96,"c":412.96,"p":0.0},{"n":"KRAUSZERS - LIBERTY CORNER","v":410.94,"c":410.94,"p":0.0},{"n":"LINDYS SMOKE SHOP","v":391.9,"c":391.9,"p":0.0},{"n":"VETERANS CONVENIENCE","v":381.57,"c":490.69,"p":109.12},{"n":"TRUMBULL FOOD MART","v":380.12,"c":380.12,"p":0.0},{"n":"CIRCUS WINES - SEA GIRT","v":360.85,"c":3587.83,"p":3226.98},{"n":"FOOD EXPRESS SUMMIT","v":359.96,"c":359.96,"p":0.0},{"n":"THE SMOKING BOUTIQUE","v":358.7,"c":358.7,"p":0.0},{"n":"MILK N' STUFF-MONROE","v":348.89,"c":348.89,"p":0.0},{"n":"KARTIK OPERATIONS","v":347.71,"c":523.64,"p":175.93},{"n":"smokey outlet","v":328.86,"c":328.86,"p":0.0},{"n":"MUNCHIE MART","v":328.56,"c":328.56,"p":0.0},{"n":"SUNOCO SCHAGHTICOKE","v":328.0,"c":472.99,"p":144.99},{"n":"KRAUSZERS/KENVIL","v":325.2,"c":614.49,"p":289.29},{"n":"ELMWOOD PARK TIGER MART","v":323.68,"c":323.68,"p":0.0},{"n":"DELTA - PATERSON","v":321.54,"c":321.54,"p":0.0},{"n":"TEX'S LIQUOR","v":317.28,"c":317.28,"p":0.0},{"n":"KRAUSZERS FOOD FREEHOLD","v":317.04,"c":317.04,"p":0.0},{"n":"Tobacco express","v":314.81,"c":314.81,"p":0.0},{"n":"COASTAL MAGNOLIA","v":297.83,"c":297.83,"p":0.0},{"n":"CREAM RIDGE COUNTRY MARKET","v":295.3,"c":405.2,"p":109.9},{"n":"WEE SHOP CBD","v":294.56,"c":294.56,"p":0.0},{"n":"AAA MARKET LLC","v":294.42,"c":294.42,"p":0.0},{"n":"RAMSEY STATIONERS INC","v":287.66,"c":287.66,"p":0.0},{"n":"GRAB & GO FOOD & DELI","v":287.51,"c":287.51,"p":0.0},{"n":"Mo's Smoke & Gift Shop","v":286.11,"c":286.11,"p":0.0},{"n":"QUICK STOP PERKASIE","v":281.39,"c":281.39,"p":0.0},{"n":"SHOREWAY CONVENIENT INC","v":279.77,"c":279.77,"p":0.0},{"n":"AR DISTRIBUTORS","v":276.15,"c":276.15,"p":0.0},{"n":"PAT DEON BEVERAGE","v":273.84,"c":273.84,"p":0.0},{"n":"MINIT STOP-JACKSON","v":273.82,"c":746.6,"p":472.78},{"n":"POINT MART PT PLEASANT","v":263.76,"c":263.76,"p":0.0},{"n":"BELMAR FOOD STORE INC","v":259.39,"c":590.92,"p":331.53},{"n":"KRAUSZERS SPRINGFIELD","v":249.98,"c":249.98,"p":0.0},{"n":"ELITE VAPE","v":240.33,"c":240.33,"p":0.0},{"n":"LEVITTOWN TOBACCO LLC","v":239.2,"c":239.2,"p":0.0},{"n":"SMOKER HUT BENSALEM","v":238.09,"c":238.09,"p":0.0},{"n":"THE CORNER STORE AT TUCKERTON","v":232.86,"c":232.86,"p":0.0},{"n":"BAY AVE FARM","v":230.22,"c":230.22,"p":0.0},{"n":"VALLEY SPA-LITTLE FALLS","v":230.09,"c":230.09,"p":0.0},{"n":"BORDENTOWN QUICK STOP","v":229.35,"c":229.35,"p":0.0},{"n":"BARNUM AVE CONVENIENCE","v":223.87,"c":223.87,"p":0.0},{"n":"HOMETOWN FOOD MART","v":223.16,"c":294.44,"p":71.28},{"n":"KRAUSZER'S FAIRLAWN","v":222.08,"c":222.08,"p":0.0},{"n":"SUNRISE WHOLESLE, NJ ACCOUNT","v":212.56,"c":212.56,"p":0.0},{"n":"AMPAK FOOD MART","v":212.12,"c":212.12,"p":0.0},{"n":"SPEEDY MART-LAKE HOPATCONG","v":195.06,"c":195.06,"p":0.0},{"n":"RACEWAY BANGOR","v":193.15,"c":193.15,"p":0.0},{"n":"ARCHIE'S CORNER RAHULRAJ ENTER","v":186.36,"c":186.36,"p":0.0},{"n":"QUICK STOP BARNEGAT","v":181.85,"c":181.85,"p":0.0},{"n":"TOWN MART DISCOUNT WHOLESALE","v":180.14,"c":180.14,"p":0.0},{"n":"PINTUS QUICK STOP","v":175.44,"c":175.44,"p":0.0},{"n":"Putnam Valley Market","v":175.04,"c":175.04,"p":0.0},{"n":"DB SMOKE SHOP","v":174.85,"c":174.85,"p":0.0},{"n":"LINDEN CONV STORE & DELI","v":173.26,"c":173.26,"p":0.0},{"n":"A CLAUSE DISTRIBUTING INC","v":171.79,"c":171.79,"p":0.0},{"n":"KWICK MART FANWOOD - NEW","v":165.59,"c":165.59,"p":0.0},{"n":"QUICK SHOPPE - WILLINGBORO","v":160.56,"c":160.56,"p":0.0},{"n":"SMOKERS PARADISE II","v":157.64,"c":157.64,"p":0.0},{"n":"GLORYS LIQUORS JACKSON","v":151.92,"c":151.92,"p":0.0},{"n":"MK MINI MART","v":150.29,"c":150.29,"p":0.0},{"n":"US MART MIDDLE ISLAND","v":149.93,"c":149.93,"p":0.0},{"n":"SWAN MOTEL - BENEDICT MOTEL","v":147.5,"c":147.5,"p":0.0},{"n":"QUICK STOP DELI & GRILL","v":146.95,"c":146.95,"p":0.0},{"n":"ROSE CITY LIQUORS","v":145.2,"c":145.2,"p":0.0},{"n":"KRAUSZERS FAIRFIELD","v":144.53,"c":144.53,"p":0.0},{"n":"ASK WHOLESALERS & DISTRIBUTION","v":141.86,"c":141.86,"p":0.0},{"n":"MOUNTAIN VARIETY SPRINGFIELD","v":140.72,"c":140.72,"p":0.0},{"n":"CIGAR SHOP MIDDLESEX","v":140.41,"c":140.41,"p":0.0},{"n":"BUCHANAN SHELL","v":139.96,"c":139.96,"p":0.0},{"n":"RAJVI FOOD/ KRAUSZER","v":137.41,"c":312.08,"p":174.67},{"n":"LITTLE SILVER FAMILY PHARMACY","v":137.04,"c":137.04,"p":0.0},{"n":"BETHEL DISCOUNT BEVERAGE,INC","v":136.97,"c":136.97,"p":0.0},{"n":"MINIT MART - HAWORTH","v":134.8,"c":134.8,"p":0.0},{"n":"SELLERSVILLE GAS","v":127.31,"c":127.31,"p":0.0},{"n":"VILLA EWR RESTAURANT GROUP","v":126.15,"c":126.15,"p":0.0},{"n":"LANGHORNE EXXON","v":125.5,"c":125.5,"p":0.0},{"n":"SMOKIN JACKPOTS","v":124.64,"c":124.64,"p":0.0},{"n":"SILVERTON EXXON-TOMS RIVER","v":118.26,"c":118.26,"p":0.0},{"n":"KRAUSZER'S BLOOMFIELD","v":115.57,"c":115.57,"p":0.0},{"n":"DOWNTOWN LIQUORS - WOODBRIDGE","v":113.61,"c":678.44,"p":564.83},{"n":"SMOKIN DUDZ","v":112.44,"c":387.37,"p":274.93},{"n":"BP GAS MART EAST SETAUKET","v":109.12,"c":109.12,"p":0.0},{"n":"NEWS PLUS","v":105.42,"c":105.42,"p":0.0},{"n":"CORTEC ENTERPRISES","v":105.18,"c":105.18,"p":0.0},{"n":"SUPER SHOP GARNERVILLE","v":104.57,"c":411.32,"p":306.75},{"n":"BIG CLOUDZ VAPOR","v":102.34,"c":102.34,"p":0.0},{"n":"BRICKTOWN LIQUORS","v":98.32,"c":98.32,"p":0.0},{"n":"STREET CORNER NEWS","v":98.32,"c":98.32,"p":0.0},{"n":"ABINGTON SUNOCO","v":95.53,"c":95.53,"p":0.0},{"n":"ONE STOP FOOD MART","v":93.86,"c":93.86,"p":0.0},{"n":"QUICK MART - NEWARK","v":93.84,"c":93.84,"p":0.0},{"n":"SMOKERS AND MORE","v":87.11,"c":87.11,"p":0.0},{"n":"MR.B'S TOBACCO SHOP","v":85.32,"c":85.32,"p":0.0},{"n":"KIMS TOBACCO STOP - PA","v":83.56,"c":410.46,"p":326.9},{"n":"LAMBERTVILLE FOOD & DELI MARKE","v":83.19,"c":83.19,"p":0.0},{"n":"KRAUSZERS MINI MART FAIRFIELD","v":82.06,"c":82.06,"p":0.0},{"n":"PRIME TOBACCO ZONE HARRISON","v":81.38,"c":81.38,"p":0.0},{"n":"BELL LIQUORS - LONG BRANCH","v":79.28,"c":326.3,"p":247.02},{"n":"PENNY PANTRY","v":75.18,"c":519.03,"p":443.85},{"n":"LIBERTY LANDING MARINA","v":73.01,"c":73.01,"p":0.0},{"n":"Citgo manasquan","v":72.05,"c":72.05,"p":0.0},{"n":"New downtown deli","v":69.54,"c":69.54,"p":0.0},{"n":"MICHAEL'S DELI","v":66.3,"c":66.3,"p":0.0},{"n":"STOP & GO BRANFORD","v":66.3,"c":66.3,"p":0.0},{"n":"BP RAMSEY","v":61.48,"c":61.48,"p":0.0},{"n":"GTB FUEL 6","v":60.17,"c":60.17,"p":0.0},{"n":"SMOKE PARADISE","v":57.44,"c":57.44,"p":0.0},{"n":"DUNMORE CIGAR RETAIL","v":57.2,"c":57.2,"p":0.0},{"n":"QUICK FOOD STORE - BARNEGAT","v":56.07,"c":56.07,"p":0.0},{"n":"NORRISTOWN FOOD MART","v":55.62,"c":55.62,"p":0.0},{"n":"JERSEY SMOKE SHOP","v":54.2,"c":1206.94,"p":1152.74},{"n":"Prime Tobacco Zone","v":53.61,"c":175.6,"p":121.99},{"n":"GTB FUEL 9 CORPORATION","v":52.49,"c":52.49,"p":0.0},{"n":"CITGO STRATFORD","v":48.94,"c":48.94,"p":0.0},{"n":"HIGHTSTOWN SHELL","v":48.35,"c":48.35,"p":0.0},{"n":"TOBACCO JUNCTION & VARIETY","v":27.98,"c":571.74,"p":543.76},{"n":"VICKY FRESH MART","v":4.98,"c":4.98,"p":0.0},{"n":"KING SMOKE VAPE","v":4.55,"c":653.3,"p":648.75},{"n":"7-STAR NEWS","v":0.0,"c":0.0,"p":0.0},{"n":"Addison Shop","v":0.0,"c":459.91,"p":459.91},{"n":"AMERICAN TOBACCO CORP","v":0.0,"c":0.0,"p":0.0},{"n":"ARYA CORP. D/B/A KRAUSZERS","v":0.0,"c":0.0,"p":0.0},{"n":"BRONX TRADING COMPANY STATE","v":0.0,"c":0.0,"p":0.0},{"n":"CITGO 419 WINDSOR HIGHWAY","v":0.0,"c":0.0,"p":0.0},{"n":"DISCOUNT SMOKE","v":0.0,"c":0.0,"p":0.0},{"n":"EASY MART SPOTSWOOD","v":0.0,"c":0.0,"p":0.0},{"n":"GREEN STREET WINE & LIQUORS","v":0.0,"c":0.0,"p":0.0},{"n":"J & N BEAVER MEADOWS LLC","v":0.0,"c":0.0,"p":0.0},{"n":"KK CORNER STORE","v":0.0,"c":0.0,"p":0.0},{"n":"KRAUSZER'S EAST BRUNSWICK","v":0.0,"c":0.0,"p":0.0},{"n":"KUSUM CONVEINENCE STORE LLC","v":0.0,"c":0.0,"p":0.0},{"n":"LAKESIDE ONE STOP  INC","v":0.0,"c":0.0,"p":0.0},{"n":"LUIGI DELI MEAT MARKET","v":0.0,"c":0.0,"p":0.0},{"n":"M&I PETROLEUM","v":0.0,"c":0.0,"p":0.0},{"n":"SHELL NORTH BERGEN","v":0.0,"c":0.0,"p":0.0},{"n":"SHREEJI VAPE & SMOKE SHOP","v":0.0,"c":0.0,"p":0.0},{"n":"VILLA WIND CREEK BETHLEHEM","v":0.0,"c":0.0,"p":0.0},{"n":"CHESTER DRUGS","v":-1.2,"c":-1.2,"p":0.0},{"n":"EZ CHEK COLONIA","v":-28.41,"c":277.28,"p":305.69},{"n":"PETRO 19 SOUTH AMBOY","v":-28.43,"c":0.0,"p":28.43},{"n":"BAYAT MARKET HUNTINGTON","v":-56.36,"c":0.0,"p":56.36},{"n":"PRIME TOBACCO ZONE HACKTSTWN","v":-60.4,"c":0.0,"p":60.4},{"n":"JIMMIE LEEDS CONVENIENCE","v":-77.68,"c":59.05,"p":136.73},{"n":"VALLEY LIQUORS LYNDHURST","v":-78.26,"c":54.58,"p":132.84},{"n":"EZ Quick II","v":-80.81,"c":55.79,"p":136.6},{"n":"KRAUSZERS - CEDAR GROVE","v":-83.51,"c":127.37,"p":210.88},{"n":"SAMS II","v":-105.02,"c":0.0,"p":105.02},{"n":"KRAUSZER'S - OAKLAND","v":-112.87,"c":116.77,"p":229.64},{"n":"KRAUSERS-LONG VALLEY","v":-116.7,"c":0.0,"p":116.7},{"n":"JUNIORS MINI MART","v":-124.53,"c":0.0,"p":124.53},{"n":"WINSLOW CONOCO","v":-131.46,"c":0.0,"p":131.46},{"n":"EXXON WAYNE","v":-135.11,"c":0.0,"p":135.11},{"n":"MOUSA MART","v":-135.11,"c":65.61,"p":200.72},{"n":"BLAIRSTOWN MARKET, INC","v":-136.6,"c":0.0,"p":136.6},{"n":"JJ'S BAR & PACKAGE GOODS","v":-137.44,"c":0.0,"p":137.44},{"n":"KRAUSZERS - MONTGOMERY","v":-143.21,"c":0.0,"p":143.21},{"n":"ARY'S","v":-146.56,"c":1775.81,"p":1922.37},{"n":"BI COUNTY DISTRIBUTORS USA","v":-152.17,"c":0.0,"p":152.17},{"n":"MERCERVILLE EXXON","v":-162.21,"c":133.56,"p":295.77},{"n":"EZ QUICK FOOD MART","v":-187.33,"c":0.0,"p":187.33},{"n":"HARLEM SMOKE SHOP 1INC","v":-204.69,"c":0.0,"p":204.69},{"n":"518 EXOTICS/BONGZOS GLASS MART","v":-223.96,"c":0.0,"p":223.96},{"n":"Shawnee Inn & Golf Resort","v":-239.39,"c":1843.98,"p":2083.37},{"n":"CITGO BELLEVUE STAR","v":-257.49,"c":0.0,"p":257.49},{"n":"SHAYONA STORE","v":-274.93,"c":0.0,"p":274.93},{"n":"MAGNOLIA C STORE LLC","v":-276.47,"c":134.92,"p":411.39},{"n":"SUNOCO-WARETOWN","v":-291.18,"c":0.0,"p":291.18},{"n":"COTTAGE DELI GROCERY & LIQUOR","v":-328.35,"c":963.87,"p":1292.22},{"n":"AMBASSADOR CIGAR","v":-335.45,"c":0.0,"p":335.45},{"n":"CIRCUS WINES - LINCROFT","v":-372.22,"c":529.76,"p":901.98},{"n":"SUNOCO-PRINCETON","v":-386.53,"c":74.66,"p":461.19},{"n":"JUNIORS SMOKE SHOP","v":-393.94,"c":0.0,"p":393.94},{"n":"E & T FOOD MART","v":-400.25,"c":136.68,"p":536.93},{"n":"DELI WORKS JEFFERSON","v":-400.53,"c":0.0,"p":400.53},{"n":"UNIVERSAL-CITGO","v":-411.39,"c":0.0,"p":411.39},{"n":"JERSEY SMOKE SHOP LIMITED","v":-427.26,"c":0.0,"p":427.26},{"n":"JOLLY SMOKE SHOP & CONVENIENCE","v":-452.55,"c":0.0,"p":452.55},{"n":"OCEAN CONVENIENCE STORE","v":-452.69,"c":-38.69,"p":414.0},{"n":"STOP-N-GO-POINT PLESANT","v":-453.89,"c":315.89,"p":769.78},{"n":"H AND S LIQUORS","v":-507.49,"c":425.16,"p":932.65},{"n":"CIRCUS WINES - PORT MONMOUTH","v":-538.86,"c":0.0,"p":538.86},{"n":"EDWINS WINES & SPIRITS","v":-542.65,"c":0.0,"p":542.65},{"n":"JOLLY GOOD II","v":-627.07,"c":0.0,"p":627.07},{"n":"MANOR SWEET SHOP","v":-627.46,"c":0.0,"p":627.46},{"n":"CIRCUS WINES - MIDDLETOWN","v":-1010.78,"c":1075.48,"p":2086.26},{"n":"Hylan Deli","v":-1125.75,"c":0.0,"p":1125.75},{"n":"CIRCUS WINES-BROAD ST RED BANK","v":-1696.71,"c":0.0,"p":1696.71},{"n":"FROGGIES DISCOUNT LIQUORS","v":-2044.9,"c":0.0,"p":2044.9}];
+
+// Format helpers
+const fmt = (n) => '$' + Math.round(n).toLocaleString();
+const fmtSign = (n) => (n >= 0 ? '+' : '−') + '$' + Math.abs(Math.round(n)).toLocaleString();
+
+// ============== HERO COUNTER ==============
+function animateNum(el, target, duration = 1600) {
+  const start = performance.now();
+  function tick(t) {
+    const p = Math.min(1, (t - start) / duration);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(target * eased).toLocaleString();
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+animateNum(document.getElementById('heroNum'), 267056);
+
+// Animate story bars
+setTimeout(() => {
+  document.querySelectorAll('.story-card-bar-fill').forEach(b => {
+    b.style.width = b.dataset.w + '%';
+  });
+}, 300);
+
+// ============== BAR CHART ==============
+const newCustomers = DATA.filter(c => c.p === 0 && c.c > 0).sort((a,b) => b.v - a.v);
+const existingGrowers = DATA.filter(c => c.p > 0 && c.v > 0).sort((a,b) => b.v - a.v);
+const decliners = DATA.filter(c => c.v < 0).sort((a,b) => a.v - b.v);
+const topAll = [...DATA].sort((a,b) => b.v - a.v);
+
+function renderBars(mode) {
+  const bars = document.getElementById('bars');
+  let rows;
+  let isDecline = false;
+  if (mode === 'top') rows = topAll.slice(0, 20);
+  else if (mode === 'existing') rows = existingGrowers.slice(0, 20);
+  else { rows = decliners.slice(0, 20); isDecline = true; }
+
+  const maxAbs = Math.max(...rows.map(r => Math.abs(r.v)));
+
+  bars.innerHTML = rows.map(r => {
+    const w = (Math.abs(r.v) / maxAbs * 100).toFixed(1);
+    const status = r.p === 0 ? 'NEW' : (r.v > 0 ? 'GREW' : 'DECLINED');
+    const detail = r.p === 0 ? `New cigar buyer · YR1: ${fmt(r.c)}` : `${fmt(r.p)} → ${fmt(r.c)}`;
+    return `
+      <div class="bar-row ${isDecline ? 'declining' : ''}">
+        <div>
+          <div class="bar-name">${r.n}</div>
+          <div class="bar-detail">${detail}</div>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width: 0"></div></div>
+        <div class="bar-val">${fmtSign(r.v)}</div>
+      </div>`;
+  }).join('');
+
+  // Animate fills
+  requestAnimationFrame(() => {
+    bars.querySelectorAll('.bar-row').forEach((row, i) => {
+      const fill = row.querySelector('.bar-fill');
+      const val = Math.abs(rows[i].v);
+      const w = (val / maxAbs * 100).toFixed(1);
+      setTimeout(() => { fill.style.width = w + '%'; }, i * 30);
+    });
+  });
+}
+
+document.querySelectorAll('.chart-controls .chip[data-mode]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.chart-controls .chip[data-mode]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderBars(btn.dataset.mode);
+  });
+});
+renderBars('top');
+
+// ============== DONUT ==============
+function renderDonut() {
+  const svg = document.getElementById('donut');
+  const cx = 100, cy = 100, r = 78, w = 18;
+  const total = 239883 + 44899 + 17726; // gross movements
+  const segments = [
+    { val: 239883, color: 'var(--gold-bright)', label: 'New' },
+    { val: 44899, color: 'var(--leaf)', label: 'Existing growers' },
+    { val: 17726, color: 'var(--rust)', label: 'Decliners' },
+  ];
+  let cumA = -Math.PI / 2;
+  let html = '';
+  segments.forEach((s, i) => {
+    const angle = (s.val / total) * Math.PI * 2;
+    const a0 = cumA, a1 = cumA + angle;
+    const x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0);
+    const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+    const large = angle > Math.PI ? 1 : 0;
+    html += `<path d="M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}"
+      fill="none" stroke="${s.color}" stroke-width="${w}" stroke-linecap="butt"
+      style="opacity: 0; transition: opacity 0.6s ${i*0.15}s; transform-origin: 100px 100px;" />`;
+    cumA = a1;
+  });
+  // Inner thin ring decorative
+  html += `<circle cx="100" cy="100" r="60" fill="none" stroke="var(--ink-faint)" stroke-width="0.5" stroke-dasharray="2,4" />`;
+  svg.innerHTML = html;
+  setTimeout(() => svg.querySelectorAll('path').forEach(p => p.style.opacity = 1), 100);
+}
+renderDonut();
+
+// ============== TABLE ==============
+let sortKey = 'variance';
+let sortDir = 'desc';
+let activeFilter = 'all';
+let searchQ = '';
+
+function statusOf(c) {
+  if (c.p === 0 && c.c > 0) return 'new';
+  if (c.v > 0) return 'grow';
+  if (c.v < 0) return 'decl';
+  return 'inactive';
+}
+function statusLabel(s) {
+  return { new: 'New', grow: 'Grew', decl: 'Declined', inactive: 'Inactive' }[s];
+}
+function statusClass(s) {
+  return { new: 'tag new', grow: 'tag grow', decl: 'tag decl', inactive: 'tag' }[s];
+}
+
+function renderTable() {
+  let rows = DATA.map(c => ({ ...c, status: statusOf(c) }));
+  if (activeFilter !== 'all') rows = rows.filter(r => r.status === activeFilter);
+  if (searchQ) rows = rows.filter(r => r.n.toLowerCase().includes(searchQ.toLowerCase()));
+
+  rows.sort((a, b) => {
+    let va, vb;
+    if (sortKey === 'name' || sortKey === 'status') {
+      va = a[sortKey === 'name' ? 'n' : 'status'].toLowerCase();
+      vb = b[sortKey === 'name' ? 'n' : 'status'].toLowerCase();
+    } else {
+      const k = { prior: 'p', current: 'c', variance: 'v' }[sortKey];
+      va = a[k]; vb = b[k];
+    }
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = rows.slice(0, 100).map(r => `
+    <tr>
+      <td>${r.n}</td>
+      <td><span class="${statusClass(r.status)}">${statusLabel(r.status)}</span></td>
+      <td class="num neutral">${r.p === 0 ? '—' : fmt(r.p)}</td>
+      <td class="num">${r.c === 0 ? '—' : fmt(r.c)}</td>
+      <td class="num ${r.v >= 0 ? 'pos' : 'neg'}">${fmtSign(r.v)}</td>
+    </tr>
+  `).join('');
+
+  document.getElementById('tfoot').textContent =
+    `Showing ${Math.min(100, rows.length)} of ${rows.length} accounts` +
+    (rows.length > 100 ? ' (filter or search to narrow)' : '');
+
+  // Update sort indicators
+  document.querySelectorAll('.ctable th').forEach(th => {
+    th.classList.remove('sorted');
+    th.textContent = th.textContent.replace(/[↓↑]/g, '').trim();
+    if (th.dataset.sort === sortKey) {
+      th.classList.add('sorted');
+      th.textContent = th.textContent + ' ' + (sortDir === 'desc' ? '↓' : '↑');
+    }
+  });
+}
+
+document.querySelectorAll('.ctable th').forEach(th => {
+  th.addEventListener('click', () => {
+    const k = th.dataset.sort;
+    if (sortKey === k) sortDir = sortDir === 'desc' ? 'asc' : 'desc';
+    else { sortKey = k; sortDir = (k === 'name' || k === 'status') ? 'asc' : 'desc'; }
+    renderTable();
+  });
+});
+document.querySelectorAll('.chip[data-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.chip[data-filter]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    renderTable();
+  });
+});
+document.getElementById('search').addEventListener('input', (e) => {
+  searchQ = e.target.value;
+  renderTable();
+});
+renderTable();
+
+</script>
+</body>
+</html>
