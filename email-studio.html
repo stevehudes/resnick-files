@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resnick Email Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Archivo+Black&display=swap">
+<style>
+:root{--g:#0E5C2F;--g2:#0A4724;--gl:#EEF5EF;--lime:#A6D84A;--red:#D9262C;--ink:#1B1F2A;--mut:#626875;--line:#E4E3DD;--bg:#F5F4F0;--card:#FFFFFF;--amber:#C98A12;}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--g)}
+.app{display:grid;grid-template-rows:60px 1fr;height:100vh}
+/* top bar */
+.top{display:flex;align-items:center;gap:12px;padding:0 18px;background:#fff;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;letter-spacing:-.01em;white-space:nowrap}
+.brand .mark{width:30px;height:30px;border-radius:8px;background:var(--g);display:grid;place-items:center;color:#fff;font-size:13px;font-weight:800}
+.brand small{display:block;font-size:11px;font-weight:500;color:var(--mut);letter-spacing:0}
+.chips{display:flex;gap:8px;margin-left:14px;flex-wrap:nowrap;min-width:0}
+.chip{display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:17px;border:1px solid var(--line);background:#fff;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:330px}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:#C9C9C2;flex:none}
+.chip.ok .dot{background:#2E9D4E}.chip.warn{border-color:#F0D58A;background:#FFF8E6}.chip.warn .dot{background:var(--amber)}
+.chip.busy .dot{background:var(--g);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.sp{flex:1}
+.btn{height:36px;padding:0 14px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:#cfcdc4}
+.btn.pri{background:var(--g);border-color:var(--g);color:#fff}.btn.pri:hover{background:var(--g2)}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn.sm{height:30px;padding:0 10px;font-size:12px;border-radius:7px}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn:disabled{opacity:.5;cursor:default}
+/* main */
+.main{display:grid;grid-template-columns:380px 1fr;min-height:0}
+.side{border-right:1px solid var(--line);background:#fff;overflow:auto;min-height:0}
+.stage{overflow:auto;min-height:0;position:relative}
+.pane{padding:18px}
+.h{font-size:20px;font-weight:800;letter-spacing:-.02em;margin:0 0 4px}
+.sub{color:var(--mut);font-size:13px;margin:0 0 16px}
+.lbl{display:block;font-size:12px;font-weight:700;margin:14px 0 6px}
+.lbl span{font-weight:500;color:var(--mut)}
+.in{width:100%;height:38px;padding:0 11px;border:1px solid var(--line);border-radius:9px;background:#FAFAF8;outline:none}
+textarea.in{height:auto;padding:9px 11px;resize:vertical;line-height:1.45}
+.in:focus{border-color:var(--g);background:#fff;box-shadow:0 0 0 3px rgba(14,92,47,.1)}
+.drop{border:2px dashed #D3D1C8;border-radius:14px;padding:22px 16px;text-align:center;background:#FBFBF9;cursor:pointer;transition:.15s}
+.drop:hover,.drop.over{border-color:var(--g);background:var(--gl)}
+.drop b{display:block;font-size:15px;margin-bottom:4px}
+.drop .ic{font-size:26px;color:var(--g);font-weight:800;line-height:1;margin-bottom:6px}
+.files{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.file{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:12.5px}
+.file img{width:40px;height:40px;object-fit:contain;border-radius:6px;background:#F3F3EF;flex:none}
+.file .t{flex:1;min-width:0}.file .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file .t span{color:var(--mut)}
+.x{width:26px;height:26px;border-radius:7px;border:0;background:transparent;color:var(--mut);font-size:16px;flex:none}
+.x:hover{background:#F3F2EE;color:var(--red)}
+.tpls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tpl{text-align:left;padding:10px;border:1.5px solid var(--line);border-radius:12px;background:#fff}
+.tpl.on{border-color:var(--g);background:var(--gl)}
+.tpl b{display:block;font-size:13px}.tpl span{font-size:11.5px;color:var(--mut);line-height:1.3;display:block}
+.wire{height:46px;border-radius:7px;background:#F2F0EA;margin-bottom:8px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px;overflow:hidden}
+.wire i{display:block;border-radius:2px;flex:none}
+.go{width:100%;height:48px;font-size:15px;margin-top:18px;border-radius:11px}
+.note{font-size:12px;color:var(--mut);margin-top:8px}
+.warnbox{padding:10px 12px;border-radius:10px;background:#FFF8E6;border:1px solid #F0D58A;font-size:12.5px;margin-top:10px}
+/* outline */
+.det{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px;background:#FCFCFA}
+.det summary{font-weight:700;cursor:pointer;font-size:13px;list-style:none;display:flex;align-items:center;gap:6px}
+.det summary::after{content:'▾';margin-left:auto;color:var(--mut)}
+.blk{border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:#fff;overflow:hidden}
+.blk.sel{border-color:var(--g);box-shadow:0 0 0 3px rgba(14,92,47,.08)}
+.bh{display:flex;align-items:center;gap:8px;padding:9px 8px 9px 12px;cursor:pointer}
+.bh .ty{font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--mut);text-transform:uppercase}
+.bh .nm{font-weight:650;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bh .meta{flex:1;min-width:0}
+.ib{width:28px;height:28px;border-radius:7px;border:0;background:transparent;color:var(--mut);font-size:14px;display:grid;place-items:center;flex:none}
+.ib:hover{background:#F1F0EB;color:var(--ink)}
+.bb{padding:4px 12px 14px;border-top:1px solid #F0EFEA}
+.items{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.it{display:grid;grid-template-columns:52px 1fr auto;gap:9px;align-items:center;padding:7px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.it.sel{border-color:var(--red);box-shadow:0 0 0 3px rgba(217,38,44,.08)}
+.it .th{width:52px;height:52px;border-radius:8px;background:#F4F3EF;display:grid;place-items:center;overflow:hidden;position:relative}
+.it .th img{width:100%;height:100%;object-fit:contain}
+.it .th .ld{position:absolute;inset:0;background:rgba(255,255,255,.8);display:grid;place-items:center;font-size:10px;font-weight:700;color:var(--g)}
+.it .nm{font-weight:650;font-size:12.5px;line-height:1.25}
+.it .no{font-size:11.5px;color:var(--mut)}
+.it .act{display:flex;gap:0}
+.it .miss{color:var(--red);font-weight:600}
+.row{display:flex;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:#fff;height:30px;padding:0 12px;font-size:12px;font-weight:600}
+.seg button.on{background:var(--g);color:#fff}
+.addmenu{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.addmenu button{text-align:left;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:12.5px;font-weight:600}
+.addmenu button span{display:block;font-weight:400;font-size:11px;color:var(--mut)}
+/* stage */
+.stagebar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:12px 18px;background:rgba(245,244,240,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.hint{font-size:12px;color:var(--mut)}
+.canvas{display:flex;justify-content:center;padding:26px 18px 80px}
+.frame{width:640px;max-width:100%;transition:width .2s;border-radius:6px;overflow:hidden;box-shadow:0 10px 30px rgba(27,31,42,.12);background:#F2F0EA}
+.frame.phone{width:390px;border-radius:30px;border:9px solid #1B1F2A}
+.frame iframe{display:block;width:100%;border:0;height:1600px;background:#F2F0EA}
+.empty{display:grid;place-items:center;height:calc(100vh - 140px);text-align:center;color:var(--mut)}
+.empty .big{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.02em;margin-bottom:6px}
+.busyov{position:absolute;inset:0;background:rgba(245,244,240,.75);display:none;place-items:center;z-index:20}
+.busyov.on{display:grid}
+.busyov .card{background:#fff;border-radius:14px;padding:20px 26px;box-shadow:0 10px 40px rgba(0,0,0,.12);display:flex;align-items:center;gap:14px;font-weight:600}
+.spin{width:22px;height:22px;border-radius:50%;border:3px solid #DCEBDD;border-top-color:var(--g);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(27,31,42,.45);display:none;align-items:flex-start;justify-content:center;padding:50px 20px;z-index:50;overflow:auto}
+.modal.on{display:flex}
+.mbox{width:min(760px,100%);background:#fff;border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3);padding:24px 26px 26px}
+.mhead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.mhead h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em;flex:1}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:16px 0;border-top:1px solid #EFEEE9}
+.step .n{width:30px;height:30px;border-radius:50%;background:var(--g);color:#fff;display:grid;place-items:center;font-weight:800}
+.step .n.done{background:#2E9D4E}
+.step h3{margin:3px 0 4px;font-size:15px}
+.step p{margin:0 0 10px;color:var(--mut);font-size:13px}
+.assets{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.as{border:1px solid var(--line);border-radius:10px;padding:6px;font-size:11px;display:flex;gap:6px;align-items:center}
+.as img{width:34px;height:34px;object-fit:contain;flex:none;background:#F4F3EF;border-radius:5px}
+.as .s{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.as.ok{border-color:#9BD3A9;background:#F2FAF4}
+.bm{display:inline-flex;align-items:center;height:30px;padding:0 14px;border-radius:15px;background:var(--red);color:#fff;font-weight:700;font-size:12.5px;text-decoration:none;cursor:grab}
+.saved{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:14px}
+.sv{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.sv .im{aspect-ratio:2/1;background:#F2F0EA;display:grid;place-items:center;overflow:hidden}
+.sv .im img{width:100%;height:100%;object-fit:cover}
+.sv .b{padding:10px}
+.sv b{display:block;font-size:13px}.sv span{font-size:11.5px;color:var(--mut)}
+.checks{margin:8px 0 0;padding:0;list-style:none;font-size:12.5px}
+.checks li{padding:3px 0}.checks li::before{content:'●';margin-right:7px;color:var(--amber)}
+.checks li.ok::before{color:#2E9D4E}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;transition:.25s;background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-weight:500;z-index:80;max-width:90vw;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.kbd{font-size:11px;color:var(--mut)}
+.pop{position:absolute;z-index:30}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="mark">R</div><div>Email Studio<small>Resnick Distributors</small></div></div>
+    <div class="chips">
+      <button class="chip" id="chipImg"><span class="dot"></span><span class="t">Images folder</span></button>
+      <button class="chip" id="chipCat"><span class="dot"></span><span class="t">Catalog</span></button>
+    </div>
+    <div class="sp"></div>
+    <button class="btn" id="bNew">New email</button>
+    <button class="btn" id="bSaved">Saved emails</button>
+    <button class="btn ghost" id="bSettings" title="Settings">Settings</button>
+    <button class="btn pri" id="bExport">Get it ready to send →</button>
+  </header>
+  <div class="main">
+    <aside class="side" id="side"></aside>
+    <section class="stage" id="stage">
+      <div class="stagebar">
+        <div class="seg" id="viewSeg"><button data-v="desktop" class="on">Desktop</button><button data-v="phone">Phone</button></div>
+        <span class="hint" id="stageHint">Click any text in the email to edit it. Click a product to change it.</span>
+        <div class="sp"></div>
+        <button class="btn sm" id="bUndo" title="Undo">↶ Undo</button>
+      </div>
+      <div class="canvas" id="canvas"></div>
+      <div class="busyov" id="busy"><div class="card"><div class="spin"></div><span id="busyT">Working…</span></div></div>
+    </section>
+  </div>
+</div>
+<div class="modal" id="modal"><div class="mbox" id="mbox"></div></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="fileIn" hidden multiple>
+<script>
+'use strict';
+// ================= utilities =================
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const clone = o => JSON.parse(JSON.stringify(o));
+const canvasEl = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+const titleCase = s => String(s || '').toLowerCase().replace(/(^|[\s\-+&/(])([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/\bOz\b/g, 'oz').replace(/(\d)(Oz|Ct|Pc|Pk)\b/g, (m, d, u) => d + u.toLowerCase());
+let toastT;
+function toast(msg, ms = 3800) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), ms); }
+function busy(msg) { $('#busy').classList.toggle('on', !!msg); if (msg) $('#busyT').textContent = msg; }
+function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src)); document.head.appendChild(s); }); }
+function pickFiles(accept, multiple = true) {
+  return new Promise(res => { const inp = $('#fileIn'); inp.value = ''; inp.accept = accept || ''; inp.multiple = multiple; inp.removeAttribute('webkitdirectory'); inp.onchange = () => res([...inp.files]); inp.click(); });
+}
+function fileToDataUrl(f) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); }); }
+function dataUrlToBlob(u) { const [h, b] = u.split(','), mime = (h.match(/:(.*?);/) || [])[1] || 'image/jpeg', bin = atob(b), a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new Blob([a], { type: mime }); }
+function download(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+async function copyText(t) { try { await navigator.clipboard.writeText(t); return true; } catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok; } }
+
+// ================= storage =================
+const DB = (() => {
+  let p;
+  const open = () => p || (p = new Promise((res, rej) => {
+    const r = indexedDB.open('resnick-email-studio', 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); r.result.createObjectStore('emails', { keyPath: 'id' }); };
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  }));
+  const tx = async (store, mode, fn) => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction(store, mode), q = fn(t.objectStore(store)); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); }); };
+  return {
+    get: k => tx('kv', 'readonly', s => s.get(k)), set: (k, v) => tx('kv', 'readwrite', s => s.put(v, k)), del: k => tx('kv', 'readwrite', s => s.delete(k)),
+    all: () => tx('emails', 'readonly', s => s.getAll()), put: e => tx('emails', 'readwrite', s => s.put(e)), one: id => tx('emails', 'readonly', s => s.get(id)), drop: id => tx('emails', 'readwrite', s => s.delete(id))
+  };
+})();
+function persistStorage() { try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {} }
+
+// ================= settings =================
+const DEFAULTS = {
+  appLink: 'https://resnick.link/',
+  logo: 'https://files.constantcontact.com/45169573201/6bbc0f23-6e82-4c71-a7c6-51ce49f7d88e.png',
+  phone: '800-828-3865',
+  flipbook: 'https://resnickdistributors.cld.bz/Resnick-Fall-2026-Book',
+  footer: 'Resnick Distributors · 25 Van Dyke Avenue, New Brunswick, NJ 08901',
+  ccLibrary: 'https://app.constantcontact.com/pages/legacy/mlui/home',
+  logoData: ''
+};
+let S = { ...DEFAULTS };
+async function loadSettings() { try { const s = await DB.get('settings'); if (s) S = { ...DEFAULTS, ...s }; } catch (e) {} }
+async function saveSettings() { await DB.set('settings', S); }
+
+// ================= app state =================
+const st = {
+  email: null, sel: null, view: 'desktop', undo: [],
+  folder: { handle: null, state: 'none', map: null, files: null, count: 0, indexing: false },
+  cat: { pdf: null, name: '', pages: 0, saved: 0, index: null, reading: '' },
+  start: { files: [], nums: '', pages: '', tpl: 'sections' }
+};
+
+// ================= images folder =================
+const IMG_EXT = /\.(jpe?g|png|jfif|webp|gif|bmp)$/i;
+const NUM_RE = /^0*(\d{3,6})(?=[_\-. ]|$)/;
+function nameRank(n, num) {
+  const base = n.replace(IMG_EXT, '');
+  if (/^0*\d+$/.test(base)) return /\.png$/i.test(n) ? 1 : 0;
+  if (/_B$/i.test(base)) return 9;
+  if (/C1$|A1C1|CF_A1C1/i.test(base)) return 2;
+  if (/A1L1|A1N1|A1R1/i.test(base)) return 3;
+  return 5;
+}
+function buildFolderMap(names) {
+  const m = new Map();
+  for (const n of names) { if (!IMG_EXT.test(n)) continue; const k = n.match(NUM_RE); if (!k) continue; const key = k[1]; if (!m.has(key)) m.set(key, []); m.get(key).push(n); }
+  for (const [k, arr] of m) arr.sort((a, b) => nameRank(a, k) - nameRank(b, k) || a.length - b.length);
+  return m;
+}
+async function connectFolder() {
+  if (!window.showDirectoryPicker) return fallbackFolder();
+  try {
+    const h = await window.showDirectoryPicker({ id: 'resnick-images', mode: 'read' });
+    await DB.set('dir', h); persistStorage();
+    await useFolder(h, true);
+  } catch (e) { if (e && e.name !== 'AbortError') toast('Could not open that folder: ' + (e.message || e)); }
+}
+function fallbackFolder() {
+  return new Promise(res => {
+    const inp = $('#fileIn'); inp.value = ''; inp.accept = ''; inp.setAttribute('webkitdirectory', ''); inp.multiple = true;
+    inp.onchange = () => {
+      const files = new Map(); for (const f of inp.files) { const parts = (f.webkitRelativePath || f.name).split('/'); if (parts.length <= 2) files.set(f.name, f); }
+      inp.removeAttribute('webkitdirectory');
+      st.folder.files = files; st.folder.map = buildFolderMap([...files.keys()]); st.folder.count = files.size; st.folder.state = 'ok'; st.folder.name = 'folder';
+      renderChips(); toast(`Connected: ${files.size.toLocaleString()} photos (this browser needs reconnecting each visit).`); onFolderReady(); res();
+    };
+    inp.click();
+  });
+}
+async function restoreFolder() {
+  let h = null; try { h = await DB.get('dir'); } catch (e) {}
+  if (!h) { st.folder.state = 'none'; return renderChips(); }
+  st.folder.handle = h;
+  let p = 'prompt'; try { p = await h.queryPermission({ mode: 'read' }); } catch (e) {}
+  if (p === 'granted') await useFolder(h, false); else { st.folder.state = 'needs'; renderChips(); }
+}
+async function reconnectFolder() {
+  const h = st.folder.handle; if (!h) return connectFolder();
+  try { const p = await h.requestPermission({ mode: 'read' }); if (p === 'granted') return useFolder(h, false); } catch (e) {}
+  connectFolder();
+}
+async function useFolder(h, fresh) {
+  st.folder.handle = h; st.folder.name = h.name; st.folder.state = 'ok';
+  let idx = null; try { idx = await DB.get('dirIndex'); } catch (e) {}
+  if (idx && idx.name === h.name && !fresh) { st.folder.map = buildFolderMap(idx.names); st.folder.count = idx.names.length; renderChips(); onFolderReady(); if (Date.now() - idx.at > 2 * 864e5) indexFolder(h, true); }
+  else { renderChips(); onFolderReady(); indexFolder(h, false); }
+}
+async function indexFolder(h, quiet) {
+  if (st.folder.indexing) return; st.folder.indexing = true; renderChips();
+  const names = []; let n = 0;
+  try { for await (const name of h.keys()) { names.push(name); if (++n % 1500 === 0) { st.folder.count = n; if (!quiet) renderChips(); await sleep(0); } } }
+  catch (e) { st.folder.indexing = false; renderChips(); return; }
+  st.folder.map = buildFolderMap(names); st.folder.count = names.length; st.folder.indexing = false;
+  try { await DB.set('dirIndex', { name: h.name, at: Date.now(), names }); } catch (e) {}
+  renderChips(); onFolderReady();
+}
+function folderReady() { return st.folder.state === 'ok'; }
+async function folderFile(name) {
+  if (st.folder.files) return st.folder.files.get(name) || null;
+  if (!st.folder.handle) return null;
+  try { return await (await st.folder.handle.getFileHandle(name)).getFile(); } catch (e) { return null; }
+}
+async function photoNames(num) {
+  num = String(num || '').replace(/\D/g, '').replace(/^0+/, ''); if (!num) return [];
+  if (st.folder.map && st.folder.map.has(num)) return st.folder.map.get(num);
+  if (st.folder.map && !st.folder.indexing) return [];
+  const out = []; for (const ext of ['jpg', 'png', 'jpeg', 'jfif']) { if (await folderFile(num + '.' + ext)) out.push(num + '.' + ext); }
+  return out;
+}
+function onFolderReady() { if (st.email) fillMissingPhotos(); }
+
+// ================= image processing =================
+async function decodeImage(blob) {
+  try { return await createImageBitmap(blob); } catch (e) {}
+  const url = URL.createObjectURL(blob);
+  try { const im = new Image(); im.src = url; await im.decode(); return im; } catch (e) { return null; } finally { setTimeout(() => URL.revokeObjectURL(url), 1000); }
+}
+function trimBox(img) {
+  const W = img.width, H = img.height, k = Math.min(1, 500 / Math.max(W, H));
+  const c = canvasEl(Math.max(1, Math.round(W * k)), Math.max(1, Math.round(H * k))), x = c.getContext('2d', { willReadFrequently: true });
+  x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+  const d = x.getImageData(0, 0, c.width, c.height).data; let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
+  for (let y = 0; y < c.height; y++) for (let xx = 0; xx < c.width; xx++) { const i = (y * c.width + xx) * 4; if (Math.min(d[i], d[i + 1], d[i + 2]) < 236) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (y < y0) y0 = y; if (y > y1) y1 = y; } }
+  if (x1 < 0) return { sx: 0, sy: 0, sw: W, sh: H };
+  const pad = 1; return { sx: Math.max(0, (x0 - pad) / k), sy: Math.max(0, (y0 - pad) / k), sw: Math.min(W, (x1 - x0 + 1 + pad * 2) / k), sh: Math.min(H, (y1 - y0 + 1 + pad * 2) / k) };
+}
+function makeTile(img, size = 400, pad = 0.09) {
+  const b = trimBox(img), c = canvasEl(size, size), x = c.getContext('2d');
+  x.fillStyle = '#fff'; x.fillRect(0, 0, size, size);
+  const box = size * (1 - pad * 2), k = Math.min(box / b.sw, box / b.sh), w = b.sw * k, h = b.sh * k;
+  x.imageSmoothingQuality = 'high'; x.drawImage(img, b.sx, b.sy, b.sw, b.sh, (size - w) / 2, (size - h) / 2, w, h);
+  return c.toDataURL('image/jpeg', 0.86);
+}
+function fitWidth(img, w, q = 0.84) {
+  const k = Math.min(1, w / img.width), c = canvasEl(Math.round(img.width * k), Math.round(img.height * k)), x = c.getContext('2d');
+  x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.imageSmoothingQuality = 'high'; x.drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', q);
+}
+async function productPhoto(num, start = 0) {
+  const names = await photoNames(num); if (!names.length) return null;
+  for (let j = 0; j < names.length; j++) {
+    const i = (start + j) % names.length, f = await folderFile(names[i]); if (!f) continue;
+    const img = await decodeImage(f); if (!img) continue;
+    return { data: makeTile(img), alt: i, total: names.length, file: names[i] };
+  }
+  return null;
+}
+
+// ================= PDF / catalog =================
+async function pdfLib() {
+  if (!window.pdfjsLib) { await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'); window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; }
+  return window.pdfjsLib;
+}
+async function openPdf(blob) { const lib = await pdfLib(); return lib.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise; }
+async function pageTokens(pdf, n) {
+  const pg = await pdf.getPage(n), vp = pg.getViewport({ scale: 1 }), tc = await pg.getTextContent();
+  const toks = tc.items.filter(t => t.str && t.str.trim()).map(t => { const tr = t.transform; const size = Math.hypot(tr[2], tr[3]) || t.height || 10; return { s: t.str.replace(/\s+/g, ' ').trim(), x: tr[4], y: vp.height - tr[5], w: t.width || 0, size }; });
+  return { toks, W: vp.width, H: vp.height, n };
+}
+async function renderPdfPage(pdf, n, width) {
+  const pg = await pdf.getPage(n), v1 = pg.getViewport({ scale: 1 }), vp = pg.getViewport({ scale: width / v1.width });
+  const c = canvasEl(Math.round(vp.width), Math.round(vp.height)), x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
+  await pg.render({ canvasContext: x, viewport: vp }).promise; return c;
+}
+async function restoreCatalog() {
+  let rec = null; try { rec = await DB.get('catalog'); } catch (e) {}
+  if (!rec || !rec.blob) return renderChips();
+  try {
+    st.cat.pdf = await openPdf(rec.blob); Object.assign(st.cat, { name: rec.name, pages: st.cat.pdf.numPages, saved: rec.saved });
+    persistStorage();
+    const idx = await DB.get('catIndex').catch(() => null);
+    if (idx && idx.saved === rec.saved) st.cat.index = idx.map; else indexCatalog();
+  } catch (e) { console.warn(e); }
+  renderChips();
+}
+async function setCatalog(file) {
+  busy('Opening the catalog…');
+  try {
+    const pdf = await openPdf(file);
+    if (pdf.numPages < 40) { busy(''); toast(`That PDF has ${pdf.numPages} page${pdf.numPages > 1 ? 's' : ''}, so it isn't the catalog. Added it to your email files instead.`); addStartFiles([file]); return; }
+    const name = file.name.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').trim(), saved = Date.now();
+    await DB.set('catalog', { blob: file, name, saved }); persistStorage();
+    Object.assign(st.cat, { pdf, name, pages: pdf.numPages, saved, index: null });
+    renderChips(); busy(''); toast(`Saved "${name}" as this quarter's catalog. It stays until you replace it.`);
+    indexCatalog();
+  } catch (e) { busy(''); toast('Could not open that PDF.'); }
+}
+async function indexCatalog() {
+  const pdf = st.cat.pdf; if (!pdf) return; const map = {};
+  for (let n = 1; n <= pdf.numPages; n++) {
+    if (n % 5 === 1) { st.cat.reading = `Reading catalog ${n}/${pdf.numPages}`; renderChips(); }
+    try {
+      const P = await pageTokens(pdf, n);
+      for (const lineToks of groupLines(P.toks)) {
+        const line = lineToks.map(t => t.s).join(' ');
+        const re = /#\s?(\d{4,6})\b/g; let m;
+        while ((m = re.exec(line))) {
+          const num = m[1].replace(/^0+/, ''); if (map[num]) continue;
+          const before = line.slice(0, m.index).split(/#\s?\d{4,6}/).pop().replace(/[$\d.,]+\s*(OFF|off)?\s*$/, '').trim();
+          const after = line.slice(m.index + m[0].length).split(/#\s?\d{4,6}/)[0].trim();
+          const name = (before.length >= 4 ? before : after).replace(/^[·•|\-–\s]+|[·•|\-–\s]+$/g, '').slice(0, 60);
+          map[num] = { page: n, name };
+        }
+      }
+    } catch (e) {}
+    if (n % 10 === 0) await sleep(0);
+  }
+  st.cat.index = map; st.cat.reading = ''; renderChips();
+  try { await DB.set('catIndex', { saved: st.cat.saved, map }); } catch (e) {}
+}
+function groupLines(toks) {
+  const sorted = toks.slice().sort((a, b) => a.y - b.y || a.x - b.x), lines = [];
+  for (const t of sorted) { const L = lines[lines.length - 1]; if (L && Math.abs(L.y - t.y) < Math.max(2, t.size * 0.35)) L.t.push(t); else lines.push({ y: t.y, t: [t] }); }
+  return lines.map(L => L.t.sort((a, b) => a.x - b.x));
+}
+function catInfo(num) { num = String(num).replace(/^0+/, ''); return (st.cat.index && st.cat.index[num]) || null; }
+
+// ================= flyer parsing =================
+const GENERIC = /^(lower|prices?|sell|off|save|only|limited|stocking|cough|more|holiday|beverages?|new|hot|top|best|snacks?|candy|also|sales|focus|this|our|picks|deals?|the|seasonal|winter|summer|fall|spring|featured|must|everyday)$/i;
+const FLAVOR = /^(orange|mango|watermelon|peach|cool|fruit|lemon|lemon-lime|honey|honey-lemon|mentho-lyptus|menthol|cherry|vit|vitamin|extra|strawberry|wild|kiwi|tropical|fierce|glacier|original|citrus|grape|berry|mint|spearmint|peppermint|sugar|zero|blue|green|black|red|white|vanilla|chocolate|caramel|salted|sour|sweet|spicy|bbq|ranch|cheddar|regular|classic|lime|apple|pineapple|coconut|raspberry|blueberry|passion|peach|ultra|sf|sugar-free)$/i;
+const isCaps = s => /[A-Z]{2}/.test(s) && s === s.toUpperCase();
+const COPY = [
+  { re: /beverage|drink|soda|\bcola\b|coca|pepsi|coke|sprite|water|gatorade|celsius|energy|juice|\btea\b|monster|red bull|cooler|mtn dew/i, cat: 'BEVERAGES', short: 'Cold drinks', title: 'Stock up the cooler', body: 'Cold drinks move fast. Keep the best sellers faced and full.' },
+  { re: /cough|halls|ricola|throat|vicks|cold season/i, cat: 'COUGH DROPS', short: 'Cough drops', title: 'Ready for cold season', body: 'Customers grab these on the way out. Keep them near the register.' },
+  { re: /stocking|holiday|christmas|gift|toy|squish|novelt|plush/i, cat: 'STOCKING STUFFERS', short: 'Stocking stuffers', title: 'Small gifts that sell themselves', body: 'Place them at the register, at eye level. Kids spot them, parents buy them.' },
+  { re: /candy|chocolate|\bgum\b|mints?\b|confection|hershey|mars|reese|m&m|skittles/i, cat: 'CANDY', short: 'Candy', title: 'Sweet sellers for the counter', body: 'Keep them front and center, right by the register.' },
+  { re: /chip|snack|frito|lays|doritos|pretzel|jerky|\bnuts?\b|popcorn/i, cat: 'SNACKS', short: 'Snacks', title: 'Snacks that keep moving', body: 'Restock the rack before the weekend rush.' },
+  { re: /coffee|creamer|\bcups?\b|lids/i, cat: 'COFFEE', short: 'Coffee', title: 'Keep the coffee station full', body: 'Morning regulars notice when something runs out.' },
+  { re: /pain|advil|tylenol|health|beauty|haba|razor|lotion/i, cat: 'HEALTH & BEAUTY', short: 'Everyday essentials', title: 'Everyday essentials', body: 'Small items, steady sales, every day.' },
+  { re: /cigar|tobacco|vape|lighter|grabba/i, cat: 'TOBACCO', short: 'Tobacco', title: 'Behind-the-counter best sellers', body: 'Keep your fastest movers in stock.' }
+];
+const copyFor = text => COPY.find(c => c.re.test(text || '')) || null;
+const copyForSec = (head, names) => copyFor(head) || copyFor(names);
+
+async function parsePdfFlyer(file) {
+  const pdf = await openPdf(file), pages = [];
+  for (let n = 1; n <= Math.min(pdf.numPages, 12); n++) pages.push(await pageTokens(pdf, n));
+  return analyzeFlyer(pages);
+}
+function analyzeFlyer(pages) {
+  const heads = [], subs = [], items = [];
+  let title = '', date = '';
+  pages.forEach((P, pi) => {
+    const T = P.toks; if (!T.length) return;
+    const sizes = T.map(t => t.size).sort((a, b) => a - b), med = sizes[Math.floor(sizes.length / 2)] || 10, max = sizes[sizes.length - 1];
+    if (pi === 0) {
+      const top = T.filter(t => t.y < P.H * 0.16).sort((a, b) => b.size - a.size);
+      if (top[0] && isCaps(top[0].s)) title = top[0].s;
+      const dm = T.map(t => t.s).join(' ').match(/\b(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|SEPT|OCT|NOV|DEC)[A-Z]*\.?\s+\d{1,2}\s*[–\-—to]+\s*(?:(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|SEPT|OCT|NOV|DEC)[A-Z]*\.?\s+)?\d{1,2}/i);
+      if (dm) date = dm[0].toUpperCase().replace(/\s*[–\-—]\s*|\s+TO\s+/i, ' – ');
+    }
+    const isNumTok = t => /^#\s?\d{4,6}\b/.test(t.s);
+    T.forEach(t => {
+      if (isNumTok(t) || !isCaps(t.s) || t.y < P.H * 0.11 || /#\d/.test(t.s)) return;
+      if (t.s.replace(/[^A-Z]/g, '').length < 3) return;
+      if (t.size >= Math.max(13, med * 1.45) && t.size < max) heads.push({ ...t, pi });
+      else if (t.size >= med * 0.98) subs.push({ ...t, pi });
+    });
+    const lines = groupLines(T);
+    T.forEach(t => {
+      const m = t.s.match(/^#\s?(\d{4,6})\b\s*(.*)$/); if (!m) return;
+      let inline = m[2].trim();
+      if (!inline) {
+        const line = lines.find(L => L.includes(t)) || [];
+        const right = line.filter(o => o !== t && o.x > t.x + 2), nextNum = right.find(isNumTok);
+        inline = right.filter(o => !isNumTok(o) && (!nextNum || o.x < nextNum.x) && o.x < t.x + t.w + 220).map(o => o.s).join(' ').trim();
+      }
+      let featured = false, name = inline;
+      if (!inline) {
+        const cx = t.x + t.w / 2;
+        const below = T.filter(o => o !== t && !isNumTok(o) && o.y > t.y + 1 && o.y <= t.y + t.size * 3.4 && Math.abs(o.x + o.w / 2 - cx) < 42 && o.size <= t.size + 0.6);
+        name = below.sort((a, b) => a.y - b.y || a.x - b.x).map(o => o.s).join(' ').replace(/\s+/g, ' ').trim();
+        featured = true;
+      }
+      items.push({ num: m[1].replace(/^0+/, ''), name, featured, x: t.x, y: t.y, pi });
+    });
+  });
+  // sections
+  const above = (list, it) => list.filter(h => h.pi === it.pi && h.y < it.y - 2 && h.x <= it.x + 15).sort((a, b) => (b.y - a.y) || (b.x - a.x))[0] || null;
+  const secMap = new Map();
+  heads.sort((a, b) => a.pi - b.pi || a.y - b.y || a.x - b.x).forEach(h => {
+    const sameLine = pages[h.pi].toks.filter(o => Math.abs(o.y - h.y) < 4 && o.x > h.x + h.w && o.size < h.size && !isCaps(o.s));
+    secMap.set(h, { head: h.s, pi: h.pi, sub: sameLine.map(o => o.s).join(' ').trim(), featured: [], also: [] });
+  });
+  const loose = { head: '', pi: 0, sub: '', featured: [], also: [] };
+  const seen = new Set();
+  for (const it of items) {
+    if (seen.has(it.num)) continue; seen.add(it.num);
+    const h = above(heads, it), sec = h ? secMap.get(h) : loose;
+    const sb = above(subs, it), sub2 = sb && (!h || sb.y > h.y) && !sb.s.split(/\s+/).every(w => GENERIC.test(w)) ? sb : null;
+    const brandTok = [sub2, h].filter(Boolean).find(x => !GENERIC.test(x.s.split(/\s+/)[0]));
+    const brand = brandTok ? titleCase(brandTok.s.split(/\s+/)[0]) : '';
+    let name = it.name.replace(/\s+/g, ' ').trim();
+    const first = (name.split(/\s+/)[0] || '').toLowerCase();
+    if (brand && name && FLAVOR.test(first) && !/coke|pepsi|dew|sprite|fanta|water/i.test(name) && !name.toLowerCase().includes(brand.toLowerCase())) name = brand + ' ' + name;
+    if (!name) { const ci = catInfo(it.num); if (ci) name = titleCase(ci.name); }
+    (it.featured ? sec.featured : sec.also).push({ num: it.num, name, group: h ? h.s : '' });
+  }
+  let secs = [...secMap.values()]; if (loose.featured.length || loose.also.length) secs.unshift(loose);
+  // attach sections with no featured items to the one before (as "also")
+  const merged = [];
+  for (const s of secs) { if (!s.featured.length && merged.length) { merged[merged.length - 1].also.push(...s.also); continue; } merged.push(s); }
+  // merge pages that have more than two sections into one section
+  const byPage = new Map(); merged.forEach(s => { if (!byPage.has(s.pi)) byPage.set(s.pi, []); byPage.get(s.pi).push(s); });
+  const out = [];
+  for (const [pi, list] of byPage) {
+    if (list.length > 2) {
+      const groups = list.map(s => s.featured), rr = [];
+      for (let i = 0; rr.length < 200; i++) { let any = false; groups.forEach(g => { if (g[i]) { rr.push(g[i]); any = true; } }); if (!any) break; }
+      const names = list.map(s => titleCase(s.head)), joined = names.length > 1 ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] : names[0];
+      out.push({ head: joined, sub: '', featured: rr, also: list.flatMap(s => s.also), merged: true });
+    } else out.push(...list);
+  }
+  return { title, date, sections: out.filter(s => s.featured.length || s.also.length), count: items.length };
+}
+
+// ================= email model =================
+const BLOCK_NAMES = { hero: 'Top banner', intro: 'Intro', products: 'Products', spotlight: 'Spotlight', banner: 'Picture', pages: 'Catalog pages', text: 'Text', cta: 'Order button band' };
+function newEmail(name) {
+  const d = new Date(), code = 'r' + String(d.getFullYear()).slice(2) + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') + uid().slice(0, 3);
+  return { id: uid(), code, name: name || 'New email', subject: '', preheader: '', band: '', blocks: [], assets: {}, hosted: {}, created: Date.now(), updated: Date.now() };
+}
+const mkItem = (num, name) => ({ id: uid(), num: String(num || ''), name: name || '', deal: '', img: null, alt: 0, total: 0, busy: false });
+function mkBlock(type, o = {}) {
+  const base = {
+    hero: { mode: 'auto', eyebrow: '', title: 'This week at Resnick', sub: 'Ready to order in the Resnick app.', img: null, link: '' },
+    intro: { title: 'What to have on the shelf this week', body: 'Here are this week\'s picks, all ready to order in the Resnick app.', button: true, label: 'Order in the app' },
+    products: { eyebrow: 'THIS WEEK', title: 'This week\'s picks', body: '', cols: 3, items: [], more: '', linkLabel: 'Shop in the app', showNum: true },
+    spotlight: { eyebrow: 'SPOTLIGHT', item: mkItem(), body: 'One or two lines on why it sells.', label: 'Order in the app' },
+    banner: { img: null, alt: '', link: '' },
+    pages: { eyebrow: 'IN THE CATALOG', title: 'Flip to these pages', body: 'Tap a page to open it in the catalog.', pages: [] },
+    text: { title: 'A quick note', body: 'Write a short note here.' },
+    cta: { title: 'Ready to order?', body: 'Type the item number into the search bar in the app and it\'s in your order in seconds.', label: 'Open the Resnick app', phone: true }
+  }[type];
+  return { id: uid(), type, ...clone(base), ...o };
+}
+function shortCat(sec) { return copyForSec(sec.head, sec.featured.map(i => i.name).join(' ')); }
+
+async function buildFromStart() {
+  const s = st.start, files = s.files;
+  const pdfs = files.filter(f => f.kind === 'flyer'), imgs = files.filter(f => f.kind === 'image');
+  const nums = String(s.nums || '').split(/[\s,;]+/).map(x => x.replace(/\D/g, '')).filter(Boolean);
+  const pages = String(s.pages || '').split(/[\s,;]+/).flatMap(x => { const m = x.match(/^(\d+)(?:-(\d+))?$/); if (!m) return []; const a = +m[1], b = +(m[2] || m[1]); return Array.from({ length: Math.min(20, b - a + 1) }, (_, i) => a + i); });
+  if (!pdfs.length && !imgs.length && !nums.length && !pages.length && s.tpl !== 'blank') return toast('Drop a flyer, add pictures, or type item numbers first.');
+  busy('Reading your files…');
+  const e = newEmail();
+  let parsed = { title: '', date: '', sections: [] };
+  for (const f of pdfs) { try { const p = await parsePdfFlyer(f.file); parsed.title = parsed.title || p.title; parsed.date = parsed.date || p.date; parsed.sections.push(...p.sections); } catch (er) { console.warn(er); toast('Could not read ' + f.file.name); } }
+  if (nums.length) parsed.sections.push({ head: 'This week\'s picks', sub: '', featured: nums.map(n => { const ci = catInfo(n); return { num: n, name: ci ? titleCase(ci.name) : '' }; }), also: [] });
+  const band = [parsed.title, parsed.date].filter(Boolean).join(' · ');
+  e.band = band; e.name = (parsed.title ? titleCase(parsed.title) : 'Email') + (parsed.date ? ' ' + titleCase(parsed.date) : ' ' + new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+  const secs = parsed.sections, cats = secs.map(shortCat);
+  const shorts = [...new Set(cats.filter(Boolean).map(c => c.short))];
+  const endDate = (parsed.date.match(/(\d{1,2})\s*$/) || [])[1], month = (parsed.date.match(/[A-Z]{3,}/g) || []).pop();
+  const through = endDate && month ? ` through ${titleCase(month)} ${endDate}` : '';
+  // hero
+  const wide = [];
+  for (const f of imgs) { if (f.w / f.h >= 1.6) wide.push(f); }
+  const heroImg = wide[0];
+  const hero = mkBlock('hero', { eyebrow: band || 'THIS WEEK AT RESNICK', title: shorts.length >= 2 ? shorts.slice(0, 3).map(x => x + '.').join('\n') : (shorts[0] ? shorts[0] + ' that sell.' : 'This week at Resnick'), sub: 'Ready to order in the Resnick app.' });
+  if (heroImg) { hero.mode = 'image'; hero.img = 'hero'; e.assets.hero = heroImg.data; }
+  e.blocks.push(hero);
+  const intro = mkBlock('intro', { title: 'What to have on the shelf this week', body: shorts.length ? `${listJoin(shorts.map(x => x.toLowerCase()), true)} are moving fast right now. Here are the picks${through}, all ready to order in the Resnick app.` : `Here are this week's picks${through}, all ready to order in the Resnick app.` });
+  e.blocks.push(intro);
+  imgs.filter(f => f !== heroImg).forEach(f => { const k = 'b' + uid().slice(0, 5); e.assets[k] = f.data; e.blocks.push(mkBlock('banner', { img: k, alt: f.file.name.replace(/\.\w+$/, '').replace(/[-_]+/g, ' ') })); });
+  const tpl = s.tpl;
+  if (tpl === 'catalog') e.blocks.push(mkBlock('pages', { pages: pages.map(p => ({ page: p, img: null })) }));
+  if (tpl === 'spotlight' && secs.length) {
+    const all = secs.flatMap(x => x.featured); const first = all[0];
+    const c = cats[0];
+    if (first) e.blocks.push(mkBlock('spotlight', { eyebrow: c ? c.cat : 'SPOTLIGHT', item: mkItem(first.num, first.name), body: c ? c.body : '' }));
+    const rest = all.slice(1, 7);
+    if (rest.length) e.blocks.push(mkBlock('products', { eyebrow: 'ALSO THIS WEEK', title: 'More to stock up on', body: '', items: rest.map(i => mkItem(i.num, i.name)) }));
+  } else {
+    secs.forEach((sec, i) => {
+      const c = cats[i], generic = c && new RegExp(c.re.source, 'i').test(sec.head) && sec.head.length < 24;
+      const eyebrow = sec.merged ? (c ? c.cat : 'THIS WEEK') : (isCaps(sec.head) ? sec.head : (c ? c.cat : sec.head.toUpperCase()));
+      const title = sec.merged ? (c ? c.title : sec.head) : generic ? (c ? c.title : titleCase(sec.head)) : (c && !isCaps(sec.head) ? c.title : titleCase(sec.head));
+      const body = sec.sub ? sec.sub.replace(/^[a-z]/, m => m.toUpperCase()).replace(/([^.])$/, '$1.') : (sec.merged ? sec.head + '. ' : '') + (c ? c.body : '');
+      const shown = sec.featured.slice(0, 6), pool = [...sec.featured.slice(6), ...sec.also].filter(x => x.num);
+      e.blocks.push(mkBlock('products', { eyebrow, title, body, items: shown.map(x => mkItem(x.num, x.name)), more: moreLine(pool), pool, linkLabel: c ? 'Shop ' + c.short.toLowerCase() : 'Shop in the app', cols: shown.length === 4 ? 2 : 3 }));
+    });
+  }
+  if (pages.length && tpl !== 'catalog') e.blocks.push(mkBlock('pages', { pages: pages.map(p => ({ page: p, img: null })) }));
+  if (tpl === 'blank' && e.blocks.length <= 2) e.blocks.push(mkBlock('products'));
+  e.blocks.push(mkBlock('cta'));
+  e.subject = shorts.length ? 'Stock up: ' + listJoin(shorts.map(x => x.toLowerCase())).replace(/^./, m => m.toUpperCase()) : 'This week at Resnick';
+  e.preheader = `This week's picks for your store${through}. Order in the Resnick app.`;
+  st.email = e; st.sel = null; st.undo = [];
+  busy('Pulling product photos…');
+  render();
+  await fillMissingPhotos();
+  busy('Swapping in products that have photos…');
+  await backfillPhotos();
+  await renderPages();
+  await renderHero();
+  busy(''); save(); render();
+  const miss = allItems().filter(it => !it.img).length;
+  toast(miss ? `${miss} product${miss > 1 ? 's' : ''} had no photo in the images folder. Click them to fix.` : 'Your email is ready. Click any text to edit it.');
+}
+const listJoin = (arr, cap) => { const a = arr.filter(Boolean); const s = a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; return cap ? s.replace(/^./, m => m.toUpperCase()) : s; };
+const moreLine = pool => { const n = pool.map(x => x.name).filter(Boolean); return n.length ? 'Also: ' + (n.length > 5 ? n.slice(0, 5).join(', ') + ' and more.' : listJoin(n) + '.') : ''; };
+function allItems() { const e = st.email; if (!e) return []; return e.blocks.flatMap(b => b.type === 'products' ? b.items : b.type === 'spotlight' ? [b.item] : []); }
+async function fillMissingPhotos() {
+  if (!st.email || !folderReady()) return;
+  const todo = allItems().filter(it => it.num && !it.img && !it.tried);
+  for (const it of todo) { it.busy = true; } if (todo.length) renderSide();
+  await Promise.all(Array.from({ length: 4 }, async () => { while (todo.length) { const it = todo.shift(); await loadItemPhoto(it, 0, true); } }));
+  if (todo.length === 0) { renderSide(); paint(); }
+}
+async function backfillPhotos() {
+  if (!folderReady()) return;
+  for (const b of st.email.blocks) {
+    if (b.type !== 'products' || !b.pool || !b.pool.length) continue;
+    let changed = false;
+    for (let i = 0; i < b.items.length; i++) {
+      if (b.items[i].img) continue;
+      while (b.pool.length) {
+        const cand = b.pool.shift(); if (b.items.some(x => x.num === cand.num)) continue;
+        if (!(await photoNames(cand.num)).length) { b.pool.push({ ...cand, nophoto: true }); if (b.pool.every(x => x.nophoto)) break; continue; }
+        const it = mkItem(cand.num, cand.name); if (await loadItemPhoto(it, 0, true)) { b.pool.push({ num: b.items[i].num, name: b.items[i].name, nophoto: true }); b.items[i] = it; changed = true; break; }
+      }
+    }
+    if (changed) b.more = moreLine(b.pool);
+  }
+}
+async function loadItemPhoto(it, start = 0, quiet) {
+  it.busy = true; if (!quiet) renderSide();
+  const r = await productPhoto(it.num, start).catch(() => null);
+  it.busy = false; it.tried = true;
+  if (r) { const k = 'p' + it.num; st.email.assets[k] = r.data; delete st.email.hosted[k]; it.img = k; it.alt = r.alt; it.total = r.total; }
+  if (!it.name) { const ci = catInfo(it.num); if (ci) it.name = titleCase(ci.name); }
+  if (!quiet) { renderSide(); paint(); save(); }
+  return !!r;
+}
+async function renderPages() {
+  const e = st.email; if (!e) return;
+  for (const b of e.blocks) if (b.type === 'pages') for (const p of b.pages) {
+    if (p.img || !st.cat.pdf || p.page < 1 || p.page > st.cat.pages) continue;
+    try { const c = await renderPdfPage(st.cat.pdf, p.page, 560); const k = 'pg' + p.page; e.assets[k] = c.toDataURL('image/jpeg', 0.84); delete e.hosted[k]; p.img = k; } catch (er) {}
+  }
+}
+
+// ================= hero banner (auto) =================
+function wrapText(x, text, maxW) { const out = []; String(text || '').split('\n').forEach(par => { let cur = ''; par.split(/\s+/).forEach(w => { const t = cur ? cur + ' ' + w : w; if (x.measureText(t).width > maxW && cur) { out.push(cur); cur = w; } else cur = t; }); if (cur) out.push(cur); }); return out; }
+async function loadImg(src) { const im = new Image(); im.src = src; await im.decode(); return im; }
+async function renderHero() {
+  const e = st.email; if (!e) return; const b = e.blocks.find(x => x.type === 'hero'); if (!b || b.mode !== 'auto') return;
+  try { await Promise.all([document.fonts.load('64px "Archivo Black"'), document.fonts.load('700 24px Inter'), document.fonts.load('500 24px Inter')]); } catch (er) {}
+  const W = 1200, H = 620, c = canvasEl(W, H), x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#0E5C2F'); g.addColorStop(1, '#0A4724'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.fillStyle = 'rgba(255,255,255,0.05)'; x.beginPath(); x.arc(980, 120, 380, 0, Math.PI * 2); x.fill();
+  x.fillStyle = 'rgba(166,216,74,0.10)'; x.beginPath(); x.arc(860, 640, 260, 0, Math.PI * 2); x.fill();
+  // text
+  const L = 64; let y = 112;
+  x.fillStyle = '#A6D84A'; x.font = '700 22px Inter'; x.letterSpacing = '4px';
+  wrapText(x, String(b.eyebrow || '').toUpperCase(), 520).slice(0, 2).forEach(l => { x.fillText(l, L, y); y += 30; });
+  x.letterSpacing = '0px';
+  x.fillStyle = '#A6D84A'; x.fillRect(L, y - 6, 56, 6); y += 58;
+  let fs = 74; x.font = `${fs}px "Archivo Black", Arial Black, sans-serif`;
+  let lines = wrapText(x, b.title, 540);
+  while ((lines.length > 3 || lines.some(l => x.measureText(l).width > 560)) && fs > 40) { fs -= 4; x.font = `${fs}px "Archivo Black", Arial Black, sans-serif`; lines = wrapText(x, b.title, 540); }
+  x.fillStyle = '#FFFFFF'; lines.slice(0, 4).forEach(l => { x.fillText(l, L, y); y += fs * 1.08; });
+  y += 14; x.font = '500 27px Inter'; x.fillStyle = '#D6E8D9';
+  wrapText(x, b.sub, 500).slice(0, 2).forEach(l => { x.fillText(l, L, y); y += 34; });
+  // pill
+  const pill = 'Order in the Resnick app  →'; x.font = '700 21px Inter'; const pw = x.measureText(pill).width + 44, py = Math.min(H - 84, y + 14);
+  x.fillStyle = '#D9262C'; roundRect(x, L, py, pw, 52, 26); x.fill(); x.fillStyle = '#fff'; x.fillText(pill, L + 22, py + 33);
+  // products
+  const keys = allItems().filter(i => i.img && e.assets[i.img]).slice(0, 3).map(i => e.assets[i.img]);
+  const spots = [[700, 70, 250, -5], [930, 150, 230, 4], [760, 330, 230, 3]];
+  for (let i = 0; i < keys.length; i++) {
+    const [px, pyy, sz, rot] = spots[i]; const im = await loadImg(keys[i]).catch(() => null); if (!im) continue;
+    x.save(); x.translate(px + sz / 2, pyy + sz / 2); x.rotate(rot * Math.PI / 180);
+    x.shadowColor = 'rgba(0,0,0,0.35)'; x.shadowBlur = 30; x.shadowOffsetY = 14;
+    x.fillStyle = '#fff'; roundRect(x, -sz / 2, -sz / 2, sz, sz, 22); x.fill(); x.shadowColor = 'transparent';
+    x.save(); roundRect(x, -sz / 2, -sz / 2, sz, sz, 22); x.clip(); x.drawImage(im, -sz / 2, -sz / 2, sz, sz); x.restore();
+    x.restore();
+  }
+  e.assets.hero = c.toDataURL('image/jpeg', 0.86); delete e.hosted.hero; b.img = 'hero';
+}
+function roundRect(x, X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
+
+// ================= email HTML =================
+const C = { g: '#0E5C2F', red: '#D9262C', ink: '#1E2230', mut: '#5A5F6B', line: '#E8E4DA', bg: '#F2F0EA' };
+const FONT = 'Arial,Helvetica,sans-serif';
+function fileName(e, k) { const d = e.assets[k] || ''; return `${e.code}-${k}.${/^data:image\/png/.test(d) ? 'png' : 'jpg'}`; }
+function emailHtml(e, mode) {
+  const P = mode === 'preview', A = S.appLink;
+  const src = k => !k ? '' : P ? (e.assets[k] || '') : (e.hosted[k] || fileName(e, k));
+  const ed = (path, multi) => P ? ` data-e="${path}"${multi ? ' data-multi="1"' : ''}` : '';
+  const bAttr = i => P ? ` data-b="${i}"` : '';
+  const txt = s => esc(s).replace(/\n/g, '<br>');
+  const button = (label, path, bg = C.red) => `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;"><tr><td align="center" bgcolor="${bg}" style="border-radius:8px;">
+<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="${A}" style="height:50px;v-text-anchor:middle;width:${Math.max(220, label.length * 10 + 70)}px;" arcsize="16%" stroke="f" fillcolor="${bg}"><center style="color:#FFFFFF;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;">${esc(label)} &rarr;</center></v:roundrect><![endif]-->
+<!--[if !mso]><!--><a href="${A}" target="_blank" style="display:inline-block;padding:15px 34px;font-family:${FONT};font-size:16px;line-height:20px;font-weight:bold;color:#FFFFFF;text-decoration:none;border-radius:8px;"><span${ed(path)}>${esc(label)}</span> &rarr;</a><!--<![endif]-->
+</td></tr></table>`;
+  const head = (bi, b, top) => `<tr${bAttr(bi)}><td class="px" style="padding:${top} 40px 14px 40px;font-family:${FONT};">
+${b.eyebrow || P ? `<p style="margin:0 0 6px 0;font-size:12px;line-height:16px;letter-spacing:2px;font-weight:bold;color:${C.red};"${ed(bi + '.eyebrow')}>${esc(b.eyebrow)}</p>` : ''}
+<h2 style="margin:0 0 8px 0;font-size:24px;line-height:30px;font-weight:bold;color:${C.ink};"${ed(bi + '.title')}>${esc(b.title)}</h2>
+${b.body || P ? `<p style="margin:0;font-size:15px;line-height:22px;color:${C.mut};"${ed(bi + '.body', 1)}>${txt(b.body)}</p>` : ''}
+</td></tr>`;
+  const divider = (bi) => `<tr${bAttr(bi)}><td class="px" style="padding:38px 40px 0 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="height:1px;line-height:1px;font-size:1px;background-color:${C.line};">&nbsp;</td></tr></table></td></tr>`;
+  const rows = []; let prevSection = false;
+  e.blocks.forEach((b, bi) => {
+    if (b.type === 'hero') {
+      const k = b.img; if (!k && !P) return;
+      rows.push(`<tr${bAttr(bi)}><td style="padding:0;">${k ? `<a href="${esc(b.link || A)}" target="_blank"><img src="${src(k)}" width="600" alt="${esc(b.title ? b.title.replace(/\n/g, ' ') : 'Resnick Distributors')}" style="display:block;width:100%;max-width:600px;height:auto;border:0;font-family:${FONT};font-size:16px;color:${C.ink};"></a>` : `<div style="height:240px;background:${C.g};color:#fff;font-family:${FONT};font-size:16px;text-align:center;line-height:240px;">Top banner</div>`}</td></tr>`);
+      prevSection = false;
+    } else if (b.type === 'intro') {
+      rows.push(`<tr${bAttr(bi)}><td class="px" align="center" style="padding:40px 40px 34px 40px;font-family:${FONT};">
+<h1 class="h1" style="margin:0 0 12px 0;font-size:30px;line-height:36px;font-weight:bold;color:${C.ink};"${ed(bi + '.title')}>${esc(b.title)}</h1>
+<p style="margin:0 0 ${b.button ? 26 : 0}px 0;font-size:16px;line-height:25px;color:${C.mut};"${ed(bi + '.body', 1)}>${txt(b.body)}</p>
+${b.button ? button(b.label, bi + '.label') : ''}
+</td></tr>`); prevSection = false;
+    } else if (b.type === 'products') {
+      if (prevSection) rows.push(divider(bi));
+      rows.push(head(bi, b, prevSection ? '34px' : '10px'));
+      const cols = b.cols === 2 ? 2 : 3, cw = cols === 3 ? 181 : 272, iw = cols === 3 ? 145 : 200, tot = cols * cw;
+      const card = (it, ii) => `<div class="col${cols === 2 ? ' c2' : ''}" style="display:inline-block;width:100%;max-width:${cw}px;vertical-align:top;"${P ? ` data-card="${bi}.${ii}"` : ''}>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:6px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${C.line};border-radius:10px;background-color:#FFFFFF;">
+<tr><td align="center" style="padding:12px 12px 4px 12px;"><a href="${esc(it.link || A)}" target="_blank" style="text-decoration:none;">${it.img ? `<img src="${src(it.img)}" width="${iw}" alt="${esc(it.name)}" style="display:block;width:100%;max-width:${iw}px;height:auto;border:0;font-family:${FONT};font-size:12px;color:${C.mut};">` : (P ? `<div style="width:${iw}px;max-width:100%;height:${iw}px;background:#F4F3EF;border-radius:8px;font-family:${FONT};font-size:12px;color:#B44;line-height:${iw}px;text-align:center;">No photo yet</div>` : '')}</a></td></tr>
+<tr><td style="padding:6px 12px 14px 12px;font-family:${FONT};">
+<p style="margin:0 0 4px 0;font-size:14px;line-height:18px;font-weight:bold;color:${C.ink};min-height:36px;"${ed(bi + '.items.' + ii + '.name')}>${esc(it.name || ('Item #' + it.num))}</p>
+${it.deal ? `<p style="margin:0 0 4px 0;font-size:15px;line-height:19px;font-weight:bold;color:${C.red};"${ed(bi + '.items.' + ii + '.deal')}>${esc(it.deal)}</p>` : ''}
+${b.showNum !== false && it.num ? `<p style="margin:0;font-size:12px;line-height:16px;color:${C.mut};">Item #${esc(it.num)}</p>` : ''}
+</td></tr></table>
+</td></tr></table>
+</div>`;
+      const grid = [];
+      for (let i = 0; i < b.items.length; i += cols) {
+        const r = b.items.slice(i, i + cols);
+        grid.push(`<!--[if mso]><table role="presentation" width="${tot}" cellpadding="0" cellspacing="0" border="0"><tr><td width="${cw}" valign="top"><![endif]-->`);
+        grid.push(r.map((it, j) => card(it, i + j)).join(`\n<!--[if mso]></td><td width="${cw}" valign="top"><![endif]-->\n`));
+        grid.push('<!--[if mso]></td></tr></table><![endif]-->');
+      }
+      if (!b.items.length && P) grid.push(`<div style="font-family:${FONT};font-size:13px;color:${C.mut};padding:20px;border:2px dashed ${C.line};border-radius:10px;margin:0 18px;">Add products in the panel on the left.</div>`);
+      rows.push(`<tr${bAttr(bi)}><td class="gridpad" align="center" style="padding:0 22px;font-size:0;line-height:0;">\n${grid.join('\n')}\n</td></tr>`);
+      rows.push(`<tr${bAttr(bi)}><td class="px" style="padding:12px 40px 0 40px;font-family:${FONT};">
+${b.more || P ? `<p style="margin:0 0 10px 0;font-size:13px;line-height:19px;color:${C.mut};"${ed(bi + '.more', 1)}>${txt(b.more)}</p>` : ''}
+${b.linkLabel ? `<a href="${A}" target="_blank" style="font-size:14px;line-height:18px;font-weight:bold;color:${C.g};text-decoration:underline;"><span${ed(bi + '.linkLabel')}>${esc(b.linkLabel)}</span> in the app &rarr;</a>` : ''}
+</td></tr>`);
+      prevSection = true;
+    } else if (b.type === 'spotlight') {
+      if (prevSection) rows.push(divider(bi));
+      const it = b.item;
+      rows.push(`<tr${bAttr(bi)}><td class="px" style="padding:${prevSection ? 34 : 10}px 40px 6px 40px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${C.line};border-radius:14px;background-color:#FFFFFF;"><tr>
+<td class="stack" width="46%" align="center" valign="middle" style="padding:22px;"${P ? ` data-card="${bi}.s"` : ''}><a href="${A}" target="_blank">${it.img ? `<img src="${src(it.img)}" width="220" alt="${esc(it.name)}" style="display:block;width:100%;max-width:220px;height:auto;border:0;">` : (P ? `<div style="width:200px;height:200px;background:#F4F3EF;border-radius:10px;font-family:${FONT};font-size:12px;color:#B44;line-height:200px;text-align:center;">No photo yet</div>` : '')}</a></td>
+<td class="stack" width="54%" valign="middle" style="padding:22px 24px 22px 6px;font-family:${FONT};">
+<p style="margin:0 0 8px 0;font-size:12px;line-height:16px;letter-spacing:2px;font-weight:bold;color:${C.red};"${ed(bi + '.eyebrow')}>${esc(b.eyebrow)}</p>
+<p style="margin:0 0 8px 0;font-size:24px;line-height:29px;font-weight:bold;color:${C.ink};"${ed(bi + '.item.name')}>${esc(it.name || ('Item #' + it.num))}</p>
+${it.deal || P ? `<p style="margin:0 0 8px 0;font-size:26px;line-height:30px;font-weight:bold;color:${C.red};"${ed(bi + '.item.deal')}>${esc(it.deal)}</p>` : ''}
+<p style="margin:0 0 14px 0;font-size:15px;line-height:22px;color:${C.mut};"${ed(bi + '.body', 1)}>${txt(b.body)}</p>
+${it.num ? `<p style="margin:0 0 14px 0;font-size:12px;line-height:16px;color:${C.mut};">Item #${esc(it.num)}</p>` : ''}
+<a href="${A}" target="_blank" style="font-size:15px;line-height:19px;font-weight:bold;color:${C.g};text-decoration:underline;"><span${ed(bi + '.label')}>${esc(b.label)}</span> &rarr;</a>
+</td></tr></table></td></tr>`);
+      prevSection = true;
+    } else if (b.type === 'banner') {
+      if (!b.img) { if (P) rows.push(`<tr${bAttr(bi)}><td style="padding:10px 40px;font-family:${FONT};font-size:13px;color:${C.mut};">Picture block: add a picture in the panel.</td></tr>`); return; }
+      rows.push(`<tr${bAttr(bi)}><td style="padding:${prevSection ? '34px' : '10px'} 0 10px 0;"><a href="${esc(b.link || A)}" target="_blank"><img src="${src(b.img)}" width="600" alt="${esc(b.alt)}" style="display:block;width:100%;max-width:600px;height:auto;border:0;font-family:${FONT};font-size:15px;color:${C.ink};"></a></td></tr>`);
+      prevSection = false;
+    } else if (b.type === 'pages') {
+      if (prevSection) rows.push(divider(bi));
+      rows.push(head(bi, b, prevSection ? '34px' : '10px'));
+      const fb = String(S.flipbook || '').replace(/\/+$/, '');
+      const pc = (p) => `<div class="col c2" style="display:inline-block;width:100%;max-width:262px;vertical-align:top;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:8px;"><a href="${fb}/${p.page}/" target="_blank" style="text-decoration:none;">${p.img ? `<img src="${src(p.img)}" width="244" alt="Catalog page ${p.page}" style="display:block;width:100%;max-width:244px;height:auto;border:1px solid ${C.line};border-radius:6px;">` : (P ? `<div style="height:300px;background:#F4F3EF;border-radius:6px;font-family:${FONT};font-size:12px;color:#B44;line-height:300px;text-align:center;">Add the catalog PDF</div>` : '')}<p style="margin:8px 0 0 0;font-family:${FONT};font-size:14px;line-height:18px;font-weight:bold;color:${C.g};">Page ${p.page} &rarr;</p></a></td></tr></table></div>`;
+      const g = []; for (let i = 0; i < b.pages.length; i += 2) { const r = b.pages.slice(i, i + 2); g.push('<!--[if mso]><table role="presentation" width="524" cellpadding="0" cellspacing="0" border="0"><tr><td width="262" valign="top"><![endif]-->' + r.map(pc).join('<!--[if mso]></td><td width="262" valign="top"><![endif]-->') + '<!--[if mso]></td></tr></table><![endif]-->'); }
+      rows.push(`<tr${bAttr(bi)}><td class="gridpad" align="center" style="padding:0 30px;font-size:0;line-height:0;">${g.join('\n')}</td></tr>`);
+      prevSection = true;
+    } else if (b.type === 'text') {
+      if (prevSection) rows.push(divider(bi));
+      rows.push(`<tr${bAttr(bi)}><td class="px" style="padding:${prevSection ? 34 : 14}px 40px 8px 40px;font-family:${FONT};">
+<h2 style="margin:0 0 8px 0;font-size:22px;line-height:28px;font-weight:bold;color:${C.ink};"${ed(bi + '.title')}>${esc(b.title)}</h2>
+<p style="margin:0;font-size:16px;line-height:25px;color:${C.mut};"${ed(bi + '.body', 1)}>${txt(b.body)}</p></td></tr>`);
+      prevSection = true;
+    } else if (b.type === 'cta') {
+      rows.push(`<tr${bAttr(bi)}><td style="padding:${prevSection ? 44 : 20}px 0 0 0;"></td></tr>`);
+      rows.push(`<tr${bAttr(bi)}><td class="px" align="center" style="padding:40px 40px 42px 40px;background-color:${C.g};font-family:${FONT};">
+<h2 style="margin:0 0 10px 0;font-size:26px;line-height:32px;font-weight:bold;color:#FFFFFF;"${ed(bi + '.title')}>${esc(b.title)}</h2>
+<p style="margin:0 0 24px 0;font-size:16px;line-height:24px;color:#DCEBDD;"${ed(bi + '.body', 1)}>${txt(b.body)}</p>
+${button(b.label, bi + '.label')}
+${b.phone ? `<p style="margin:22px 0 0 0;font-size:14px;line-height:20px;color:#DCEBDD;">Questions? Call your sales rep or <a href="tel:1${String(S.phone).replace(/\D/g, '')}" style="color:#FFFFFF;font-weight:bold;text-decoration:underline;">${esc(S.phone)}</a></p>` : ''}
+</td></tr>`); prevSection = false;
+    }
+  });
+  const pre = esc(e.preheader || '');
+  return `<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<title>${esc(e.subject || e.name)}</title>
+<!--[if mso]><style>table,td{border-collapse:collapse;mso-table-lspace:0;mso-table-rspace:0}</style><![endif]-->
+<style>
+@media only screen and (max-width:620px){
+  .px{padding-left:22px !important;padding-right:22px !important}
+  .gridpad{padding-left:10px !important;padding-right:10px !important}
+  .col{max-width:50% !important}
+  .stack{display:block !important;width:100% !important;box-sizing:border-box}
+  .h1{font-size:26px !important;line-height:32px !important}
+}
+@media only screen and (max-width:380px){ .col.c2{max-width:100% !important} }
+</style>
+</head>
+<body style="margin:0;padding:0;background-color:${C.bg};">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:${C.bg};">${pre}&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${C.bg};">
+<tr><td align="center" style="padding:24px 8px;">
+<!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#FFFFFF;">
+${e.band || P ? `<tr><td align="center" style="padding:10px 20px;background-color:${C.g};font-family:${FONT};font-size:11px;line-height:15px;letter-spacing:2px;font-weight:bold;color:#FFFFFF;"${ed('band')}>${esc(String(e.band || '').toUpperCase())}</td></tr>` : ''}
+<tr><td align="center" style="padding:24px 40px 20px 40px;"><a href="${A}" target="_blank"><img src="${esc(P ? (S.logoData || S.logo) : (e.hosted.logo || (S.logoData ? fileName(e, 'logo') : S.logo)))}" width="220" alt="Resnick Distributors" style="display:block;width:220px;max-width:60%;height:auto;border:0;font-family:${FONT};font-size:22px;font-weight:bold;color:${C.g};"></a></td></tr>
+${rows.join('\n')}
+<tr><td align="center" style="padding:22px 40px;background-color:#1E2230;font-family:${FONT};font-size:12px;line-height:18px;color:#B9BDC7;">${esc(S.footer)}</td></tr>
+</table>
+<!--[if mso]></td></tr></table><![endif]-->
+</td></tr>
+</table>
+${P ? '' : '[[trackingImage]]'}
+</body>
+</html>`;
+}
+
+// ================= rendering: chips =================
+function renderChips() {
+  const fi = $('#chipImg'), f = st.folder;
+  fi.className = 'chip ' + (f.state === 'ok' ? (f.indexing ? 'busy' : 'ok') : f.state === 'needs' ? 'warn' : '');
+  fi.querySelector('.t').textContent = f.state === 'ok' ? (f.indexing ? `Images: reading folder… ${f.count.toLocaleString()}` : `Images: ${f.count ? f.count.toLocaleString() + ' photos' : 'connected'}`) : f.state === 'needs' ? 'Images: click to reconnect' : 'Connect images folder';
+  fi.title = f.state === 'needs' ? 'Your browser asks once per visit. Click, then choose "Allow on every visit" if offered.' : (f.name || '');
+  const c = st.cat, ci = $('#chipCat');
+  ci.className = 'chip ' + (c.pdf ? (c.reading ? 'busy' : 'ok') : '');
+  ci.querySelector('.t').textContent = c.pdf ? (c.reading || `Catalog: ${c.name} · ${c.pages} pages`) : 'Add this quarter\'s catalog';
+}
+// ================= side panel =================
+function renderSide() {
+  const el = $('#side'); const keep = el.scrollTop;
+  el.innerHTML = st.email ? outlineHtml() : startHtml();
+  el.scrollTop = keep; bindSide();
+}
+const TPLS = [
+  { k: 'sections', label: 'Sections', sub: 'One section per category, like your Sales Focus flyer', w: [['14px', '#0E5C2F', '100%'], ['4px', '#C9CDD6', '70%'], ['10px', '#fff', '90%'], ['10px', '#fff', '90%']] },
+  { k: 'spotlight', label: 'Spotlight', sub: 'One product up close, plus a few more', w: [['14px', '#0E5C2F', '100%'], ['16px', '#fff', '90%'], ['8px', '#fff', '90%']] },
+  { k: 'catalog', label: 'Catalog pages', sub: 'Show catalog pages that open in the flipbook', w: [['14px', '#0E5C2F', '100%'], ['20px', '#fff', '60%'], ['4px', '#D9262C', '40%']] },
+  { k: 'blank', label: 'Blank', sub: 'Start simple and add blocks yourself', w: [['14px', '#0E5C2F', '100%'], ['4px', '#C9CDD6', '70%'], ['4px', '#D9262C', '40%']] }
+];
+function startHtml() {
+  const s = st.start;
+  const files = s.files.map((f, i) => `<div class="file"><img src="${f.thumb || ''}" alt=""><div class="t"><b>${esc(f.file.name)}</b><span>${f.kind === 'flyer' ? 'Flyer: we\'ll pull the products and sections' : f.w / f.h >= 1.6 ? 'Picture: used as the top banner' : 'Picture: shown full width'}</span></div><button class="x" data-rmfile="${i}" title="Remove">×</button></div>`).join('');
+  return `<div class="pane">
+  <h1 class="h">New email</h1>
+  <p class="sub">Drop in what you have. We'll build the email, pull product photos from your images folder and you fine-tune from there.</p>
+  <div class="drop" id="dropStart"><div class="ic">+</div><b>Drop your flyer or pictures</b>PDF flyers, vendor ads, promo banners. Or click to choose.</div>
+  <div class="files">${files}</div>
+  <label class="lbl">Item numbers <span>optional</span></label>
+  <textarea class="in" id="sNums" rows="2" placeholder="e.g. 19647, 32400, 25664">${esc(s.nums)}</textarea>
+  <label class="lbl">Catalog pages <span>optional, like 12, 40-42</span></label>
+  <input class="in" id="sPages" value="${esc(s.pages)}" placeholder="${st.cat.pdf ? 'Page numbers to show' : 'Add the catalog first (top bar)'}">
+  <label class="lbl">Layout</label>
+  <div class="tpls">${TPLS.map(t => `<button class="tpl ${s.tpl === t.k ? 'on' : ''}" data-tpl="${t.k}"><div class="wire">${t.w.map(w => `<i style="height:${w[0]};background:${w[1]};width:${w[2]}"></i>`).join('')}</div><b>${t.label}</b><span>${t.sub}</span></button>`).join('')}</div>
+  ${st.folder.state !== 'ok' ? `<div class="warnbox">Connect your images folder (top bar) so products get real photos.</div>` : ''}
+  <button class="btn red go" id="bBuild">Build my email</button>
+  <p class="note">Everything stays editable after it's built.</p>
+</div>`;
+}
+function blockLabel(b) {
+  if (b.type === 'products') return b.title || 'Products';
+  if (b.type === 'spotlight') return b.item.name || ('#' + b.item.num) || 'Spotlight';
+  if (b.type === 'hero') return b.mode === 'image' ? 'Your picture' : 'Auto banner';
+  if (b.type === 'pages') return b.pages.map(p => 'p.' + p.page).join(', ') || 'No pages yet';
+  if (b.type === 'banner') return b.alt || 'Picture';
+  return (b.title || '').replace(/\n/g, ' ');
+}
+function outlineHtml() {
+  const e = st.email;
+  return `<div class="pane">
+  <input class="in" id="eName" value="${esc(e.name)}" style="font-weight:700;font-size:15px;margin-bottom:12px">
+  <details class="det" ${e._detOpen ? 'open' : ''} id="detInfo"><summary>Subject line and inbox preview</summary>
+    <label class="lbl">Subject line</label><input class="in" data-f="subject" value="${esc(e.subject)}">
+    <label class="lbl">Inbox preview text <span>${(e.preheader || '').length}/90</span></label><input class="in" data-f="preheader" value="${esc(e.preheader)}">
+    <label class="lbl">Top green band</label><input class="in" data-f="band" value="${esc(e.band)}">
+  </details>
+  <div class="row" style="margin-bottom:8px"><b style="font-size:13px;flex:1">Blocks</b><span class="kbd">Click a block to edit it</span></div>
+  ${e.blocks.map((b, i) => blockHtml(b, i)).join('')}
+  <details class="det" id="detAdd"><summary>+ Add a block</summary>
+    <div class="addmenu">
+      <button data-add="products">Products<span>Grid of products by item #</span></button>
+      <button data-add="spotlight">Spotlight<span>One product, big</span></button>
+      <button data-add="banner">Picture<span>Ad or flyer, full width</span></button>
+      <button data-add="pages">Catalog pages<span>Pages that open the flipbook</span></button>
+      <button data-add="text">Text<span>A short note</span></button>
+      <button data-add="cta">Order band<span>Green band with button</span></button>
+    </div>
+  </details>
+</div>`;
+}
+function blockHtml(b, i) {
+  const sel = st.sel && st.sel.b === i, n = st.email.blocks.length;
+  return `<div class="blk ${sel ? 'sel' : ''}" data-bi="${i}">
+  <div class="bh" data-selb="${i}"><div class="meta"><div class="ty">${BLOCK_NAMES[b.type]}</div><div class="nm">${esc(blockLabel(b))}</div></div>
+    <button class="ib" data-mv="${i},-1" title="Move up" ${i === 0 ? 'disabled' : ''}>↑</button><button class="ib" data-mv="${i},1" title="Move down" ${i === n - 1 ? 'disabled' : ''}>↓</button>
+    <button class="ib" data-dup="${i}" title="Duplicate">⧉</button><button class="ib" data-del="${i}" title="Delete" style="color:#C33">×</button></div>
+  ${sel ? `<div class="bb">${blockEditor(b, i)}</div>` : ''}
+</div>`;
+}
+function itemRow(it, path, selected) {
+  const th = it.img ? st.email.assets[it.img] : '';
+  return `<div class="it ${selected ? 'sel' : ''}" data-item="${path}">
+  <div class="th">${th ? `<img src="${th}" alt="">` : '<span style="font-size:10px;color:#B44;text-align:center">No photo</span>'}${it.busy ? '<div class="ld">Loading…</div>' : ''}</div>
+  <div style="min-width:0"><div class="nm">${esc(it.name || 'Unnamed')}</div><div class="no">#${esc(it.num || '—')}${it.total > 1 ? ` · photo ${it.alt + 1} of ${it.total}` : ''}${!it.img && !it.busy ? ' · <span class="miss">no photo</span>' : ''}</div></div>
+  <div class="act">${it.total > 1 ? `<button class="ib" data-nextph="${path}" title="Try the next photo">⟳</button>` : ''}<button class="ib" data-upph="${path}" title="Use my own photo">⇪</button>${path.includes('.s') ? '' : `<button class="ib" data-itmv="${path},-1" title="Move left">←</button><button class="ib" data-itmv="${path},1" title="Move right">→</button><button class="ib" data-itdel="${path}" title="Remove" style="color:#C33">×</button>`}</div>
+</div>${selected ? `<div style="padding:8px 4px 6px;display:grid;grid-template-columns:90px 1fr;gap:6px">
+  <input class="in" data-itf="${path}.num" value="${esc(it.num)}" placeholder="Item #" style="height:32px">
+  <input class="in" data-itf="${path}.name" value="${esc(it.name)}" placeholder="Name" style="height:32px">
+  <input class="in" data-itf="${path}.deal" value="${esc(it.deal)}" placeholder="Deal (optional), e.g. $2 off a box" style="height:32px;grid-column:1/-1">
+</div>` : ''}`;
+}
+function blockEditor(b, i) {
+  const sel = st.sel || {};
+  if (b.type === 'hero') return `
+    <div class="seg" style="margin-top:8px"><button data-heromode="auto" class="${b.mode === 'auto' ? 'on' : ''}">Auto banner</button><button data-heromode="image" class="${b.mode === 'image' ? 'on' : ''}">My picture</button></div>
+    ${b.mode === 'auto' ? `<label class="lbl">Small line on top</label><input class="in" data-bf="${i}.eyebrow" value="${esc(b.eyebrow)}">
+    <label class="lbl">Headline <span>new lines with Enter</span></label><textarea class="in" rows="3" data-bf="${i}.title">${esc(b.title)}</textarea>
+    <label class="lbl">Line under it</label><input class="in" data-bf="${i}.sub" value="${esc(b.sub)}">
+    <p class="note">The banner uses the first three product photos. Reorder products to change them.</p>
+    <button class="btn sm" data-redraw="1" style="margin-top:8px">Redraw banner</button>` :
+    `<button class="btn" data-heroimg="${i}" style="margin-top:12px;width:100%">${b.img ? 'Replace picture' : 'Choose a picture'}</button><p class="note">Wide pictures work best (about 2:1).</p>`}`;
+  if (b.type === 'intro') return `<p class="note">Edit the headline and text right in the email.</p>
+    <label class="row" style="margin-top:10px;font-size:13px;gap:8px"><input type="checkbox" data-bchk="${i}.button" ${b.button ? 'checked' : ''}> Show the red button</label>`;
+  if (b.type === 'products') return `
+    <div class="row" style="margin-top:10px"><span style="font-size:12px;font-weight:700;flex:1">Across</span><div class="seg"><button data-cols="${i},2" class="${b.cols === 2 ? 'on' : ''}">2</button><button data-cols="${i},3" class="${b.cols !== 2 ? 'on' : ''}">3</button></div></div>
+    <div class="items">${b.items.map((it, ii) => itemRow(it, i + '.' + ii, sel.b === i && sel.i === ii)).join('')}</div>
+    <label class="lbl">Add products <span>item numbers</span></label>
+    <div class="row"><input class="in" id="addNums${i}" placeholder="e.g. 19647, 32400" style="flex:1"><button class="btn pri" data-addnums="${i}">Add</button></div>
+    <label class="row" style="margin-top:12px;font-size:13px;gap:8px"><input type="checkbox" data-bchk="${i}.showNum" ${b.showNum !== false ? 'checked' : ''}> Show item numbers</label>`;
+  if (b.type === 'spotlight') return `<div class="items">${itemRow(b.item, i + '.s', sel.b === i)}</div><p class="note">Change the item # to swap the product.</p>`;
+  if (b.type === 'banner') return `<button class="btn" data-bannerimg="${i}" style="margin-top:12px;width:100%">${b.img ? 'Replace picture' : 'Choose a picture'}</button>
+    <label class="lbl">What's in the picture <span>for people who can't see images</span></label><input class="in" data-bf="${i}.alt" value="${esc(b.alt)}">
+    <label class="lbl">Link <span>blank opens the app</span></label><input class="in" data-bf="${i}.link" value="${esc(b.link)}">`;
+  if (b.type === 'pages') return `<label class="lbl">Pages <span>like 12, 40-42</span></label>
+    <div class="row"><input class="in" id="pg${i}" value="${esc(b.pages.map(p => p.page).join(', '))}" style="flex:1"><button class="btn pri" data-setpages="${i}">Update</button></div>
+    ${st.cat.pdf ? '' : '<div class="warnbox">Add the catalog PDF in the top bar to show the pages.</div>'}`;
+  if (b.type === 'cta') return `<label class="row" style="margin-top:10px;font-size:13px;gap:8px"><input type="checkbox" data-bchk="${i}.phone" ${b.phone ? 'checked' : ''}> Show the phone number</label>`;
+  return `<p class="note">Edit the text right in the email.</p>`;
+}
+// ================= preview =================
+function render() { renderChips(); renderSide(); paint(); }
+let paintT;
+function paint() {
+  const cv = $('#canvas');
+  if (!st.email) { cv.innerHTML = `<div class="empty"><div><div class="big">Your email shows up here</div>Start on the left: drop a flyer, add pictures or type item numbers.</div></div>`; return; }
+  let fr = cv.querySelector('.frame');
+  if (!fr) { cv.innerHTML = `<div class="frame"><iframe title="Email preview"></iframe></div>`; fr = cv.querySelector('.frame'); }
+  fr.classList.toggle('phone', st.view === 'phone');
+  const f = fr.querySelector('iframe'), stage = $('#stage'), top = stage.scrollTop;
+  f.onload = () => {
+    const d = f.contentDocument; if (!d) return;
+    const css = d.createElement('style');
+    css.textContent = `[data-e]{outline:none;cursor:text;border-radius:3px;transition:box-shadow .1s}[data-e]:hover{box-shadow:0 0 0 2px rgba(14,92,47,.35)}[data-e]:focus{box-shadow:0 0 0 2px #0E5C2F;background:rgba(166,216,74,.15)}[data-e]:empty::before{content:'Click to add text';color:#aaa;font-weight:400}[data-card]{cursor:pointer;border-radius:12px}[data-card]:hover{box-shadow:0 0 0 2px #D9262C}[data-card].on{box-shadow:0 0 0 3px #D9262C}[data-b].on>td{background-image:linear-gradient(rgba(14,92,47,.04),rgba(14,92,47,.04))}`;
+    d.head.appendChild(css);
+    d.querySelectorAll('[data-e]').forEach(el => {
+      el.contentEditable = 'plaintext-only';
+      el.addEventListener('focus', () => { el._v = el.innerText; });
+      el.addEventListener('blur', () => { const v = el.innerText.replace(/ /g, ' ').replace(/\n{3,}/g, '\n\n').trim(); if (v !== (el._v || '').trim()) commitEdit(el.dataset.e, el.dataset.multi ? v : v.replace(/\s*\n\s*/g, ' ')); });
+      el.addEventListener('keydown', ev => { if (ev.key === 'Enter' && !el.dataset.multi) { ev.preventDefault(); el.blur(); } if (ev.key === 'Escape') { el.innerText = el._v || ''; el.blur(); } });
+    });
+    d.addEventListener('click', ev => {
+      const a = ev.target.closest('a'); if (a) ev.preventDefault();
+      if (ev.target.closest('[data-e]')) return;
+      const c = ev.target.closest('[data-card]'); if (c) { const [b, i] = c.dataset.card.split('.'); selectItem(+b, i === 's' ? 's' : +i); return; }
+      const bl = ev.target.closest('[data-b]'); if (bl) selectBlock(+bl.dataset.b);
+    });
+    if (st.sel) { d.querySelectorAll(`[data-b="${st.sel.b}"]`).forEach(x => x.classList.add('on')); if (st.sel.i != null) { const c = d.querySelector(`[data-card="${st.sel.b}.${st.sel.i}"]`); if (c) c.classList.add('on'); } }
+    const fit = () => { try { f.style.height = Math.max(400, d.documentElement.scrollHeight) + 'px'; } catch (er) {} };
+    fit(); setTimeout(fit, 150); setTimeout(fit, 600); d.querySelectorAll('img').forEach(im => im.addEventListener('load', fit));
+    stage.scrollTop = top;
+  };
+  f.srcdoc = emailHtml(st.email, 'preview');
+}
+function setPath(obj, path, v) { const p = path.split('.'); let o = obj; for (let i = 0; i < p.length - 1; i++) o = o[/^\d+$/.test(p[i]) ? +p[i] : p[i]]; o[p[p.length - 1]] = v; }
+function getPath(obj, path) { return path.split('.').reduce((o, k) => o && o[/^\d+$/.test(k) ? +k : k], obj); }
+function commitEdit(path, v) {
+  pushUndo();
+  if (path === 'band') st.email.band = v; else setPath(st.email.blocks, path.replace(/^(\d+)\.items\.(\d+)/, '$1.items.$2'), v);
+  save(); renderSide(); clearTimeout(paintT); paintT = setTimeout(paint, 30);
+  const bi = +path.split('.')[0], b = st.email.blocks[bi]; if (b && b.type === 'hero') scheduleHero();
+}
+function selectBlock(i) { st.sel = st.sel && st.sel.b === i && st.sel.i == null ? null : { b: i }; renderSide(); paint(); const el = $(`.blk[data-bi="${i}"]`); if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+function selectItem(b, i) { st.sel = { b, i }; renderSide(); paint(); const el = $(`[data-item="${b}.${i}"]`); if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+function itemAt(path) { const [b, i] = path.split('.'); const blk = st.email.blocks[+b]; return i === 's' ? blk.item : blk.items[+i]; }
+// ================= undo / save =================
+function pushUndo() { if (!st.email) return; st.undo.push(JSON.stringify(st.email)); if (st.undo.length > 40) st.undo.shift(); }
+function undo() { const s = st.undo.pop(); if (!s) return toast('Nothing to undo.'); st.email = JSON.parse(s); save(); render(); }
+let saveT;
+function save() { if (!st.email) return; st.email.updated = Date.now(); clearTimeout(saveT); saveT = setTimeout(async () => { try { await DB.put(st.email); await DB.set('current', st.email.id); } catch (e) { toast('Could not save. The browser may be out of space.'); } }, 500); }
+let heroT;
+function scheduleHero() { clearTimeout(heroT); heroT = setTimeout(async () => { await renderHero(); save(); paint(); }, 400); }
+// ================= side events =================
+function bindSide() {
+  const side = $('#side');
+  const ds = $('#dropStart', side);
+  if (ds) {
+    ds.onclick = async () => addStartFiles(await pickFiles('application/pdf,.pdf,image/*'));
+    ds.ondragover = e => { e.preventDefault(); ds.classList.add('over'); }; ds.ondragleave = () => ds.classList.remove('over');
+    ds.ondrop = e => { e.preventDefault(); ds.classList.remove('over'); addStartFiles([...e.dataTransfer.files]); };
+    $('#sNums').oninput = e => st.start.nums = e.target.value; $('#sPages').oninput = e => st.start.pages = e.target.value;
+    $('#bBuild').onclick = () => buildFromStart().catch(err => { busy(''); console.error(err); toast('Something went wrong: ' + err.message); });
+  }
+  side.onclick = async ev => {
+    const t = ev.target.closest('button,[data-selb]'); if (!t) return;
+    const d = t.dataset;
+    if (d.rmfile != null) { st.start.files.splice(+d.rmfile, 1); return renderSide(); }
+    if (d.tpl) { st.start.tpl = d.tpl; return renderSide(); }
+    if (!st.email) return;
+    const B = st.email.blocks;
+    if (d.mv) { ev.stopPropagation(); const [i, dir] = d.mv.split(',').map(Number), j = i + dir; if (j < 0 || j >= B.length) return; pushUndo(); [B[i], B[j]] = [B[j], B[i]]; st.sel = { b: j }; save(); return render(); }
+    if (d.dup) { ev.stopPropagation(); pushUndo(); const c = clone(B[+d.dup]); c.id = uid(); B.splice(+d.dup + 1, 0, c); save(); return render(); }
+    if (d.del) { ev.stopPropagation(); pushUndo(); B.splice(+d.del, 1); st.sel = null; save(); toast('Block deleted. Undo is at the top of the preview.'); return render(); }
+    if (d.selb != null && !ev.target.closest('button')) return selectBlock(+d.selb);
+    if (d.add) { pushUndo(); const nb = mkBlock(d.add); const at = B.findIndex(x => x.type === 'cta'); B.splice(at < 0 ? B.length : at, 0, nb); st.sel = { b: B.indexOf(nb) }; save(); render(); if (d.add === 'banner') pickBannerImg(B.indexOf(nb)); return; }
+    if (d.cols) { const [i, c] = d.cols.split(',').map(Number); pushUndo(); B[i].cols = c; save(); return render(); }
+    if (d.addnums != null) { const i = +d.addnums, inp = $('#addNums' + i); const nums = inp.value.split(/[\s,;]+/).map(x => x.replace(/\D/g, '')).filter(Boolean); if (!nums.length) return toast('Type one or more item numbers.'); pushUndo(); const its = nums.map(n => { const ci = catInfo(n); return mkItem(n, ci ? titleCase(ci.name) : ''); }); B[i].items.push(...its); save(); render(); for (const it of its) await loadItemPhoto(it); const miss = its.filter(x => !x.img).map(x => x.num); if (miss.length) toast('No photo found for #' + miss.join(', #')); return; }
+    if (d.itdel) { pushUndo(); const [b, i] = d.itdel.split('.').map(Number); B[b].items.splice(i, 1); st.sel = { b }; save(); return render(); }
+    if (d.itmv) { const [p, dir] = d.itmv.split(','); const [b, i] = p.split('.').map(Number), j = i + +dir, its = B[b].items; if (j < 0 || j >= its.length) return; pushUndo(); [its[i], its[j]] = [its[j], its[i]]; st.sel = { b, i: j }; save(); render(); if (b === firstProductsBlock()) scheduleHero(); return; }
+    if (d.nextph) { const it = itemAt(d.nextph); pushUndo(); await loadItemPhoto(it, (it.alt || 0) + 1); scheduleHero(); return; }
+    if (d.upph) { const f = (await pickFiles('image/*', false))[0]; if (!f) return; const img = await decodeImage(f); if (!img) return toast('Could not open that picture.'); pushUndo(); const it = itemAt(d.upph), k = 'p' + (it.num || uid().slice(0, 5)); st.email.assets[k] = makeTile(img); delete st.email.hosted[k]; it.img = k; it.total = 0; save(); render(); scheduleHero(); return; }
+    if (d.heromode) { pushUndo(); const b = B.find(x => x.type === 'hero'); b.mode = d.heromode; if (b.mode === 'auto') { await renderHero(); } else if (!st.email.assets.hero || b.img !== 'hero') { /* keep */ } save(); render(); if (b.mode === 'image') pickHeroImg(); return; }
+    if (d.heroimg) return pickHeroImg();
+    if (d.redraw) { await renderHero(); save(); return paint(); }
+    if (d.bannerimg) return pickBannerImg(+d.bannerimg);
+    if (d.setpages) { const i = +d.setpages; const pages = $('#pg' + i).value.split(/[\s,;]+/).flatMap(x => { const m = x.match(/^(\d+)(?:-(\d+))?$/); if (!m) return []; const a = +m[1], b2 = +(m[2] || m[1]); return Array.from({ length: Math.min(20, b2 - a + 1) }, (_, k) => a + k); }); pushUndo(); B[i].pages = pages.map(p => ({ page: p, img: null })); busy('Adding catalog pages…'); await renderPages(); busy(''); save(); return render(); }
+    if (t.closest('[data-item]') && !t.closest('button.ib')) { const p = t.closest('[data-item]').dataset.item.split('.'); return selectItem(+p[0], p[1] === 's' ? 's' : +p[1]); }
+  };
+  side.querySelectorAll('[data-item]').forEach(el => el.onclick = ev => { if (ev.target.closest('button')) return; const p = el.dataset.item.split('.'); selectItem(+p[0], p[1] === 's' ? 's' : +p[1]); });
+  side.querySelectorAll('[data-f]').forEach(inp => inp.onchange = () => { pushUndo(); st.email[inp.dataset.f] = inp.value; save(); paint(); renderSide(); });
+  const en = $('#eName', side); if (en) en.onchange = () => { st.email.name = en.value; save(); };
+  const det = $('#detInfo', side); if (det) det.ontoggle = () => st.email._detOpen = det.open;
+  side.querySelectorAll('[data-bf]').forEach(inp => inp.onchange = () => { pushUndo(); const [i, ...k] = inp.dataset.bf.split('.'); st.email.blocks[+i][k.join('.')] = inp.value; save(); paint(); if (st.email.blocks[+i].type === 'hero') scheduleHero(); });
+  side.querySelectorAll('[data-bchk]').forEach(inp => inp.onchange = () => { pushUndo(); const [i, k] = inp.dataset.bchk.split('.'); st.email.blocks[+i][k] = inp.checked; save(); paint(); });
+  side.querySelectorAll('[data-itf]').forEach(inp => inp.onchange = async () => {
+    pushUndo(); const p = inp.dataset.itf.split('.'), key = p.pop(), it = itemAt(p.join('.'));
+    it[key] = inp.value.trim(); save();
+    if (key === 'num') { it.img = null; it.tried = false; it.name = ''; const ci = catInfo(it.num); if (ci) it.name = titleCase(ci.name); await loadItemPhoto(it); scheduleHero(); }
+    renderSide(); paint();
+  });
+}
+function firstProductsBlock() { return st.email.blocks.findIndex(b => b.type === 'products' || b.type === 'spotlight'); }
+async function pickHeroImg() { const f = (await pickFiles('image/*', false))[0]; if (!f) return; const img = await decodeImage(f); if (!img) return toast('Could not open that picture.'); pushUndo(); const b = st.email.blocks.find(x => x.type === 'hero'); b.mode = 'image'; st.email.assets.hero = fitWidth(img, 1200); delete st.email.hosted.hero; b.img = 'hero'; save(); render(); }
+async function pickBannerImg(i) { const f = (await pickFiles('image/*,application/pdf', false))[0]; if (!f) return; let data; if (/pdf/i.test(f.type) || /\.pdf$/i.test(f.name)) { const pdf = await openPdf(f); data = (await renderPdfPage(pdf, 1, 1200)).toDataURL('image/jpeg', 0.85); } else { const img = await decodeImage(f); if (!img) return toast('Could not open that picture.'); data = fitWidth(img, 1200); } pushUndo(); const b = st.email.blocks[i], k = 'b' + uid().slice(0, 5); st.email.assets[k] = data; b.img = k; if (!b.alt) b.alt = f.name.replace(/\.\w+$/, '').replace(/[-_]+/g, ' '); save(); render(); }
+async function addStartFiles(files) {
+  for (const f of files) {
+    if (/pdf/i.test(f.type) || /\.pdf$/i.test(f.name)) {
+      try {
+        const pdf = await openPdf(f);
+        if (pdf.numPages >= 40) { if (!st.cat.pdf || confirm(`"${f.name}" looks like the full catalog. Replace this quarter's catalog with it?`)) await setCatalog(f); continue; }
+        const thumb = (await renderPdfPage(pdf, 1, 120)).toDataURL('image/jpeg', 0.7);
+        st.start.files.push({ kind: 'flyer', file: f, thumb, w: 1, h: 1 });
+      } catch (e) { toast('Could not open ' + f.name); }
+    } else if (f.type.startsWith('image/')) {
+      const img = await decodeImage(f); if (!img) { toast('Could not open ' + f.name); continue; }
+      st.start.files.push({ kind: 'image', file: f, thumb: fitWidth(img, 120, 0.7), data: fitWidth(img, 1200), w: img.width, h: img.height });
+    }
+  }
+  renderSide();
+}
+
+// ================= modals =================
+function openModal(html, bind) { $('#mbox').innerHTML = html; $('#modal').classList.add('on'); if (bind) bind($('#mbox')); }
+function closeModal() { $('#modal').classList.remove('on'); }
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal' || e.target.closest('[data-close]')) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.target.closest('input,textarea,[contenteditable]')) { e.preventDefault(); undo(); } });
+
+function usedAssets(e) {
+  const keys = [];
+  e.blocks.forEach(b => {
+    if (b.type === 'hero' && b.img) keys.push(b.img);
+    if (b.type === 'banner' && b.img) keys.push(b.img);
+    if (b.type === 'products') b.items.forEach(it => it.img && keys.push(it.img));
+    if (b.type === 'spotlight' && b.item.img) keys.push(b.item.img);
+    if (b.type === 'pages') b.pages.forEach(p => p.img && keys.push(p.img));
+  });
+  if (S.logoData && !e.hosted.logo) { e.assets.logo = S.logoData; keys.unshift('logo'); }
+  return [...new Set(keys)].filter(k => e.assets[k]);
+}
+function checks(e) {
+  const out = [], its = allItems(), keys = usedAssets(e);
+  const noPh = its.filter(i => !i.img).length, noNm = its.filter(i => !i.name).length, host = keys.filter(k => !e.hosted[k]).length;
+  out.push([!noPh, noPh ? `${noPh} product${noPh > 1 ? 's have' : ' has'} no photo` : 'Every product has a photo']);
+  out.push([!noNm, noNm ? `${noNm} product${noNm > 1 ? 's have' : ' has'} no name` : 'Every product has a name']);
+  out.push([!!e.subject, e.subject ? 'Subject line is set' : 'Add a subject line (left panel, top)']);
+  out.push([!!e.preheader && e.preheader.length <= 90, !e.preheader ? 'Add inbox preview text' : e.preheader.length > 90 ? 'Inbox preview text is over 90 characters' : 'Inbox preview text is set']);
+  out.push([!host, host ? `${host} of ${keys.length} images still need a Constant Contact link` : 'All images are hosted in Constant Contact']);
+  return out;
+}
+function openExport() {
+  const e = st.email; if (!e) return toast('Build an email first.');
+  const keys = usedAssets(e), hosted = keys.filter(k => e.hosted[k]).length, ck = checks(e);
+  openModal(`<div class="mhead"><h2>Get it ready to send</h2><button class="btn ghost" data-close>Close</button></div>
+  <ul class="checks">${ck.map(([ok, t]) => `<li class="${ok ? 'ok' : ''}">${esc(t)}</li>`).join('')}</ul>
+  <div class="step"><div class="n ${hosted === keys.length ? 'done' : ''}">1</div><div><h3>Put the images in Constant Contact</h3>
+    <p>Download the images, upload them to your Constant Contact Library (all at once, don't rename them), then grab their links.</p>
+    <div class="row" style="flex-wrap:wrap"><button class="btn pri" id="xZip">Download images (${keys.length})</button><button class="btn" id="xCC">Open Constant Contact Library</button><button class="btn" id="xPaste">Paste links</button></div>
+    <div id="pasteBox" style="display:none;margin-top:10px"><textarea class="in" id="pasteIn" rows="2" placeholder="Click here and press Ctrl+V"></textarea></div>
+    <details style="margin-top:10px"><summary style="cursor:pointer;font-size:12.5px;font-weight:600;color:var(--g)">How the link grabber works (one-time setup)</summary>
+      <p style="font-size:12.5px;margin:8px 0">Drag this button to your bookmarks bar: <a class="bm" id="bmCC" href="#">Grab CC links</a></p>
+      <p style="font-size:12.5px;margin:0">In the Constant Contact Library, click <b>Recently Added</b> (list view), then click <b>Grab CC links</b> in your bookmarks bar. The links come back here by themselves. If not, click <b>Paste links</b> and press Ctrl+V.</p>
+    </details>
+    <div class="assets">${keys.map(k => `<div class="as ${e.hosted[k] ? 'ok' : ''}"><img src="${e.assets[k]}" alt=""><div class="s">${esc(fileName(e, k))}</div></div>`).join('')}</div>
+  </div></div>
+  <div class="step"><div class="n">2</div><div><h3>Copy the email into Constant Contact</h3>
+    <p>Create a new email in Constant Contact, choose <b>Custom Code</b>, and paste.${hosted < keys.length ? ' <b style="color:#B26A00">Some images are not linked yet, so they won\'t show.</b>' : ''}</p>
+    <div class="row" style="flex-wrap:wrap"><button class="btn red" id="xCopy">Copy HTML</button><button class="btn" id="xDl">Download .html</button><button class="btn" id="xSubj">Copy subject line</button><button class="btn" id="xPre">Copy preview text</button></div>
+  </div></div>`, box => {
+    $('#bmCC', box).href = ccBookmarklet(); $('#bmCC', box).onclick = ev => { ev.preventDefault(); toast('Drag this button up to your bookmarks bar.'); };
+    $('#xZip', box).onclick = () => zipImages();
+    $('#xCC', box).onclick = async () => { await copyText('RESNICK-FILES ' + JSON.stringify({ files: keys.map(k => fileName(e, k)) })); window.open(S.ccLibrary, 'resnick-cc'); toast('Upload the images, open Recently Added, then click "Grab CC links".'); };
+    $('#xPaste', box).onclick = async () => { let t = ''; try { t = await navigator.clipboard.readText(); } catch (er) {} if (/RESNICK-CC/.test(t)) return applyCc(t); $('#pasteBox', box).style.display = 'block'; $('#pasteIn', box).focus(); };
+    $('#pasteIn', box).onpaste = ev => { ev.preventDefault(); applyCc((ev.clipboardData || window.clipboardData).getData('text')); };
+    $('#xCopy', box).onclick = async () => { await copyText(emailHtml(e, 'export')); toast(hosted < keys.length ? 'HTML copied. Some images still need links.' : 'HTML copied. Paste it into a Constant Contact Custom Code email.'); };
+    $('#xDl', box).onclick = () => download(new Blob([emailHtml(e, 'export')], { type: 'text/html' }), (e.name || 'email').replace(/[^\w\- ]+/g, '').trim() + '.html');
+    $('#xSubj', box).onclick = async () => { await copyText(e.subject || ''); toast('Subject line copied.'); };
+    $('#xPre', box).onclick = async () => { await copyText(e.preheader || ''); toast('Preview text copied.'); };
+  });
+}
+async function zipImages() {
+  const e = st.email, keys = usedAssets(e);
+  if (!window.JSZip) { try { await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'); } catch (er) { } }
+  if (window.JSZip) { const z = new JSZip(); keys.forEach(k => z.file(fileName(e, k), dataUrlToBlob(e.assets[k]))); download(await z.generateAsync({ type: 'blob' }), (e.name || 'email').replace(/[^\w\- ]+/g, '').trim() + ' images.zip'); }
+  else for (const k of keys) { download(dataUrlToBlob(e.assets[k]), fileName(e, k)); await sleep(300); }
+}
+function applyCc(t) {
+  let links = {}; if (t && typeof t === 'object') links = t; else { const s = String(t || ''), i = s.indexOf('{'); if (i >= 0) try { links = JSON.parse(s.slice(i)).links || {}; } catch (er) {} }
+  const base = n => String(n || '').toLowerCase().replace(/\.(png|jpe?g|gif|webp)$/i, '').trim();
+  const e = st.email; if (!e) return; let n = 0; const keys = usedAssets(e);
+  keys.forEach(k => { const u = links[base(fileName(e, k))]; if (u && /^https?:\/\//.test(u)) { e.hosted[k] = u; n++; } });
+  if (!n) return toast('No matching image links found. Make sure the file names weren\'t changed in Constant Contact.');
+  if (e.hosted.logo && S.logoData) { S.logo = e.hosted.logo; S.logoData = ''; saveSettings(); }
+  save(); toast(`${n} of ${keys.length} image links filled in.`); if ($('#modal').classList.contains('on')) openExport();
+}
+window.addEventListener('message', ev => { if (ev.data && ev.data.type === 'resnick-cc') applyCc(ev.data.links || {}); });
+// The Constant Contact helper runs as a bookmarklet inside the CC Library page.
+async function ccHelper() {
+  const H = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const old = document.getElementById('rk-cc'); if (old) old.remove();
+  const box = document.createElement('div'); box.id = 'rk-cc';
+  box.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:2147483647;width:340px;max-height:60vh;overflow:auto;background:#fff;border:2px solid #0E5C2F;border-radius:10px;padding:14px 16px;font:14px/1.45 Arial,sans-serif;color:#1E2230;box-shadow:0 10px 30px rgba(0,0,0,.25)';
+  document.body.appendChild(box);
+  const say = h => { box.innerHTML = '<div style="font-weight:bold;color:#0E5C2F;margin-bottom:6px">Resnick image links</div>' + h; };
+  const base = n => String(n || '').toLowerCase().replace(/\.(png|jpe?g|gif|webp)$/i, '').trim();
+  const docs = [document]; document.querySelectorAll('iframe').forEach(f => { try { if (f.contentDocument && f.contentDocument.body) docs.push(f.contentDocument); } catch (e) {} });
+  let rows = []; docs.forEach(d => rows.push(...d.querySelectorAll('tr.file, tr[data-file-id]')));
+  if (!rows.length) {
+    const fr = [...document.querySelectorAll('iframe')].find(f => { let x = true; try { x = !f.contentDocument; } catch (e) {} const r = f.getBoundingClientRect(); return x && f.src && r.width > 400 && r.height > 300; });
+    if (fr) { say('The Library is inside a frame I can\'t read.<div style="margin-top:10px"><button id="rk-cc-go" style="height:32px;padding:0 12px;border:0;border-radius:6px;background:#0E5C2F;color:#fff;font-weight:bold;cursor:pointer">Open Library on its own page</button></div><div style="margin-top:8px">Then click <b>Recently Added</b> and click this bookmark again.</div>'); box.querySelector('#rk-cc-go').onclick = () => { location.href = fr.src; }; return; }
+    say('Open <b>Library</b> and click <b>Recently Added</b> (list view), then click this bookmark again.'); return;
+  }
+  let want = null, raw = '';
+  try { raw = await navigator.clipboard.readText(); } catch (e) {}
+  if (/RESNICK-FILES/.test(raw)) { try { localStorage.setItem('rk-files', raw); } catch (e) {} } else { try { raw = localStorage.getItem('rk-files') || ''; } catch (e) {} }
+  try { const j = JSON.parse(raw.slice(raw.indexOf('{'))); if (Array.isArray(j.files) && j.files.length) want = new Set(j.files.map(base)); } catch (e) {}
+  const out = {};
+  for (const tr of rows) {
+    const nameEl = tr.querySelector('a.file-name, .file-name'); const name = base(nameEl ? nameEl.textContent : ''); if (!name || out[name]) continue;
+    if (want && !want.has(name)) continue;
+    const im = tr.querySelector('img.preview, img'); if (!im) continue;
+    let u = im.getAttribute('data-href') || (im.getAttribute('src') || '').replace(/-thumbnail(\.\w+)/, '$1');
+    u = u.replace(/[?#].*$/, '').replace(/^https?:\/\/mlsvc01-prod\.s3\.amazonaws\.com\//i, 'https://files.constantcontact.com/');
+    if (/^https?:\/\//.test(u)) out[name] = u;
+  }
+  const count = Object.keys(out).length, payload = 'RESNICK-CC ' + JSON.stringify({ links: out });
+  let sent = false; try { if (window.opener) { window.opener.postMessage({ type: 'resnick-cc', links: out }, '*'); sent = true; } } catch (e) {}
+  let copied = false; try { await navigator.clipboard.writeText(payload); copied = true; } catch (e) {}
+  const missing = want ? [...want].filter(k => !out[k]) : [];
+  say('<div><b>' + count + '</b> image link' + (count === 1 ? '' : 's') + ' found.</div>' + (missing.length ? '<div style="color:#D9262C;margin-top:6px">Not on this page: ' + missing.map(H).join(', ') + '. Upload them (or go to the next page) and click the bookmark again.</div>' : '') + '<div style="margin-top:8px">' + (sent ? 'Sent to Email Studio. ' : '') + (copied ? 'Copied too. If they did not show up, click <b>Paste links</b> in Email Studio and press Ctrl+V.' : 'Click Copy links, then paste in Email Studio.') + '</div><div style="display:flex;gap:8px;margin-top:10px"><button id="rk-cc-copy" style="height:32px;padding:0 12px;border:0;border-radius:6px;background:#0E5C2F;color:#fff;font-weight:bold;cursor:pointer">Copy links</button><button id="rk-cc-close" style="height:32px;padding:0 12px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer">Close</button></div>');
+  box.querySelector('#rk-cc-copy').onclick = async () => { try { await navigator.clipboard.writeText(payload); box.querySelector('#rk-cc-copy').textContent = 'Copied'; } catch (e) { prompt('Copy this, then paste it in Email Studio:', payload); } };
+  box.querySelector('#rk-cc-close').onclick = () => box.remove();
+}
+function ccBookmarklet() { return 'javascript:' + encodeURIComponent('(' + ccHelper.toString() + ')();void 0'); }
+
+async function openSaved() {
+  let all = []; try { all = (await DB.all()).sort((a, b) => b.updated - a.updated); } catch (e) {}
+  openModal(`<div class="mhead"><h2>Saved emails</h2><button class="btn ghost" data-close>Close</button></div>
+  <p class="sub">Everything saves automatically. Open one to edit it, or duplicate it to start next week's email.</p>
+  ${all.length ? `<div class="saved">${all.map(r => `<div class="sv"><div class="im">${r.assets && r.assets.hero ? `<img src="${r.assets.hero}" alt="">` : ''}</div><div class="b"><b>${esc(r.name)}</b><span>${new Date(r.updated).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span><div class="row" style="margin-top:8px"><button class="btn sm pri" data-open="${r.id}">Open</button><button class="btn sm" data-copy="${r.id}">Duplicate</button><button class="btn sm ghost" data-drop="${r.id}" style="color:#C33">Delete</button></div></div></div>`).join('')}</div>` : '<p class="note">Nothing saved yet.</p>'}`, box => {
+    box.onclick = async ev => {
+      const t = ev.target.closest('button'); if (!t) return;
+      if (t.dataset.open) { st.email = await DB.one(t.dataset.open); st.sel = null; st.undo = []; await DB.set('current', st.email.id); closeModal(); render(); fillMissingPhotos(); }
+      if (t.dataset.copy) { const r = await DB.one(t.dataset.copy); const c = { ...clone(r), id: uid(), name: r.name + ' (copy)', hosted: {}, created: Date.now() }; c.code = newEmail().code; await DB.put(c); st.email = c; st.sel = null; st.undo = []; closeModal(); render(); toast('Duplicated. Swap the products and words for this week.'); }
+      if (t.dataset.drop) { if (!confirm('Delete this email?')) return; await DB.drop(t.dataset.drop); if (st.email && st.email.id === t.dataset.drop) { st.email = null; render(); } openSaved(); }
+    };
+  });
+}
+function openSettings() {
+  const f = (k, label, hint) => `<label class="lbl">${label}${hint ? ` <span>${hint}</span>` : ''}</label><input class="in" data-s="${k}" value="${esc(S[k])}">`;
+  openModal(`<div class="mhead"><h2>Settings</h2><button class="btn ghost" data-close>Close</button></div>
+  ${f('appLink', 'Order link', 'every button and product opens this')}
+  ${f('logo', 'Logo image link', 'hosted in Constant Contact')}
+  <div class="row" style="margin-top:8px"><img src="${esc(S.logoData || S.logo)}" alt="Logo not loading" style="height:44px;max-width:200px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px;font-size:11px;color:#B44"><button class="btn sm" id="sLogo">Upload logo file instead</button></div>
+  ${f('phone', 'Phone number')}
+  ${f('flipbook', 'Catalog flipbook link', 'catalog page links open here')}
+  ${f('footer', 'Footer line')}
+  ${f('ccLibrary', 'Constant Contact Library link')}
+  <div class="row" style="margin-top:18px"><button class="btn pri" id="sSave">Save</button><button class="btn" id="sReset">Reset to defaults</button><div class="sp"></div><button class="btn" id="sFolder">Change images folder</button></div>`, box => {
+    $('#sSave', box).onclick = async () => { box.querySelectorAll('[data-s]').forEach(i => S[i.dataset.s] = i.value.trim()); await saveSettings(); closeModal(); paint(); toast('Settings saved.'); };
+    $('#sReset', box).onclick = async () => { S = { ...DEFAULTS }; await saveSettings(); openSettings(); };
+    $('#sLogo', box).onclick = async () => { const f = (await pickFiles('image/*', false))[0]; if (!f) return; const img = await decodeImage(f); if (!img) return toast('Could not open that picture.'); const c = canvasEl(Math.min(600, img.width), Math.round(img.height * Math.min(600, img.width) / img.width)); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); S.logoData = c.toDataURL('image/png'); await saveSettings(); paint(); openSettings(); toast('Logo saved. It goes out with the images next time you export.'); };
+    $('#sFolder', box).onclick = () => { closeModal(); connectFolder(); };
+  });
+}
+function openCatalog() {
+  const c = st.cat;
+  openModal(`<div class="mhead"><h2>This quarter's catalog</h2><button class="btn ghost" data-close>Close</button></div>
+  ${c.pdf ? `<p class="sub"><b>${esc(c.name)}</b> · ${c.pages} pages · saved ${new Date(c.saved).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}. It stays here until you replace it.${c.index ? ` ${Object.keys(c.index).length.toLocaleString()} item numbers indexed.` : ''}</p>` : `<p class="sub">Add the catalog PDF once a quarter. We use it to name products and show catalog pages. It stays saved in this browser until you replace it.</p>`}
+  <div class="drop" id="catDrop"><div class="ic">+</div><b>${c.pdf ? 'Drop next quarter\'s catalog to replace it' : 'Drop the catalog PDF here'}</b>Or click to choose the file.</div>
+  <label class="lbl">Flipbook link <span>catalog page links open here</span></label><input class="in" id="fbLink" value="${esc(S.flipbook)}">`, box => {
+    const d = $('#catDrop', box);
+    d.onclick = async () => { const f = (await pickFiles('application/pdf,.pdf', false))[0]; if (f) { closeModal(); setCatalog(f); } };
+    d.ondragover = e => { e.preventDefault(); d.classList.add('over'); }; d.ondragleave = () => d.classList.remove('over');
+    d.ondrop = e => { e.preventDefault(); const f = [...e.dataTransfer.files].find(x => /pdf/i.test(x.type) || /\.pdf$/i.test(x.name)); if (f) { closeModal(); setCatalog(f); } };
+    $('#fbLink', box).onchange = async ev => { S.flipbook = ev.target.value.trim(); await saveSettings(); };
+  });
+}
+// ================= wiring =================
+$('#chipImg').onclick = () => { if (st.folder.state === 'needs') reconnectFolder(); else if (st.folder.state === 'ok') toast(`Connected to ${st.folder.name || 'your images folder'}. Change it in Settings.`); else connectFolder(); };
+$('#chipCat').onclick = openCatalog;
+$('#bNew').onclick = () => { st.email = null; st.sel = null; st.start = { files: [], nums: '', pages: '', tpl: 'sections' }; DB.del('current'); render(); };
+$('#bSaved').onclick = openSaved;
+$('#bSettings').onclick = openSettings;
+$('#bExport').onclick = openExport;
+$('#bUndo').onclick = undo;
+$$('#viewSeg button').forEach(b => b.onclick = () => { st.view = b.dataset.v; $$('#viewSeg button').forEach(x => x.classList.toggle('on', x === b)); paint(); });
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => { if (e.target.closest('.drop')) return; e.preventDefault(); if (!st.email && e.dataTransfer.files.length) addStartFiles([...e.dataTransfer.files]); });
+
+(async function init() {
+  await loadSettings();
+  render();
+  const cur = await DB.get('current').catch(() => null);
+  if (cur) { const e = await DB.one(cur).catch(() => null); if (e) { st.email = e; render(); } }
+  await Promise.all([restoreFolder(), restoreCatalog()]);
+  render();
+})();
+window.__studio = { st, S, fallbackFolder, setCatalog, analyzeFlyer, emailHtml, buildFromStart, addStartFiles, applyCc, DB };
+
+
+</script>
+</body>
+</html>
