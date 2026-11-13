@@ -140,6 +140,30 @@ textarea.in{height:auto;padding:9px 11px;resize:vertical;line-height:1.45}
 .toast.on{opacity:1;transform:translateX(-50%)}
 .kbd{font-size:11px;color:var(--mut)}
 .pop{position:absolute;z-index:30}
+.stp{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;margin:20px 0 8px}
+.stp span{width:22px;height:22px;border-radius:50%;background:var(--g);color:#fff;display:grid;place-items:center;font-size:12px}
+.stp em{font-style:normal;font-weight:500;color:var(--mut);font-size:12px}
+.looks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.look{padding:7px;border:1.5px solid var(--line);border-radius:12px;background:#fff;text-align:left}
+.look.on{border-color:var(--g);box-shadow:0 0 0 3px rgba(14,92,47,.12)}
+.look b{display:block;font-size:12px;margin-top:6px}.look span{display:block;font-size:10.5px;color:var(--mut);line-height:1.25}
+.look .lk{height:52px;border-radius:7px;background:#F2F0EA;display:flex;flex-direction:column;gap:2px;padding:5px;justify-content:flex-start;overflow:hidden}
+.look .lk i{display:block;height:5px;border-radius:2px;width:100%}
+.look .lk span{margin:auto;font-weight:800;color:var(--g);font-size:12px}
+.look.sm{width:38px;padding:3px;border-radius:8px}.look.sm .lk{height:30px;padding:3px;gap:1px}.look.sm .lk i{height:3px}
+.col2{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+.inbox{width:640px;max-width:100%;display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:13px}
+.inbox.phone{width:390px}
+.inbox .av{width:34px;height:34px;border-radius:50%;background:var(--g);color:#fff;display:grid;place-items:center;font-weight:800;flex:none}
+.inbox .m{min-width:0;flex:1}.inbox .m>div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inbox .sj{font-weight:600}.inbox .ph{color:var(--mut)}
+.home{width:100%;max-width:980px;padding:10px 6px}
+.home h1{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:6px 0 4px}
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.hc{text-align:left;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;position:relative}
+.hc b{display:block;font-size:14px;margin-bottom:4px}.hc span{font-size:12.5px;color:var(--mut)}
+.hc .dot{position:absolute;right:14px;top:16px;width:10px;height:10px;border-radius:50%;background:#C9C9C2}
+.hc .dot.ok{background:#2E9D4E}.hc .dot.warn{background:var(--amber)}
 </style>
 </head>
 <body>
@@ -163,7 +187,7 @@ textarea.in{height:auto;padding:9px 11px;resize:vertical;line-height:1.45}
         <div class="seg" id="viewSeg"><button data-v="desktop" class="on">Desktop</button><button data-v="phone">Phone</button></div>
         <span class="hint" id="stageHint">Click any text in the email to edit it. Click a product to change it.</span>
         <div class="sp"></div>
-        <button class="btn sm" id="bUndo" title="Undo">↶ Undo</button>
+        <span class="kbd" id="saveInd"></span><button class="btn sm" id="bUndo" title="Undo">↶ Undo</button>
       </div>
       <div class="canvas" id="canvas"></div>
       <div class="busyov" id="busy"><div class="card"><div class="spin"></div><span id="busyT">Working…</span></div></div>
@@ -174,6 +198,835 @@ textarea.in{height:auto;padding:9px 11px;resize:vertical;line-height:1.45}
 <div class="toast" id="toast"></div>
 <input type="file" id="fileIn" hidden multiple>
 <script>
+// gifenc 1.0.3 (MIT License, Copyright (c) 2017 Matt DesLauriers) — GIF encoder, inlined
+const gifenc = (() => { const exports = {}; const module = { exports };
+var __defProp = Object.defineProperty;
+var __markAsModule = (target) => __defProp(target, "__esModule", {value: true});
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, {get: all[name], enumerable: true});
+};
+
+// src/index.js
+__markAsModule(exports);
+__export(exports, {
+  GIFEncoder: () => GIFEncoder,
+  applyPalette: () => applyPalette,
+  default: () => src_default,
+  nearestColor: () => nearestColor,
+  nearestColorIndex: () => nearestColorIndex,
+  nearestColorIndexWithDistance: () => nearestColorIndexWithDistance,
+  prequantize: () => prequantize,
+  quantize: () => quantize,
+  snapColorsToPalette: () => snapColorsToPalette
+});
+
+// src/constants.js
+var constants_default = {
+  signature: "GIF",
+  version: "89a",
+  trailer: 59,
+  extensionIntroducer: 33,
+  applicationExtensionLabel: 255,
+  graphicControlExtensionLabel: 249,
+  imageSeparator: 44,
+  signatureSize: 3,
+  versionSize: 3,
+  globalColorTableFlagMask: 128,
+  colorResolutionMask: 112,
+  sortFlagMask: 8,
+  globalColorTableSizeMask: 7,
+  applicationIdentifierSize: 8,
+  applicationAuthCodeSize: 3,
+  disposalMethodMask: 28,
+  userInputFlagMask: 2,
+  transparentColorFlagMask: 1,
+  localColorTableFlagMask: 128,
+  interlaceFlagMask: 64,
+  idSortFlagMask: 32,
+  localColorTableSizeMask: 7
+};
+
+// src/stream.js
+function createStream(initialCapacity = 256) {
+  let cursor = 0;
+  let contents = new Uint8Array(initialCapacity);
+  return {
+    get buffer() {
+      return contents.buffer;
+    },
+    reset() {
+      cursor = 0;
+    },
+    bytesView() {
+      return contents.subarray(0, cursor);
+    },
+    bytes() {
+      return contents.slice(0, cursor);
+    },
+    writeByte(byte) {
+      expand(cursor + 1);
+      contents[cursor] = byte;
+      cursor++;
+    },
+    writeBytes(data, offset = 0, byteLength = data.length) {
+      expand(cursor + byteLength);
+      for (let i = 0; i < byteLength; i++) {
+        contents[cursor++] = data[i + offset];
+      }
+    },
+    writeBytesView(data, offset = 0, byteLength = data.byteLength) {
+      expand(cursor + byteLength);
+      contents.set(data.subarray(offset, offset + byteLength), cursor);
+      cursor += byteLength;
+    }
+  };
+  function expand(newCapacity) {
+    var prevCapacity = contents.length;
+    if (prevCapacity >= newCapacity)
+      return;
+    var CAPACITY_DOUBLING_MAX = 1024 * 1024;
+    newCapacity = Math.max(newCapacity, prevCapacity * (prevCapacity < CAPACITY_DOUBLING_MAX ? 2 : 1.125) >>> 0);
+    if (prevCapacity != 0)
+      newCapacity = Math.max(newCapacity, 256);
+    const oldContents = contents;
+    contents = new Uint8Array(newCapacity);
+    if (cursor > 0)
+      contents.set(oldContents.subarray(0, cursor), 0);
+  }
+}
+
+// src/lzwEncode.js
+var BITS = 12;
+var DEFAULT_HSIZE = 5003;
+var MASKS = [
+  0,
+  1,
+  3,
+  7,
+  15,
+  31,
+  63,
+  127,
+  255,
+  511,
+  1023,
+  2047,
+  4095,
+  8191,
+  16383,
+  32767,
+  65535
+];
+function lzwEncode(width, height, pixels, colorDepth, outStream = createStream(512), accum = new Uint8Array(256), htab = new Int32Array(DEFAULT_HSIZE), codetab = new Int32Array(DEFAULT_HSIZE)) {
+  const hsize = htab.length;
+  const initCodeSize = Math.max(2, colorDepth);
+  accum.fill(0);
+  codetab.fill(0);
+  htab.fill(-1);
+  let cur_accum = 0;
+  let cur_bits = 0;
+  const init_bits = initCodeSize + 1;
+  const g_init_bits = init_bits;
+  let clear_flg = false;
+  let n_bits = g_init_bits;
+  let maxcode = (1 << n_bits) - 1;
+  const ClearCode = 1 << init_bits - 1;
+  const EOFCode = ClearCode + 1;
+  let free_ent = ClearCode + 2;
+  let a_count = 0;
+  let ent = pixels[0];
+  let hshift = 0;
+  for (let fcode = hsize; fcode < 65536; fcode *= 2) {
+    ++hshift;
+  }
+  hshift = 8 - hshift;
+  outStream.writeByte(initCodeSize);
+  output(ClearCode);
+  const length = pixels.length;
+  for (let idx = 1; idx < length; idx++) {
+    next_block: {
+      const c = pixels[idx];
+      const fcode = (c << BITS) + ent;
+      let i = c << hshift ^ ent;
+      if (htab[i] === fcode) {
+        ent = codetab[i];
+        break next_block;
+      }
+      const disp = i === 0 ? 1 : hsize - i;
+      while (htab[i] >= 0) {
+        i -= disp;
+        if (i < 0)
+          i += hsize;
+        if (htab[i] === fcode) {
+          ent = codetab[i];
+          break next_block;
+        }
+      }
+      output(ent);
+      ent = c;
+      if (free_ent < 1 << BITS) {
+        codetab[i] = free_ent++;
+        htab[i] = fcode;
+      } else {
+        htab.fill(-1);
+        free_ent = ClearCode + 2;
+        clear_flg = true;
+        output(ClearCode);
+      }
+    }
+  }
+  output(ent);
+  output(EOFCode);
+  outStream.writeByte(0);
+  return outStream.bytesView();
+  function output(code) {
+    cur_accum &= MASKS[cur_bits];
+    if (cur_bits > 0)
+      cur_accum |= code << cur_bits;
+    else
+      cur_accum = code;
+    cur_bits += n_bits;
+    while (cur_bits >= 8) {
+      accum[a_count++] = cur_accum & 255;
+      if (a_count >= 254) {
+        outStream.writeByte(a_count);
+        outStream.writeBytesView(accum, 0, a_count);
+        a_count = 0;
+      }
+      cur_accum >>= 8;
+      cur_bits -= 8;
+    }
+    if (free_ent > maxcode || clear_flg) {
+      if (clear_flg) {
+        n_bits = g_init_bits;
+        maxcode = (1 << n_bits) - 1;
+        clear_flg = false;
+      } else {
+        ++n_bits;
+        maxcode = n_bits === BITS ? 1 << n_bits : (1 << n_bits) - 1;
+      }
+    }
+    if (code == EOFCode) {
+      while (cur_bits > 0) {
+        accum[a_count++] = cur_accum & 255;
+        if (a_count >= 254) {
+          outStream.writeByte(a_count);
+          outStream.writeBytesView(accum, 0, a_count);
+          a_count = 0;
+        }
+        cur_accum >>= 8;
+        cur_bits -= 8;
+      }
+      if (a_count > 0) {
+        outStream.writeByte(a_count);
+        outStream.writeBytesView(accum, 0, a_count);
+        a_count = 0;
+      }
+    }
+  }
+}
+var lzwEncode_default = lzwEncode;
+
+// src/rgb-packing.js
+function rgb888_to_rgb565(r, g, b) {
+  return r << 8 & 63488 | g << 2 & 992 | b >> 3;
+}
+function rgba8888_to_rgba4444(r, g, b, a) {
+  return r >> 4 | g & 240 | (b & 240) << 4 | (a & 240) << 8;
+}
+function rgb888_to_rgb444(r, g, b) {
+  return r >> 4 << 8 | g & 240 | b >> 4;
+}
+
+// src/pnnquant2.js
+function clamp(value, min, max) {
+  return value < min ? min : value > max ? max : value;
+}
+function sqr(value) {
+  return value * value;
+}
+function find_nn(bins, idx, hasAlpha) {
+  var nn = 0;
+  var err = 1e100;
+  const bin1 = bins[idx];
+  const n1 = bin1.cnt;
+  const wa = bin1.ac;
+  const wr = bin1.rc;
+  const wg = bin1.gc;
+  const wb = bin1.bc;
+  for (var i = bin1.fw; i != 0; i = bins[i].fw) {
+    const bin = bins[i];
+    const n2 = bin.cnt;
+    const nerr2 = n1 * n2 / (n1 + n2);
+    if (nerr2 >= err)
+      continue;
+    var nerr = 0;
+    if (hasAlpha) {
+      nerr += nerr2 * sqr(bin.ac - wa);
+      if (nerr >= err)
+        continue;
+    }
+    nerr += nerr2 * sqr(bin.rc - wr);
+    if (nerr >= err)
+      continue;
+    nerr += nerr2 * sqr(bin.gc - wg);
+    if (nerr >= err)
+      continue;
+    nerr += nerr2 * sqr(bin.bc - wb);
+    if (nerr >= err)
+      continue;
+    err = nerr;
+    nn = i;
+  }
+  bin1.err = err;
+  bin1.nn = nn;
+}
+function create_bin() {
+  return {
+    ac: 0,
+    rc: 0,
+    gc: 0,
+    bc: 0,
+    cnt: 0,
+    nn: 0,
+    fw: 0,
+    bk: 0,
+    tm: 0,
+    mtm: 0,
+    err: 0
+  };
+}
+function create_bin_list(data, format) {
+  const bincount = format === "rgb444" ? 4096 : 65536;
+  const bins = new Array(bincount);
+  const size = data.length;
+  if (format === "rgba4444") {
+    for (let i = 0; i < size; ++i) {
+      const color = data[i];
+      const a = color >> 24 & 255;
+      const b = color >> 16 & 255;
+      const g = color >> 8 & 255;
+      const r = color & 255;
+      const index = rgba8888_to_rgba4444(r, g, b, a);
+      let bin = index in bins ? bins[index] : bins[index] = create_bin();
+      bin.rc += r;
+      bin.gc += g;
+      bin.bc += b;
+      bin.ac += a;
+      bin.cnt++;
+    }
+  } else if (format === "rgb444") {
+    for (let i = 0; i < size; ++i) {
+      const color = data[i];
+      const b = color >> 16 & 255;
+      const g = color >> 8 & 255;
+      const r = color & 255;
+      const index = rgb888_to_rgb444(r, g, b);
+      let bin = index in bins ? bins[index] : bins[index] = create_bin();
+      bin.rc += r;
+      bin.gc += g;
+      bin.bc += b;
+      bin.cnt++;
+    }
+  } else {
+    for (let i = 0; i < size; ++i) {
+      const color = data[i];
+      const b = color >> 16 & 255;
+      const g = color >> 8 & 255;
+      const r = color & 255;
+      const index = rgb888_to_rgb565(r, g, b);
+      let bin = index in bins ? bins[index] : bins[index] = create_bin();
+      bin.rc += r;
+      bin.gc += g;
+      bin.bc += b;
+      bin.cnt++;
+    }
+  }
+  return bins;
+}
+function quantize(rgba, maxColors, opts = {}) {
+  const {
+    format = "rgb565",
+    clearAlpha = true,
+    clearAlphaColor = 0,
+    clearAlphaThreshold = 0,
+    oneBitAlpha = false
+  } = opts;
+  if (!rgba || !rgba.buffer) {
+    throw new Error("quantize() expected RGBA Uint8Array data");
+  }
+  if (!(rgba instanceof Uint8Array) && !(rgba instanceof Uint8ClampedArray)) {
+    throw new Error("quantize() expected RGBA Uint8Array data");
+  }
+  const data = new Uint32Array(rgba.buffer);
+  let useSqrt = opts.useSqrt !== false;
+  const hasAlpha = format === "rgba4444";
+  const bins = create_bin_list(data, format);
+  const bincount = bins.length;
+  const bincountMinusOne = bincount - 1;
+  const heap = new Uint32Array(bincount + 1);
+  var maxbins = 0;
+  for (var i = 0; i < bincount; ++i) {
+    const bin = bins[i];
+    if (bin != null) {
+      var d = 1 / bin.cnt;
+      if (hasAlpha)
+        bin.ac *= d;
+      bin.rc *= d;
+      bin.gc *= d;
+      bin.bc *= d;
+      bins[maxbins++] = bin;
+    }
+  }
+  if (sqr(maxColors) / maxbins < 0.022) {
+    useSqrt = false;
+  }
+  var i = 0;
+  for (; i < maxbins - 1; ++i) {
+    bins[i].fw = i + 1;
+    bins[i + 1].bk = i;
+    if (useSqrt)
+      bins[i].cnt = Math.sqrt(bins[i].cnt);
+  }
+  if (useSqrt)
+    bins[i].cnt = Math.sqrt(bins[i].cnt);
+  var h, l, l2;
+  for (i = 0; i < maxbins; ++i) {
+    find_nn(bins, i, false);
+    var err = bins[i].err;
+    for (l = ++heap[0]; l > 1; l = l2) {
+      l2 = l >> 1;
+      if (bins[h = heap[l2]].err <= err)
+        break;
+      heap[l] = h;
+    }
+    heap[l] = i;
+  }
+  var extbins = maxbins - maxColors;
+  for (i = 0; i < extbins; ) {
+    var tb;
+    for (; ; ) {
+      var b1 = heap[1];
+      tb = bins[b1];
+      if (tb.tm >= tb.mtm && bins[tb.nn].mtm <= tb.tm)
+        break;
+      if (tb.mtm == bincountMinusOne)
+        b1 = heap[1] = heap[heap[0]--];
+      else {
+        find_nn(bins, b1, false);
+        tb.tm = i;
+      }
+      var err = bins[b1].err;
+      for (l = 1; (l2 = l + l) <= heap[0]; l = l2) {
+        if (l2 < heap[0] && bins[heap[l2]].err > bins[heap[l2 + 1]].err)
+          l2++;
+        if (err <= bins[h = heap[l2]].err)
+          break;
+        heap[l] = h;
+      }
+      heap[l] = b1;
+    }
+    var nb = bins[tb.nn];
+    var n1 = tb.cnt;
+    var n2 = nb.cnt;
+    var d = 1 / (n1 + n2);
+    if (hasAlpha)
+      tb.ac = d * (n1 * tb.ac + n2 * nb.ac);
+    tb.rc = d * (n1 * tb.rc + n2 * nb.rc);
+    tb.gc = d * (n1 * tb.gc + n2 * nb.gc);
+    tb.bc = d * (n1 * tb.bc + n2 * nb.bc);
+    tb.cnt += nb.cnt;
+    tb.mtm = ++i;
+    bins[nb.bk].fw = nb.fw;
+    bins[nb.fw].bk = nb.bk;
+    nb.mtm = bincountMinusOne;
+  }
+  let palette = [];
+  var k = 0;
+  for (i = 0; ; ++k) {
+    let r = clamp(Math.round(bins[i].rc), 0, 255);
+    let g = clamp(Math.round(bins[i].gc), 0, 255);
+    let b = clamp(Math.round(bins[i].bc), 0, 255);
+    let a = 255;
+    if (hasAlpha) {
+      a = clamp(Math.round(bins[i].ac), 0, 255);
+      if (oneBitAlpha) {
+        const threshold = typeof oneBitAlpha === "number" ? oneBitAlpha : 127;
+        a = a <= threshold ? 0 : 255;
+      }
+      if (clearAlpha && a <= clearAlphaThreshold) {
+        r = g = b = clearAlphaColor;
+        a = 0;
+      }
+    }
+    const color = hasAlpha ? [r, g, b, a] : [r, g, b];
+    const exists = existsInPalette(palette, color);
+    if (!exists)
+      palette.push(color);
+    if ((i = bins[i].fw) == 0)
+      break;
+  }
+  return palette;
+}
+function existsInPalette(palette, color) {
+  for (let i = 0; i < palette.length; i++) {
+    const p = palette[i];
+    let matchesRGB = p[0] === color[0] && p[1] === color[1] && p[2] === color[2];
+    let matchesAlpha = p.length >= 4 && color.length >= 4 ? p[3] === color[3] : true;
+    if (matchesRGB && matchesAlpha)
+      return true;
+  }
+  return false;
+}
+
+// src/color.js
+function euclideanDistanceSquared(a, b) {
+  var sum = 0;
+  var n;
+  for (n = 0; n < a.length; n++) {
+    const dx = a[n] - b[n];
+    sum += dx * dx;
+  }
+  return sum;
+}
+
+// src/palettize.js
+function roundStep(byte, step) {
+  return step > 1 ? Math.round(byte / step) * step : byte;
+}
+function prequantize(rgba, {roundRGB = 5, roundAlpha = 10, oneBitAlpha = null} = {}) {
+  const data = new Uint32Array(rgba.buffer);
+  for (let i = 0; i < data.length; i++) {
+    const color = data[i];
+    let a = color >> 24 & 255;
+    let b = color >> 16 & 255;
+    let g = color >> 8 & 255;
+    let r = color & 255;
+    a = roundStep(a, roundAlpha);
+    if (oneBitAlpha) {
+      const threshold = typeof oneBitAlpha === "number" ? oneBitAlpha : 127;
+      a = a <= threshold ? 0 : 255;
+    }
+    r = roundStep(r, roundRGB);
+    g = roundStep(g, roundRGB);
+    b = roundStep(b, roundRGB);
+    data[i] = a << 24 | b << 16 | g << 8 | r << 0;
+  }
+}
+function applyPalette(rgba, palette, format = "rgb565") {
+  if (!rgba || !rgba.buffer) {
+    throw new Error("quantize() expected RGBA Uint8Array data");
+  }
+  if (!(rgba instanceof Uint8Array) && !(rgba instanceof Uint8ClampedArray)) {
+    throw new Error("quantize() expected RGBA Uint8Array data");
+  }
+  if (palette.length > 256) {
+    throw new Error("applyPalette() only works with 256 colors or less");
+  }
+  const data = new Uint32Array(rgba.buffer);
+  const length = data.length;
+  const bincount = format === "rgb444" ? 4096 : 65536;
+  const index = new Uint8Array(length);
+  const cache = new Array(bincount);
+  const hasAlpha = format === "rgba4444";
+  if (format === "rgba4444") {
+    for (let i = 0; i < length; i++) {
+      const color = data[i];
+      const a = color >> 24 & 255;
+      const b = color >> 16 & 255;
+      const g = color >> 8 & 255;
+      const r = color & 255;
+      const key = rgba8888_to_rgba4444(r, g, b, a);
+      const idx = key in cache ? cache[key] : cache[key] = nearestColorIndexRGBA(r, g, b, a, palette);
+      index[i] = idx;
+    }
+  } else {
+    const rgb888_to_key = format === "rgb444" ? rgb888_to_rgb444 : rgb888_to_rgb565;
+    for (let i = 0; i < length; i++) {
+      const color = data[i];
+      const b = color >> 16 & 255;
+      const g = color >> 8 & 255;
+      const r = color & 255;
+      const key = rgb888_to_key(r, g, b);
+      const idx = key in cache ? cache[key] : cache[key] = nearestColorIndexRGB(r, g, b, palette);
+      index[i] = idx;
+    }
+  }
+  return index;
+}
+function nearestColorIndexRGBA(r, g, b, a, palette) {
+  let k = 0;
+  let mindist = 1e100;
+  for (let i = 0; i < palette.length; i++) {
+    const px2 = palette[i];
+    const a2 = px2[3];
+    let curdist = sqr2(a2 - a);
+    if (curdist > mindist)
+      continue;
+    const r2 = px2[0];
+    curdist += sqr2(r2 - r);
+    if (curdist > mindist)
+      continue;
+    const g2 = px2[1];
+    curdist += sqr2(g2 - g);
+    if (curdist > mindist)
+      continue;
+    const b2 = px2[2];
+    curdist += sqr2(b2 - b);
+    if (curdist > mindist)
+      continue;
+    mindist = curdist;
+    k = i;
+  }
+  return k;
+}
+function nearestColorIndexRGB(r, g, b, palette) {
+  let k = 0;
+  let mindist = 1e100;
+  for (let i = 0; i < palette.length; i++) {
+    const px2 = palette[i];
+    const r2 = px2[0];
+    let curdist = sqr2(r2 - r);
+    if (curdist > mindist)
+      continue;
+    const g2 = px2[1];
+    curdist += sqr2(g2 - g);
+    if (curdist > mindist)
+      continue;
+    const b2 = px2[2];
+    curdist += sqr2(b2 - b);
+    if (curdist > mindist)
+      continue;
+    mindist = curdist;
+    k = i;
+  }
+  return k;
+}
+function snapColorsToPalette(palette, knownColors, threshold = 5) {
+  if (!palette.length || !knownColors.length)
+    return;
+  const paletteRGB = palette.map((p) => p.slice(0, 3));
+  const thresholdSq = threshold * threshold;
+  const dim = palette[0].length;
+  for (let i = 0; i < knownColors.length; i++) {
+    let color = knownColors[i];
+    if (color.length < dim) {
+      color = [color[0], color[1], color[2], 255];
+    } else if (color.length > dim) {
+      color = color.slice(0, 3);
+    } else {
+      color = color.slice();
+    }
+    const r = nearestColorIndexWithDistance(paletteRGB, color.slice(0, 3), euclideanDistanceSquared);
+    const idx = r[0];
+    const distanceSq = r[1];
+    if (distanceSq > 0 && distanceSq <= thresholdSq) {
+      palette[idx] = color;
+    }
+  }
+}
+function sqr2(a) {
+  return a * a;
+}
+function nearestColorIndex(colors, pixel, distanceFn = euclideanDistanceSquared) {
+  let minDist = Infinity;
+  let minDistIndex = -1;
+  for (let j = 0; j < colors.length; j++) {
+    const paletteColor = colors[j];
+    const dist = distanceFn(pixel, paletteColor);
+    if (dist < minDist) {
+      minDist = dist;
+      minDistIndex = j;
+    }
+  }
+  return minDistIndex;
+}
+function nearestColorIndexWithDistance(colors, pixel, distanceFn = euclideanDistanceSquared) {
+  let minDist = Infinity;
+  let minDistIndex = -1;
+  for (let j = 0; j < colors.length; j++) {
+    const paletteColor = colors[j];
+    const dist = distanceFn(pixel, paletteColor);
+    if (dist < minDist) {
+      minDist = dist;
+      minDistIndex = j;
+    }
+  }
+  return [minDistIndex, minDist];
+}
+function nearestColor(colors, pixel, distanceFn = euclideanDistanceSquared) {
+  return colors[nearestColorIndex(colors, pixel, distanceFn)];
+}
+
+// src/index.js
+function GIFEncoder(opt = {}) {
+  const {initialCapacity = 4096, auto = true} = opt;
+  const stream = createStream(initialCapacity);
+  const HSIZE = 5003;
+  const accum = new Uint8Array(256);
+  const htab = new Int32Array(HSIZE);
+  const codetab = new Int32Array(HSIZE);
+  let hasInit = false;
+  return {
+    reset() {
+      stream.reset();
+      hasInit = false;
+    },
+    finish() {
+      stream.writeByte(constants_default.trailer);
+    },
+    bytes() {
+      return stream.bytes();
+    },
+    bytesView() {
+      return stream.bytesView();
+    },
+    get buffer() {
+      return stream.buffer;
+    },
+    get stream() {
+      return stream;
+    },
+    writeHeader,
+    writeFrame(index, width, height, opts = {}) {
+      const {
+        transparent = false,
+        transparentIndex = 0,
+        delay = 0,
+        palette = null,
+        repeat = 0,
+        colorDepth = 8,
+        dispose = -1
+      } = opts;
+      let first = false;
+      if (auto) {
+        if (!hasInit) {
+          first = true;
+          writeHeader();
+          hasInit = true;
+        }
+      } else {
+        first = Boolean(opts.first);
+      }
+      width = Math.max(0, Math.floor(width));
+      height = Math.max(0, Math.floor(height));
+      if (first) {
+        if (!palette) {
+          throw new Error("First frame must include a { palette } option");
+        }
+        encodeLogicalScreenDescriptor(stream, width, height, palette, colorDepth);
+        encodeColorTable(stream, palette);
+        if (repeat >= 0) {
+          encodeNetscapeExt(stream, repeat);
+        }
+      }
+      const delayTime = Math.round(delay / 10);
+      encodeGraphicControlExt(stream, dispose, delayTime, transparent, transparentIndex);
+      const useLocalColorTable = Boolean(palette) && !first;
+      encodeImageDescriptor(stream, width, height, useLocalColorTable ? palette : null);
+      if (useLocalColorTable)
+        encodeColorTable(stream, palette);
+      encodePixels(stream, index, width, height, colorDepth, accum, htab, codetab);
+    }
+  };
+  function writeHeader() {
+    writeUTFBytes(stream, "GIF89a");
+  }
+}
+function encodeGraphicControlExt(stream, dispose, delay, transparent, transparentIndex) {
+  stream.writeByte(33);
+  stream.writeByte(249);
+  stream.writeByte(4);
+  if (transparentIndex < 0) {
+    transparentIndex = 0;
+    transparent = false;
+  }
+  var transp, disp;
+  if (!transparent) {
+    transp = 0;
+    disp = 0;
+  } else {
+    transp = 1;
+    disp = 2;
+  }
+  if (dispose >= 0) {
+    disp = dispose & 7;
+  }
+  disp <<= 2;
+  const userInput = 0;
+  stream.writeByte(0 | disp | userInput | transp);
+  writeUInt16(stream, delay);
+  stream.writeByte(transparentIndex || 0);
+  stream.writeByte(0);
+}
+function encodeLogicalScreenDescriptor(stream, width, height, palette, colorDepth = 8) {
+  const globalColorTableFlag = 1;
+  const sortFlag = 0;
+  const globalColorTableSize = colorTableSize(palette.length) - 1;
+  const fields = globalColorTableFlag << 7 | colorDepth - 1 << 4 | sortFlag << 3 | globalColorTableSize;
+  const backgroundColorIndex = 0;
+  const pixelAspectRatio = 0;
+  writeUInt16(stream, width);
+  writeUInt16(stream, height);
+  stream.writeBytes([fields, backgroundColorIndex, pixelAspectRatio]);
+}
+function encodeNetscapeExt(stream, repeat) {
+  stream.writeByte(33);
+  stream.writeByte(255);
+  stream.writeByte(11);
+  writeUTFBytes(stream, "NETSCAPE2.0");
+  stream.writeByte(3);
+  stream.writeByte(1);
+  writeUInt16(stream, repeat);
+  stream.writeByte(0);
+}
+function encodeColorTable(stream, palette) {
+  const colorTableLength = 1 << colorTableSize(palette.length);
+  for (let i = 0; i < colorTableLength; i++) {
+    let color = [0, 0, 0];
+    if (i < palette.length) {
+      color = palette[i];
+    }
+    stream.writeByte(color[0]);
+    stream.writeByte(color[1]);
+    stream.writeByte(color[2]);
+  }
+}
+function encodeImageDescriptor(stream, width, height, localPalette) {
+  stream.writeByte(44);
+  writeUInt16(stream, 0);
+  writeUInt16(stream, 0);
+  writeUInt16(stream, width);
+  writeUInt16(stream, height);
+  if (localPalette) {
+    const interlace = 0;
+    const sorted = 0;
+    const palSize = colorTableSize(localPalette.length) - 1;
+    stream.writeByte(128 | interlace | sorted | 0 | palSize);
+  } else {
+    stream.writeByte(0);
+  }
+}
+function encodePixels(stream, index, width, height, colorDepth = 8, accum, htab, codetab) {
+  lzwEncode_default(width, height, index, colorDepth, stream, accum, htab, codetab);
+}
+function writeUInt16(stream, short) {
+  stream.writeByte(short & 255);
+  stream.writeByte(short >> 8 & 255);
+}
+function writeUTFBytes(stream, text) {
+  for (var i = 0; i < text.length; i++) {
+    stream.writeByte(text.charCodeAt(i));
+  }
+}
+function colorTableSize(length) {
+  return Math.max(Math.ceil(Math.log2(length)), 1);
+}
+var src_default = GIFEncoder;
+
+return exports; })();
+
 'use strict';
 // ================= utilities =================
 const $ = (s, r = document) => r.querySelector(s);
@@ -232,7 +1085,7 @@ const st = {
   email: null, sel: null, view: 'desktop', undo: [],
   folder: { handle: null, state: 'none', map: null, files: null, count: 0, indexing: false },
   cat: { pdf: null, name: '', pages: 0, saved: 0, index: null, reading: '' },
-  start: { files: [], nums: '', pages: '', tpl: 'sections' }
+  start: { files: [], nums: '', pages: '', tpl: 'sections', look: 'auto', heroMode: 'gif', notes: '', message: '' }
 };
 
 // ================= images folder =================
@@ -544,15 +1397,19 @@ function shortCat(sec) { return copyForSec(sec.head, sec.featured.map(i => i.nam
 async function buildFromStart() {
   const s = st.start, files = s.files;
   const pdfs = files.filter(f => f.kind === 'flyer'), imgs = files.filter(f => f.kind === 'image');
-  const nums = String(s.nums || '').split(/[\s,;]+/).map(x => x.replace(/\D/g, '')).filter(Boolean);
+  const noteNums = (String(s.notes || '').match(/#\s?\d{4,6}\b/g) || []).map(x => x.replace(/\D/g, ''));
+  const notePages = (String(s.notes || '').match(/\b(?:page|pg|p)\.?\s?(\d{1,3})\b/gi) || []).map(x => x.replace(/\D/g, ''));
+  const nums = [...new Set([...String(s.nums || '').split(/[\s,;]+/).map(x => x.replace(/\D/g, '')).filter(Boolean), ...noteNums])];
+  if (notePages.length) s.pages = [s.pages, ...notePages].filter(Boolean).join(', ');
   const pages = String(s.pages || '').split(/[\s,;]+/).flatMap(x => { const m = x.match(/^(\d+)(?:-(\d+))?$/); if (!m) return []; const a = +m[1], b = +(m[2] || m[1]); return Array.from({ length: Math.min(20, b - a + 1) }, (_, i) => a + i); });
-  if (!pdfs.length && !imgs.length && !nums.length && !pages.length && s.tpl !== 'blank') return toast('Drop a flyer, add pictures, or type item numbers first.');
+  if (!pdfs.length && !imgs.length && !nums.length && !pages.length && !String(s.notes || '').trim() && s.tpl !== 'blank') return toast('Drop a flyer, add pictures, type item numbers or write a note first.');
   busy('Reading your files…');
   const e = newEmail();
   let parsed = { title: '', date: '', sections: [] };
   for (const f of pdfs) { try { const p = await parsePdfFlyer(f.file); parsed.title = parsed.title || p.title; parsed.date = parsed.date || p.date; parsed.sections.push(...p.sections); } catch (er) { console.warn(er); toast('Could not read ' + f.file.name); } }
   if (nums.length) parsed.sections.push({ head: 'This week\'s picks', sub: '', featured: nums.map(n => { const ci = catInfo(n); return { num: n, name: ci ? titleCase(ci.name) : '' }; }), also: [] });
   const band = [parsed.title, parsed.date].filter(Boolean).join(' · ');
+  e.notes = s.notes || ''; e.look = s.look && s.look !== 'auto' ? s.look : guessLook([s.notes, parsed.sections.map(x => x.head).join(' ')].join(' '));
   e.band = band; e.name = (parsed.title ? titleCase(parsed.title) : 'Email') + (parsed.date ? ' ' + titleCase(parsed.date) : ' ' + new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
   const secs = parsed.sections, cats = secs.map(shortCat);
   const shorts = [...new Set(cats.filter(Boolean).map(c => c.short))];
@@ -563,9 +1420,11 @@ async function buildFromStart() {
   for (const f of imgs) { if (f.w / f.h >= 1.6) wide.push(f); }
   const heroImg = wide[0];
   const hero = mkBlock('hero', { eyebrow: band || 'THIS WEEK AT RESNICK', title: shorts.length >= 2 ? shorts.slice(0, 3).map(x => x + '.').join('\n') : (shorts[0] ? shorts[0] + ' that sell.' : 'This week at Resnick'), sub: 'Ready to order in the Resnick app.' });
+  hero.mode = s.heroMode === 'still' ? 'auto' : 'gif';
   if (heroImg) { hero.mode = 'image'; hero.img = 'hero'; e.assets.hero = heroImg.data; }
   e.blocks.push(hero);
   const intro = mkBlock('intro', { title: 'What to have on the shelf this week', body: shorts.length ? `${listJoin(shorts.map(x => x.toLowerCase()), true)} are moving fast right now. Here are the picks${through}, all ready to order in the Resnick app.` : `Here are this week's picks${through}, all ready to order in the Resnick app.` });
+  if (String(s.message || '').trim()) { const m = s.message.trim(); intro.body = m; }
   e.blocks.push(intro);
   imgs.filter(f => f !== heroImg).forEach(f => { const k = 'b' + uid().slice(0, 5); e.assets[k] = f.data; e.blocks.push(mkBlock('banner', { img: k, alt: f.file.name.replace(/\.\w+$/, '').replace(/[-_]+/g, ' ') })); });
   const tpl = s.tpl;
@@ -598,6 +1457,7 @@ async function buildFromStart() {
   busy('Swapping in products that have photos…');
   await backfillPhotos();
   await renderPages();
+  busy(hero.mode === 'gif' ? 'Animating the banner…' : 'Drawing the banner…');
   await renderHero();
   busy(''); save(); render();
   const miss = allItems().filter(it => !it.img).length;
@@ -646,63 +1506,24 @@ async function renderPages() {
   }
 }
 
-// ================= hero banner (auto) =================
-function wrapText(x, text, maxW) { const out = []; String(text || '').split('\n').forEach(par => { let cur = ''; par.split(/\s+/).forEach(w => { const t = cur ? cur + ' ' + w : w; if (x.measureText(t).width > maxW && cur) { out.push(cur); cur = w; } else cur = t; }); if (cur) out.push(cur); }); return out; }
-async function loadImg(src) { const im = new Image(); im.src = src; await im.decode(); return im; }
-async function renderHero() {
-  const e = st.email; if (!e) return; const b = e.blocks.find(x => x.type === 'hero'); if (!b || b.mode !== 'auto') return;
-  try { await Promise.all([document.fonts.load('64px "Archivo Black"'), document.fonts.load('700 24px Inter'), document.fonts.load('500 24px Inter')]); } catch (er) {}
-  const W = 1200, H = 620, c = canvasEl(W, H), x = c.getContext('2d');
-  const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#0E5C2F'); g.addColorStop(1, '#0A4724'); x.fillStyle = g; x.fillRect(0, 0, W, H);
-  x.fillStyle = 'rgba(255,255,255,0.05)'; x.beginPath(); x.arc(980, 120, 380, 0, Math.PI * 2); x.fill();
-  x.fillStyle = 'rgba(166,216,74,0.10)'; x.beginPath(); x.arc(860, 640, 260, 0, Math.PI * 2); x.fill();
-  // text
-  const L = 64; let y = 112;
-  x.fillStyle = '#A6D84A'; x.font = '700 22px Inter'; x.letterSpacing = '4px';
-  wrapText(x, String(b.eyebrow || '').toUpperCase(), 520).slice(0, 2).forEach(l => { x.fillText(l, L, y); y += 30; });
-  x.letterSpacing = '0px';
-  x.fillStyle = '#A6D84A'; x.fillRect(L, y - 6, 56, 6); y += 58;
-  let fs = 74; x.font = `${fs}px "Archivo Black", Arial Black, sans-serif`;
-  let lines = wrapText(x, b.title, 540);
-  while ((lines.length > 3 || lines.some(l => x.measureText(l).width > 560)) && fs > 40) { fs -= 4; x.font = `${fs}px "Archivo Black", Arial Black, sans-serif`; lines = wrapText(x, b.title, 540); }
-  x.fillStyle = '#FFFFFF'; lines.slice(0, 4).forEach(l => { x.fillText(l, L, y); y += fs * 1.08; });
-  y += 14; x.font = '500 27px Inter'; x.fillStyle = '#D6E8D9';
-  wrapText(x, b.sub, 500).slice(0, 2).forEach(l => { x.fillText(l, L, y); y += 34; });
-  // pill
-  const pill = 'Order in the Resnick app  →'; x.font = '700 21px Inter'; const pw = x.measureText(pill).width + 44, py = Math.min(H - 84, y + 14);
-  x.fillStyle = '#D9262C'; roundRect(x, L, py, pw, 52, 26); x.fill(); x.fillStyle = '#fff'; x.fillText(pill, L + 22, py + 33);
-  // products
-  const keys = allItems().filter(i => i.img && e.assets[i.img]).slice(0, 3).map(i => e.assets[i.img]);
-  const spots = [[700, 70, 250, -5], [930, 150, 230, 4], [760, 330, 230, 3]];
-  for (let i = 0; i < keys.length; i++) {
-    const [px, pyy, sz, rot] = spots[i]; const im = await loadImg(keys[i]).catch(() => null); if (!im) continue;
-    x.save(); x.translate(px + sz / 2, pyy + sz / 2); x.rotate(rot * Math.PI / 180);
-    x.shadowColor = 'rgba(0,0,0,0.35)'; x.shadowBlur = 30; x.shadowOffsetY = 14;
-    x.fillStyle = '#fff'; roundRect(x, -sz / 2, -sz / 2, sz, sz, 22); x.fill(); x.shadowColor = 'transparent';
-    x.save(); roundRect(x, -sz / 2, -sz / 2, sz, sz, 22); x.clip(); x.drawImage(im, -sz / 2, -sz / 2, sz, sz); x.restore();
-    x.restore();
-  }
-  e.assets.hero = c.toDataURL('image/jpeg', 0.86); delete e.hosted.hero; b.img = 'hero';
-}
-function roundRect(x, X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
 
 // ================= email HTML =================
 const C = { g: '#0E5C2F', red: '#D9262C', ink: '#1E2230', mut: '#5A5F6B', line: '#E8E4DA', bg: '#F2F0EA' };
 const FONT = 'Arial,Helvetica,sans-serif';
-function fileName(e, k) { const d = e.assets[k] || ''; return `${e.code}-${k}.${/^data:image\/png/.test(d) ? 'png' : 'jpg'}`; }
+function fileName(e, k) { const d = e.assets[k] || ''; return `${e.code}-${k}.${/^data:image\/png/.test(d) ? 'png' : /^data:image\/gif/.test(d) ? 'gif' : 'jpg'}`; }
 function emailHtml(e, mode) {
-  const P = mode === 'preview', A = S.appLink;
+  const P = mode === 'preview', A = S.appLink, L = lookOf(e), C = { g: L.link, red: L.eyebrow, ink: L.ink, mut: L.mut, line: L.line, bg: L.page };
   const src = k => !k ? '' : P ? (e.assets[k] || '') : (e.hosted[k] || fileName(e, k));
   const ed = (path, multi) => P ? ` data-e="${path}"${multi ? ' data-multi="1"' : ''}` : '';
   const bAttr = i => P ? ` data-b="${i}"` : '';
   const txt = s => esc(s).replace(/\n/g, '<br>');
-  const button = (label, path, bg = C.red) => `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;"><tr><td align="center" bgcolor="${bg}" style="border-radius:8px;">
+  const button = (label, path, bg = L.btn) => `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;"><tr><td align="center" bgcolor="${bg}" style="border-radius:8px;">
 <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="${A}" style="height:50px;v-text-anchor:middle;width:${Math.max(220, label.length * 10 + 70)}px;" arcsize="16%" stroke="f" fillcolor="${bg}"><center style="color:#FFFFFF;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;">${esc(label)} &rarr;</center></v:roundrect><![endif]-->
 <!--[if !mso]><!--><a href="${A}" target="_blank" style="display:inline-block;padding:15px 34px;font-family:${FONT};font-size:16px;line-height:20px;font-weight:bold;color:#FFFFFF;text-decoration:none;border-radius:8px;"><span${ed(path)}>${esc(label)}</span> &rarr;</a><!--<![endif]-->
 </td></tr></table>`;
   const head = (bi, b, top) => `<tr${bAttr(bi)}><td class="px" style="padding:${top} 40px 14px 40px;font-family:${FONT};">
 ${b.eyebrow || P ? `<p style="margin:0 0 6px 0;font-size:12px;line-height:16px;letter-spacing:2px;font-weight:bold;color:${C.red};"${ed(bi + '.eyebrow')}>${esc(b.eyebrow)}</p>` : ''}
-<h2 style="margin:0 0 8px 0;font-size:24px;line-height:30px;font-weight:bold;color:${C.ink};"${ed(bi + '.title')}>${esc(b.title)}</h2>
+<h2 style="font-family:${L.head};margin:0 0 8px 0;font-size:24px;line-height:30px;font-weight:bold;color:${C.ink};"${ed(bi + '.title')}>${esc(b.title)}</h2>
 ${b.body || P ? `<p style="margin:0;font-size:15px;line-height:22px;color:${C.mut};"${ed(bi + '.body', 1)}>${txt(b.body)}</p>` : ''}
 </td></tr>`;
   const divider = (bi) => `<tr${bAttr(bi)}><td class="px" style="padding:38px 40px 0 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="height:1px;line-height:1px;font-size:1px;background-color:${C.line};">&nbsp;</td></tr></table></td></tr>`;
@@ -714,7 +1535,7 @@ ${b.body || P ? `<p style="margin:0;font-size:15px;line-height:22px;color:${C.mu
       prevSection = false;
     } else if (b.type === 'intro') {
       rows.push(`<tr${bAttr(bi)}><td class="px" align="center" style="padding:40px 40px 34px 40px;font-family:${FONT};">
-<h1 class="h1" style="margin:0 0 12px 0;font-size:30px;line-height:36px;font-weight:bold;color:${C.ink};"${ed(bi + '.title')}>${esc(b.title)}</h1>
+<h1 class="h1" style="font-family:${L.head};margin:0 0 12px 0;font-size:30px;line-height:36px;font-weight:bold;color:${C.ink};"${ed(bi + '.title')}>${esc(b.title)}</h1>
 <p style="margin:0 0 ${b.button ? 26 : 0}px 0;font-size:16px;line-height:25px;color:${C.mut};"${ed(bi + '.body', 1)}>${txt(b.body)}</p>
 ${b.button ? button(b.label, bi + '.label') : ''}
 </td></tr>`); prevSection = false;
@@ -724,11 +1545,11 @@ ${b.button ? button(b.label, bi + '.label') : ''}
       const cols = b.cols === 2 ? 2 : 3, cw = cols === 3 ? 181 : 272, iw = cols === 3 ? 145 : 200, tot = cols * cw;
       const card = (it, ii) => `<div class="col${cols === 2 ? ' c2' : ''}" style="display:inline-block;width:100%;max-width:${cw}px;vertical-align:top;"${P ? ` data-card="${bi}.${ii}"` : ''}>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:6px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${C.line};border-radius:10px;background-color:#FFFFFF;">
-<tr><td align="center" style="padding:12px 12px 4px 12px;"><a href="${esc(itemLink(e, it))}" target="_blank" style="text-decoration:none;">${it.img ? `<img src="${src(it.img)}" width="${iw}" alt="${esc(it.name)}" style="display:block;width:100%;max-width:${iw}px;height:auto;border:0;font-family:${FONT};font-size:12px;color:${C.mut};">` : (P ? `<div style="width:${iw}px;max-width:100%;height:${iw}px;background:#F4F3EF;border-radius:8px;font-family:${FONT};font-size:12px;color:#B44;line-height:${iw}px;text-align:center;">No photo yet</div>` : '')}</a></td></tr>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${L.cardBorder};border-radius:${L.radius}px;background-color:${L.cardBg};">
+${L.topBar ? `<tr><td style="height:5px;line-height:5px;font-size:5px;background-color:${L.topBar};border-radius:${L.radius}px ${L.radius}px 0 0;">&nbsp;</td></tr>` : ''}<tr><td align="center" style="padding:12px 12px 4px 12px;"><a href="${esc(itemLink(e, it))}" target="_blank" style="text-decoration:none;">${it.img ? `<img src="${src(it.img)}" width="${iw}" alt="${esc(it.name)}" style="display:block;width:100%;max-width:${iw}px;height:auto;border:0;font-family:${FONT};font-size:12px;color:${C.mut};">` : (P ? `<div style="width:${iw}px;max-width:100%;height:${iw}px;background:#F4F3EF;border-radius:8px;font-family:${FONT};font-size:12px;color:#B44;line-height:${iw}px;text-align:center;">No photo yet</div>` : '')}</a></td></tr>
 <tr><td style="padding:6px 12px 14px 12px;font-family:${FONT};">
 <p style="margin:0 0 4px 0;font-size:14px;line-height:18px;font-weight:bold;color:${C.ink};min-height:36px;"${ed(bi + '.items.' + ii + '.name')}>${esc(it.name || ('Item #' + it.num))}</p>
-${it.deal ? `<p style="margin:0 0 4px 0;font-size:15px;line-height:19px;font-weight:bold;color:${C.red};"${ed(bi + '.items.' + ii + '.deal')}>${esc(it.deal)}</p>` : ''}
+${it.deal ? `<p style="margin:0 0 4px 0;font-size:15px;line-height:19px;font-weight:bold;color:${L.deal};"${ed(bi + '.items.' + ii + '.deal')}>${esc(it.deal)}</p>` : ''}
 ${b.showNum !== false && it.num ? `<p style="margin:0;font-size:12px;line-height:16px;color:${C.mut};">Item #${esc(it.num)}</p>` : ''}
 </td></tr></table>
 </td></tr></table>
@@ -751,12 +1572,12 @@ ${b.linkLabel ? `<a href="${A}" target="_blank" style="font-size:14px;line-heigh
       if (prevSection) rows.push(divider(bi));
       const it = b.item;
       rows.push(`<tr${bAttr(bi)}><td class="px" style="padding:${prevSection ? 34 : 10}px 40px 6px 40px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${C.line};border-radius:14px;background-color:#FFFFFF;"><tr>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${L.cardBorder};border-radius:${L.radius + 4}px;background-color:${L.cardBg};"><tr>
 <td class="stack" width="46%" align="center" valign="middle" style="padding:22px;"${P ? ` data-card="${bi}.s"` : ''}><a href="${esc(itemLink(e, it))}" target="_blank">${it.img ? `<img src="${src(it.img)}" width="220" alt="${esc(it.name)}" style="display:block;width:100%;max-width:220px;height:auto;border:0;">` : (P ? `<div style="width:200px;height:200px;background:#F4F3EF;border-radius:10px;font-family:${FONT};font-size:12px;color:#B44;line-height:200px;text-align:center;">No photo yet</div>` : '')}</a></td>
 <td class="stack" width="54%" valign="middle" style="padding:22px 24px 22px 6px;font-family:${FONT};">
 <p style="margin:0 0 8px 0;font-size:12px;line-height:16px;letter-spacing:2px;font-weight:bold;color:${C.red};"${ed(bi + '.eyebrow')}>${esc(b.eyebrow)}</p>
-<p style="margin:0 0 8px 0;font-size:24px;line-height:29px;font-weight:bold;color:${C.ink};"${ed(bi + '.item.name')}>${esc(it.name || ('Item #' + it.num))}</p>
-${it.deal || P ? `<p style="margin:0 0 8px 0;font-size:26px;line-height:30px;font-weight:bold;color:${C.red};"${ed(bi + '.item.deal')}>${esc(it.deal)}</p>` : ''}
+<p style="font-family:${L.head};margin:0 0 8px 0;font-size:24px;line-height:29px;font-weight:bold;color:${C.ink};"${ed(bi + '.item.name')}>${esc(it.name || ('Item #' + it.num))}</p>
+${it.deal || P ? `<p style="margin:0 0 8px 0;font-size:26px;line-height:30px;font-weight:bold;color:${L.deal};"${ed(bi + '.item.deal')}>${esc(it.deal)}</p>` : ''}
 <p style="margin:0 0 14px 0;font-size:15px;line-height:22px;color:${C.mut};"${ed(bi + '.body', 1)}>${txt(b.body)}</p>
 ${it.num ? `<p style="margin:0 0 14px 0;font-size:12px;line-height:16px;color:${C.mut};">Item #${esc(it.num)}</p>` : ''}
 <a href="${esc(itemLink(e, it))}" target="_blank" style="font-size:15px;line-height:19px;font-weight:bold;color:${C.g};text-decoration:underline;"><span${ed(bi + '.label')}>${esc(b.label)}</span> &rarr;</a>
@@ -777,16 +1598,16 @@ ${it.num ? `<p style="margin:0 0 14px 0;font-size:12px;line-height:16px;color:${
     } else if (b.type === 'text') {
       if (prevSection) rows.push(divider(bi));
       rows.push(`<tr${bAttr(bi)}><td class="px" style="padding:${prevSection ? 34 : 14}px 40px 8px 40px;font-family:${FONT};">
-<h2 style="margin:0 0 8px 0;font-size:22px;line-height:28px;font-weight:bold;color:${C.ink};"${ed(bi + '.title')}>${esc(b.title)}</h2>
+<h2 style="font-family:${L.head};margin:0 0 8px 0;font-size:22px;line-height:28px;font-weight:bold;color:${C.ink};"${ed(bi + '.title')}>${esc(b.title)}</h2>
 <p style="margin:0;font-size:16px;line-height:25px;color:${C.mut};"${ed(bi + '.body', 1)}>${txt(b.body)}</p></td></tr>`);
       prevSection = true;
     } else if (b.type === 'cta') {
       rows.push(`<tr${bAttr(bi)}><td style="padding:${prevSection ? 44 : 20}px 0 0 0;"></td></tr>`);
-      rows.push(`<tr${bAttr(bi)}><td class="px" align="center" style="padding:40px 40px 42px 40px;background-color:${C.g};font-family:${FONT};">
-<h2 style="margin:0 0 10px 0;font-size:26px;line-height:32px;font-weight:bold;color:#FFFFFF;"${ed(bi + '.title')}>${esc(b.title)}</h2>
-<p style="margin:0 0 24px 0;font-size:16px;line-height:24px;color:#DCEBDD;"${ed(bi + '.body', 1)}>${txt(b.body)}</p>
-${button(b.label, bi + '.label')}
-${b.phone ? `<p style="margin:22px 0 0 0;font-size:14px;line-height:20px;color:#DCEBDD;">Questions? Call your sales rep or <a href="tel:1${String(S.phone).replace(/\D/g, '')}" style="color:#FFFFFF;font-weight:bold;text-decoration:underline;">${esc(S.phone)}</a></p>` : ''}
+      rows.push(`<tr${bAttr(bi)}><td class="px" align="center" style="padding:40px 40px 42px 40px;background-color:${L.cta};font-family:${FONT};">
+<h2 style="font-family:${L.head};margin:0 0 10px 0;font-size:26px;line-height:32px;font-weight:bold;color:${L.ctaText};"${ed(bi + '.title')}>${esc(b.title)}</h2>
+<p style="margin:0 0 24px 0;font-size:16px;line-height:24px;color:${L.ctaSub};"${ed(bi + '.body', 1)}>${txt(b.body)}</p>
+${button(b.label, bi + '.label', L.ctaBtn)}
+${b.phone ? `<p style="margin:22px 0 0 0;font-size:14px;line-height:20px;color:${L.ctaSub};">Questions? Call your sales rep or <a href="tel:1${String(S.phone).replace(/\D/g, '')}" style="color:${L.ctaText};font-weight:bold;text-decoration:underline;">${esc(S.phone)}</a></p>` : ''}
 </td></tr>`); prevSection = false;
     }
   });
@@ -815,11 +1636,11 @@ ${b.phone ? `<p style="margin:22px 0 0 0;font-size:14px;line-height:20px;color:#
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${C.bg};">
 <tr><td align="center" style="padding:24px 8px;">
 <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#FFFFFF;">
-${e.band || P ? `<tr><td align="center" style="padding:10px 20px;background-color:${C.g};font-family:${FONT};font-size:11px;line-height:15px;letter-spacing:2px;font-weight:bold;color:#FFFFFF;"${ed('band')}>${esc(String(e.band || '').toUpperCase())}</td></tr>` : ''}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:${L.body};">
+${e.band || P ? `<tr><td align="center" style="padding:10px 20px;background-color:${L.band};font-family:${FONT};font-size:11px;line-height:15px;letter-spacing:2px;font-weight:bold;color:${L.bandText};"${ed('band')}>${esc(String(e.band || '').toUpperCase())}</td></tr>` : ''}
 <tr><td align="center" style="padding:24px 40px 20px 40px;"><a href="${A}" target="_blank"><img src="${esc(P ? (S.logoData || S.logo) : (e.hosted.logo || (S.logoData ? fileName(e, 'logo') : S.logo)))}" width="220" alt="Resnick Distributors" style="display:block;width:220px;max-width:60%;height:auto;border:0;font-family:${FONT};font-size:22px;font-weight:bold;color:${C.g};"></a></td></tr>
 ${rows.join('\n')}
-<tr><td align="center" style="padding:22px 40px;background-color:#1E2230;font-family:${FONT};font-size:12px;line-height:18px;color:#B9BDC7;">${esc(S.footer)}</td></tr>
+<tr><td align="center" style="padding:22px 40px;background-color:${L.footer};font-family:${FONT};font-size:12px;line-height:18px;color:${L.footText};">${esc(S.footer)}</td></tr>
 </table>
 <!--[if mso]></td></tr></table><![endif]-->
 </td></tr>
@@ -827,6 +1648,106 @@ ${rows.join('\n')}
 ${P ? '' : '[[trackingImage]]'}
 </body>
 </html>`;
+}
+
+// ================= looks (email themes) =================
+const LOOKS = {
+  green: { label: 'Resnick Green', sub: 'Brand green, red buttons', band: '#0E5C2F', bandText: '#FFFFFF', page: '#F2F0EA', body: '#FFFFFF', ink: '#1E2230', mut: '#5A5F6B', line: '#E8E4DA', eyebrow: '#D9262C', link: '#0E5C2F', btn: '#D9262C', cta: '#0E5C2F', ctaText: '#FFFFFF', ctaSub: '#DCEBDD', ctaBtn: '#D9262C', footer: '#1E2230', footText: '#B9BDC7', head: FONT, cardBg: '#FFFFFF', cardBorder: '#E8E4DA', radius: 10, topBar: '', deal: '#D9262C',
+    hero: { bg: '#0E5C2F', bg2: '#0A4724', accent: '#A6D84A', text: '#FFFFFF', sub: '#D6E8D9', pill: '#D9262C', pillText: '#FFFFFF', shape: 'rgba(255,255,255,0.06)', fx: 'none' } },
+  bold: { label: 'Bold', sub: 'Dark, punchy, red accents', band: '#D9262C', bandText: '#FFFFFF', page: '#E7E7E3', body: '#FFFFFF', ink: '#14161C', mut: '#4D525E', line: '#E1E1DC', eyebrow: '#D9262C', link: '#14161C', btn: '#14161C', cta: '#14161C', ctaText: '#FFFFFF', ctaSub: '#C9CCD3', ctaBtn: '#D9262C', footer: '#14161C', footText: '#A9ADB6', head: "'Arial Black',Arial,Helvetica,sans-serif", cardBg: '#FFFFFF', cardBorder: '#E1E1DC', radius: 4, topBar: '#D9262C', deal: '#D9262C',
+    hero: { bg: '#14161C', bg2: '#22262F', accent: '#D9262C', text: '#FFFFFF', sub: '#C9CCD3', pill: '#D9262C', pillText: '#FFFFFF', shape: 'rgba(217,38,44,0.18)', fx: 'stripes' } },
+  clean: { label: 'Clean', sub: 'White space, soft cards', band: '#F4F6F4', bandText: '#0E5C2F', page: '#FFFFFF', body: '#FFFFFF', ink: '#111418', mut: '#5D636D', line: '#ECECEA', eyebrow: '#0E5C2F', link: '#0E5C2F', btn: '#0E5C2F', cta: '#F4F6F4', ctaText: '#111418', ctaSub: '#5D636D', ctaBtn: '#0E5C2F', footer: '#FFFFFF', footText: '#8A8F98', head: FONT, cardBg: '#FFFFFF', cardBorder: '#ECECEA', radius: 16, topBar: '', deal: '#D9262C',
+    hero: { bg: '#F1F4EF', bg2: '#E6EEE4', accent: '#0E5C2F', text: '#111418', sub: '#4E5560', pill: '#0E5C2F', pillText: '#FFFFFF', shape: 'rgba(14,92,47,0.07)', fx: 'none' } },
+  kraft: { label: 'Warm Kraft', sub: 'Cream paper, classic serif', band: '#3B2A1E', bandText: '#F4E9D4', page: '#E9DFCB', body: '#FFFCF5', ink: '#2B2219', mut: '#6B5E4F', line: '#E3D5BC', eyebrow: '#B33A26', link: '#0E5C2F', btn: '#B33A26', cta: '#3B2A1E', ctaText: '#FFF6E6', ctaSub: '#E3D2B6', ctaBtn: '#B33A26', footer: '#2B2219', footText: '#CDBEA6', head: "Georgia,'Times New Roman',serif", cardBg: '#FFFFFF', cardBorder: '#E3D5BC', radius: 8, topBar: '', deal: '#B33A26',
+    hero: { bg: '#F3E8D3', bg2: '#E8D8BA', accent: '#B33A26', text: '#2B2219', sub: '#6B5E4F', pill: '#0E5C2F', pillText: '#FFFFFF', shape: 'rgba(179,58,38,0.08)', fx: 'none', serif: true } },
+  holiday: { label: 'Holiday', sub: 'Red and green, snowfall', band: '#0E5C2F', bandText: '#FFFFFF', page: '#F3ECE4', body: '#FFFFFF', ink: '#22140F', mut: '#5E5049', line: '#EBDDD0', eyebrow: '#B3121F', link: '#0E5C2F', btn: '#B3121F', cta: '#8E0F19', ctaText: '#FFFFFF', ctaSub: '#F2D6D2', ctaBtn: '#0E5C2F', footer: '#22140F', footText: '#C9B9B2', head: FONT, cardBg: '#FFFFFF', cardBorder: '#EBDDD0', radius: 12, topBar: '#B3121F', deal: '#B3121F',
+    hero: { bg: '#A3141E', bg2: '#7C0D15', accent: '#F2C14E', text: '#FFFFFF', sub: '#F6D9D4', pill: '#0E5C2F', pillText: '#FFFFFF', shape: 'rgba(255,255,255,0.07)', fx: 'snow' } }
+};
+const lookOf = e => LOOKS[(e && e.look) || 'green'] || LOOKS.green;
+function guessLook(text) { return /christmas|holiday|stocking|santa|winter|snow|gift|new year/i.test(text || '') ? 'holiday' : 'green'; }
+
+// ================= banner drawing (static + animated) =================
+function wrapText(x, text, maxW) { const out = []; String(text || '').split('\n').forEach(par => { let cur = ''; par.split(/\s+/).forEach(w => { const t = cur ? cur + ' ' + w : w; if (x.measureText(t).width > maxW && cur) { out.push(cur); cur = w; } else cur = t; }); if (cur) out.push(cur); }); return out; }
+async function loadImg(src) { const im = new Image(); im.src = src; await im.decode(); return im; }
+function roundRect(x, X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
+const ease = t => 1 - Math.pow(1 - Math.max(0, Math.min(1, t)), 3);
+const easeBack = t => { t = Math.max(0, Math.min(1, t)); const c = 1.6; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
+// Draws one banner frame at 1200x620 design size. t = entry progress (1 = settled), f = frame counter for effects.
+function drawBanner(x, L, s, t = 1, f = 0, flat = false) {
+  const W = 1200, H = 620, hp = L.hero;
+  if (flat) { x.fillStyle = hp.bg; x.fillRect(0, 0, W, H); }
+  else { const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, hp.bg); g.addColorStop(1, hp.bg2); x.fillStyle = g; x.fillRect(0, 0, W, H); }
+  x.fillStyle = hp.shape; x.beginPath(); x.arc(990, 110, 380, 0, Math.PI * 2); x.fill();
+  if (hp.fx === 'stripes') { x.save(); x.globalAlpha = 0.14; x.fillStyle = hp.accent; for (let i = -2; i < 8; i++) { x.beginPath(); const o = i * 70 + (f * 6) % 70; x.moveTo(820 + o, 0); x.lineTo(850 + o, 0); x.lineTo(700 + o, H); x.lineTo(670 + o, H); x.fill(); } x.restore(); }
+  const serif = hp.serif, L0 = 64, a = ease(t), dx = (1 - a) * -50;
+  x.save(); x.globalAlpha = a; x.translate(dx, 0);
+  let y = 112;
+  if (s.eyebrow) { x.fillStyle = hp.accent; x.font = '700 22px Inter, Arial, sans-serif'; try { x.letterSpacing = '4px'; } catch (e) {} wrapText(x, String(s.eyebrow).toUpperCase(), 540).slice(0, 2).forEach(l => { x.fillText(l, L0, y); y += 30; }); try { x.letterSpacing = '0px'; } catch (e) {} }
+  x.fillStyle = hp.accent; x.fillRect(L0, y - 6, 56 * ease(t * 1.3), 6); y += 60;
+  const fam = serif ? `Georgia, 'Times New Roman', serif` : `"Archivo Black", "Arial Black", Arial, sans-serif`, wt = serif ? 'bold ' : '';
+  const maxW = s.imgs && s.imgs.length ? 560 : 1000;
+  let fs = s.big ? 80 : 74; x.font = `${wt}${fs}px ${fam}`; let lines = wrapText(x, s.title, maxW);
+  while ((lines.length > 3 || lines.some(l => x.measureText(l).width > maxW + 20)) && fs > 40) { fs -= 4; x.font = `${wt}${fs}px ${fam}`; lines = wrapText(x, s.title, maxW); }
+  x.fillStyle = hp.text; lines.slice(0, 4).forEach(l => { x.fillText(l, L0, y); y += fs * 1.08; });
+  if (s.sub) { y += 12; x.font = '500 27px Inter, Arial, sans-serif'; x.fillStyle = hp.sub; wrapText(x, s.sub, maxW - 40).slice(0, 2).forEach(l => { x.fillText(l, L0, y); y += 36; }); }
+  if (s.pill) { x.font = '700 21px Inter, Arial, sans-serif'; const pw = x.measureText(s.pill).width + 44, py = Math.min(H - 84, y + 16); x.fillStyle = hp.pill; roundRect(x, L0, py, pw, 52, 26); x.fill(); x.fillStyle = hp.pillText; x.fillText(s.pill, L0 + 22, py + 33); }
+  x.restore();
+  const spots = [[700, 70, 250, -5], [930, 150, 230, 4], [760, 330, 230, 3]];
+  (s.imgs || []).slice(0, 3).forEach((im, i) => {
+    const [px, py, sz, rot] = spots[i], k = easeBack((t - 0.15 - i * 0.12) / 0.55); if (k <= 0) return;
+    x.save(); x.translate(px + sz / 2, py + sz / 2); x.rotate(rot * Math.PI / 180); x.scale(k, k);
+    x.shadowColor = 'rgba(0,0,0,0.30)'; x.shadowBlur = 30; x.shadowOffsetY = 14;
+    x.fillStyle = '#fff'; roundRect(x, -sz / 2, -sz / 2, sz, sz, 22); x.fill(); x.shadowColor = 'transparent';
+    x.save(); roundRect(x, -sz / 2, -sz / 2, sz, sz, 22); x.clip(); x.drawImage(im, -sz / 2, -sz / 2, sz, sz); x.restore();
+    if (s.badges && s.badges[i]) { x.rotate(-rot * Math.PI / 180); x.fillStyle = L.deal; x.beginPath(); x.arc(sz / 2 - 18, -sz / 2 + 18, 46, 0, Math.PI * 2); x.fill(); x.fillStyle = '#fff'; x.font = '800 19px Inter, Arial, sans-serif'; x.textAlign = 'center'; wrapText(x, s.badges[i], 80).slice(0, 2).forEach((l, j, arr) => x.fillText(l, sz / 2 - 18, -sz / 2 + 25 + (j - (arr.length - 1) / 2) * 21)); x.textAlign = 'left'; }
+    x.restore();
+  });
+  if (hp.fx === 'snow') { x.fillStyle = 'rgba(255,255,255,0.85)'; for (let i = 0; i < 70; i++) { const sx = (i * 197.3) % W, sy = ((i * 89.7) + f * (6 + (i % 4) * 3)) % H, r = 2 + (i % 3) * 1.6; x.beginPath(); x.arc(sx + Math.sin((f + i) / 5) * 6, sy, r, 0, Math.PI * 2); x.fill(); } }
+}
+async function bannerFonts() { try { await Promise.all([document.fonts.load('64px "Archivo Black"'), document.fonts.load('700 24px Inter'), document.fonts.load('500 24px Inter'), document.fonts.load('800 24px Inter')]); } catch (er) {} }
+async function heroSlides(e) {
+  const b = e.blocks.find(x => x.type === 'hero'), imgsOf = async its => (await Promise.all(its.filter(i => i.img && e.assets[i.img]).slice(0, 3).map(i => loadImg(e.assets[i.img]).catch(() => null)))).filter(Boolean);
+  const slides = [{ eyebrow: b.eyebrow, title: b.title, sub: b.sub, pill: 'Order in the Resnick app  →', imgs: await imgsOf(allItems()) }];
+  if (b.mode === 'gif') {
+    for (const blk of e.blocks.filter(x => x.type === 'products' || x.type === 'spotlight').slice(0, 4)) {
+      const its = blk.type === 'products' ? blk.items : [blk.item];
+      slides.push({ eyebrow: blk.eyebrow || '', title: blk.type === 'spotlight' ? (blk.item.name || '') : blk.title, sub: blk.type === 'spotlight' ? (blk.item.deal || '') : '', pill: '', imgs: await imgsOf(its), badges: its.slice(0, 3).map(i => i.deal ? i.deal.replace(/\s+(a|per|on|off)\s.*$/i, m => /off/i.test(m) ? ' OFF' : '') : '') });
+    }
+    slides.push({ eyebrow: e.band || 'RESNICK DISTRIBUTORS', title: 'Order it all in the Resnick app.', sub: `Questions? Call ${S.phone}`, pill: 'Open the app  →', imgs: [], big: true });
+  }
+  return slides;
+}
+async function renderHero() {
+  const e = st.email; if (!e) return; const b = e.blocks.find(x => x.type === 'hero'); if (!b || b.mode === 'image') return;
+  await bannerFonts();
+  const L = lookOf(e), slides = await heroSlides(e);
+  if (b.mode !== 'gif') {
+    const c = canvasEl(1200, 620), x = c.getContext('2d'); drawBanner(x, L, slides[0], 1, 0);
+    e.assets.hero = c.toDataURL('image/jpeg', 0.86); delete e.hosted.hero; b.img = 'hero'; return;
+  }
+  e.assets.hero = await renderGif(L, slides); delete e.hosted.hero; b.img = 'hero';
+}
+async function renderGif(L, slides, onProgress) {
+  const W = 600, H = 310, c = canvasEl(W, H), x = c.getContext('2d', { willReadFrequently: true });
+  const enc = gifenc.GIFEncoder(), frames = [], ENTRY = 7, snow = L.hero.fx === 'snow' || L.hero.fx === 'stripes';
+  slides.forEach((s, si) => {
+    for (let k = 0; k < ENTRY; k++) frames.push({ s, t: 0.12 + 0.88 * k / (ENTRY - 1), delay: 70 });
+    if (snow) { for (let k = 0; k < 8; k++) frames.push({ s, t: 1, delay: si === slides.length - 1 ? 300 : 220, hold: true }); }
+    else frames.push({ s, t: 1, delay: si === slides.length - 1 ? 2600 : 1900 });
+  });
+  let fcount = 0;
+  for (let i = 0; i < frames.length; i++) {
+    const fr = frames[i];
+    x.setTransform(0.5, 0, 0, 0.5, 0, 0); drawBanner(x, L, fr.s, fr.t, fcount++, true); x.setTransform(1, 0, 0, 1, 0, 0);
+    const data = x.getImageData(0, 0, W, H).data;
+    const palette = gifenc.quantize(data, 128, { format: 'rgb444' }), index = gifenc.applyPalette(data, palette, 'rgb444');
+    enc.writeFrame(index, W, H, { palette, delay: fr.delay, repeat: 0 });
+    if (onProgress) onProgress((i + 1) / frames.length);
+    if (i % 4 === 3) await sleep(0);
+  }
+  enc.finish();
+  const bytes = enc.bytes(); let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return 'data:image/gif;base64,' + btoa(bin);
 }
 
 // ================= rendering: chips =================
@@ -838,6 +1759,7 @@ function renderChips() {
   const c = st.cat, ci = $('#chipCat');
   ci.className = 'chip ' + (c.pdf ? (c.reading ? 'busy' : 'ok') : '');
   ci.querySelector('.t').textContent = c.pdf ? (c.reading || `Catalog: ${c.name} · ${c.pages} pages`) : 'Add this quarter\'s catalog';
+  if (!st.email && document.querySelector('#canvas .home')) { clearTimeout(renderChips._t); renderChips._t = setTimeout(renderHome, 300); }
 }
 // ================= side panel =================
 function renderSide() {
@@ -851,19 +1773,35 @@ const TPLS = [
   { k: 'catalog', label: 'Catalog pages', sub: 'Show catalog pages that open in the flipbook', w: [['14px', '#0E5C2F', '100%'], ['20px', '#fff', '60%'], ['4px', '#D9262C', '40%']] },
   { k: 'blank', label: 'Blank', sub: 'Start simple and add blocks yourself', w: [['14px', '#0E5C2F', '100%'], ['4px', '#C9CDD6', '70%'], ['4px', '#D9262C', '40%']] }
 ];
+function lookSwatch(k, L, on, small) {
+  return `<button class="look ${on ? 'on' : ''}${small ? ' sm' : ''}" data-look="${k}" title="${esc(L ? L.label : 'Auto')}">
+    <div class="lk">${L ? `<i style="background:${L.band}"></i><i style="background:${L.hero.bg};height:${small ? 10 : 18}px"></i><i style="background:${L.body};height:${small ? 6 : 10}px;border:1px solid ${L.line}"></i><i style="background:${L.btn};width:40%;height:${small ? 3 : 5}px;border-radius:3px;margin:2px auto 0"></i>` : '<span>Auto</span>'}</div>
+    ${small ? '' : `<b>${L ? L.label : 'Let us pick'}</b><span>${L ? L.sub : 'Holiday look for holiday emails, green otherwise'}</span>`}</button>`;
+}
 function startHtml() {
   const s = st.start;
   const files = s.files.map((f, i) => `<div class="file"><img src="${f.thumb || ''}" alt=""><div class="t"><b>${esc(f.file.name)}</b><span>${f.kind === 'flyer' ? 'Flyer: we\'ll pull the products and sections' : f.w / f.h >= 1.6 ? 'Picture: used as the top banner' : 'Picture: shown full width'}</span></div><button class="x" data-rmfile="${i}" title="Remove">×</button></div>`).join('');
   return `<div class="pane">
   <h1 class="h">New email</h1>
-  <p class="sub">Drop in what you have. We'll build the email, pull product photos from your images folder and you fine-tune from there.</p>
+  <p class="sub">Tell us what it's about, drop in what you have, pick a look. We build it, pull the photos and you fine-tune.</p>
+  <div class="stp"><span>1</span>What's this email about?</div>
+  <textarea class="in" id="sNotes" rows="4" placeholder="e.g. Push cold-season items and stocking stuffers. Mention new lower prices on Coke and Pepsi 20oz. Feature #19647 and page 95.">${esc(s.notes)}</textarea>
+  <p class="note">Your notes stay with the email for your team. Item numbers (#19647) and pages (p. 95) get added for you. Mention a holiday and we match the look.</p>
+  <div class="stp"><span>2</span>Add your flyer or pictures <em>optional</em></div>
   <div class="drop" id="dropStart"><div class="ic">+</div><b>Drop your flyer or pictures</b>PDF flyers, vendor ads, promo banners. Or click to choose.</div>
   <div class="files">${files}</div>
-  <label class="lbl">Item numbers <span>optional</span></label>
-  <textarea class="in" id="sNums" rows="2" placeholder="e.g. 19647, 32400, 25664">${esc(s.nums)}</textarea>
-  <label class="lbl">Catalog pages <span>optional, like 12, 40-42</span></label>
-  <input class="in" id="sPages" value="${esc(s.pages)}" placeholder="${st.cat.pdf ? 'Page numbers to show' : 'Add the catalog first (top bar)'}">
-  <label class="lbl">Layout</label>
+  <div class="row" style="gap:10px;align-items:flex-start">
+    <div style="flex:1"><label class="lbl">Item numbers</label><input class="in" id="sNums" value="${esc(s.nums)}" placeholder="19647, 32400"></div>
+    <div style="flex:1"><label class="lbl">Catalog pages</label><input class="in" id="sPages" value="${esc(s.pages)}" placeholder="${st.cat.pdf ? '12, 40-42' : 'Add catalog first'}"></div>
+  </div>
+  <label class="lbl">Message to your customers <span>optional, goes at the top of the email</span></label>
+  <textarea class="in" id="sMsg" rows="2" placeholder="Leave blank and we'll write a short intro.">${esc(s.message)}</textarea>
+  <div class="stp"><span>3</span>Pick a look</div>
+  <div class="looks">${lookSwatch('auto', null, s.look === 'auto')}${Object.entries(LOOKS).map(([k, L]) => lookSwatch(k, L, s.look === k)).join('')}</div>
+  <label class="lbl">Top banner</label>
+  <div class="seg"><button data-hm="gif" class="${s.heroMode !== 'still' ? 'on' : ''}">Animated GIF</button><button data-hm="still" class="${s.heroMode === 'still' ? 'on' : ''}">Still picture</button></div>
+  <p class="note" style="margin-top:6px">A wide picture you drop in above is used instead.</p>
+  <div class="stp"><span>4</span>Layout</div>
   <div class="tpls">${TPLS.map(t => `<button class="tpl ${s.tpl === t.k ? 'on' : ''}" data-tpl="${t.k}"><div class="wire">${t.w.map(w => `<i style="height:${w[0]};background:${w[1]};width:${w[2]}"></i>`).join('')}</div><b>${t.label}</b><span>${t.sub}</span></button>`).join('')}</div>
   ${st.folder.state !== 'ok' ? `<div class="warnbox">Connect your images folder (top bar) so products get real photos.</div>` : ''}
   <button class="btn red go" id="bBuild">Build my email</button>
@@ -873,7 +1811,7 @@ function startHtml() {
 function blockLabel(b) {
   if (b.type === 'products') return b.title || 'Products';
   if (b.type === 'spotlight') return b.item.name || ('#' + b.item.num) || 'Spotlight';
-  if (b.type === 'hero') return b.mode === 'image' ? 'Your picture' : 'Auto banner';
+  if (b.type === 'hero') return b.mode === 'image' ? 'Your picture' : b.mode === 'gif' ? 'Animated GIF' : 'Still banner';
   if (b.type === 'pages') return b.pages.map(p => 'p.' + p.page).join(', ') || 'No pages yet';
   if (b.type === 'banner') return b.alt || 'Picture';
   return (b.title || '').replace(/\n/g, ' ');
@@ -882,6 +1820,10 @@ function outlineHtml() {
   const e = st.email;
   return `<div class="pane">
   <input class="in" id="eName" value="${esc(e.name)}" style="font-weight:700;font-size:15px;margin-bottom:12px">
+  <div class="row" style="margin-bottom:12px;gap:6px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;margin-right:4px">Look</span>${Object.entries(LOOKS).map(([k, L]) => lookSwatch(k, L, (e.look || 'green') === k, true)).join('')}<span class="kbd" style="margin-left:4px">${esc(lookOf(e).label)}</span></div>
+  <details class="det" ${e._notesOpen || e.notes ? 'open' : ''} id="detNotes"><summary>Notes and comments <span class="kbd" style="font-weight:500;margin-left:6px">never sent</span></summary>
+    <textarea class="in" id="eNotes" rows="3" style="margin-top:10px" placeholder="Reminders, who approved it, what to change next time…">${esc(e.notes || '')}</textarea>
+  </details>
   <details class="det" ${e._detOpen ? 'open' : ''} id="detInfo"><summary>Subject line and inbox preview</summary>
     <label class="lbl">Subject line</label><input class="in" data-f="subject" value="${esc(e.subject)}">
     <label class="lbl">Inbox preview text <span>${(e.preheader || '').length}/90</span></label><input class="in" data-f="preheader" value="${esc(e.preheader)}">
@@ -925,11 +1867,11 @@ function itemRow(it, path, selected) {
 function blockEditor(b, i) {
   const sel = st.sel || {};
   if (b.type === 'hero') return `
-    <div class="seg" style="margin-top:8px"><button data-heromode="auto" class="${b.mode === 'auto' ? 'on' : ''}">Auto banner</button><button data-heromode="image" class="${b.mode === 'image' ? 'on' : ''}">My picture</button></div>
-    ${b.mode === 'auto' ? `<label class="lbl">Small line on top</label><input class="in" data-bf="${i}.eyebrow" value="${esc(b.eyebrow)}">
+    <div class="seg" style="margin-top:8px"><button data-heromode="gif" class="${b.mode === 'gif' ? 'on' : ''}">Animated GIF</button><button data-heromode="auto" class="${b.mode === 'auto' ? 'on' : ''}">Still</button><button data-heromode="image" class="${b.mode === 'image' ? 'on' : ''}">My picture</button></div>
+    ${b.mode !== 'image' ? `<label class="lbl">Small line on top</label><input class="in" data-bf="${i}.eyebrow" value="${esc(b.eyebrow)}">
     <label class="lbl">Headline <span>new lines with Enter</span></label><textarea class="in" rows="3" data-bf="${i}.title">${esc(b.title)}</textarea>
     <label class="lbl">Line under it</label><input class="in" data-bf="${i}.sub" value="${esc(b.sub)}">
-    <p class="note">The banner uses the first three product photos. Reorder products to change them.</p>
+    <p class="note">${b.mode === 'gif' ? 'Animates through a title frame, one frame per product section (with deals as red badges) and an order frame.' : 'Uses the first three product photos.'} Reorder products to change them.${b.mode === 'gif' && st.email.assets.hero ? ` GIF size: ${(st.email.assets.hero.length * 0.75 / 1048576).toFixed(1)} MB (Constant Contact allows 5 MB).` : ''}</p>
     <button class="btn sm" data-redraw="1" style="margin-top:8px">Redraw banner</button>` :
     `<button class="btn" data-heroimg="${i}" style="margin-top:12px;width:100%">${b.img ? 'Replace picture' : 'Choose a picture'}</button><p class="note">Wide pictures work best (about 2:1).</p>`}`;
   if (b.type === 'intro') return `<p class="note">Edit the headline and text right in the email.</p>
@@ -955,9 +1897,10 @@ function render() { renderChips(); renderSide(); paint(); }
 let paintT;
 function paint() {
   const cv = $('#canvas');
-  if (!st.email) { cv.innerHTML = `<div class="empty"><div><div class="big">Your email shows up here</div>Start on the left: drop a flyer, add pictures or type item numbers.</div></div>`; return; }
+  if (!st.email) { renderHome(); return; }
   let fr = cv.querySelector('.frame');
-  if (!fr) { cv.innerHTML = `<div class="frame"><iframe title="Email preview"></iframe></div>`; fr = cv.querySelector('.frame'); }
+  if (!fr) { cv.innerHTML = `<div class="col2"><div class="inbox" id="inbox"></div><div class="frame"><iframe title="Email preview"></iframe></div></div>`; fr = cv.querySelector('.frame'); }
+  const ib = $('#inbox'); if (ib) { ib.className = 'inbox' + (st.view === 'phone' ? ' phone' : ''); ib.innerHTML = `<div class="av">R</div><div class="m"><b>Resnick Distributors</b><div><span class="sj">${esc(st.email.subject || 'No subject yet')}</span> <span class="ph">${esc(st.email.preheader || '')}</span></div></div>`; }
   fr.classList.toggle('phone', st.view === 'phone');
   const f = fr.querySelector('iframe'), stage = $('#stage'), top = stage.scrollTop;
   f.onload = () => {
@@ -995,13 +1938,32 @@ function commitEdit(path, v) {
 function selectBlock(i) { st.sel = st.sel && st.sel.b === i && st.sel.i == null ? null : { b: i }; renderSide(); paint(); const el = $(`.blk[data-bi="${i}"]`); if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
 function selectItem(b, i) { st.sel = { b, i }; renderSide(); paint(); const el = $(`[data-item="${b}.${i}"]`); if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
 function itemAt(path) { const [b, i] = path.split('.'); const blk = st.email.blocks[+b]; return i === 's' ? blk.item : blk.items[+i]; }
+async function renderHome() {
+  const cv = $('#canvas'); let all = []; try { all = (await DB.all()).sort((a, b) => b.updated - a.updated); } catch (e) {}
+  if (st.email) return;
+  const f = st.folder, c = st.cat;
+  cv.innerHTML = `<div class="home">
+    <h1>Email Studio</h1><p class="sub">Fresh, on-brand customer emails in a few minutes. Start on the left.</p>
+    <div class="cards3">
+      <button class="hc" id="hImg"><div class="dot ${f.state === 'ok' ? 'ok' : f.state === 'needs' ? 'warn' : ''}"></div><b>Images folder</b><span>${f.state === 'ok' ? (f.count ? f.count.toLocaleString() + ' product photos ready' : 'Connected') : f.state === 'needs' ? 'Click to reconnect (one click)' : 'Not connected yet. Click to connect all_res_images.'}</span></button>
+      <button class="hc" id="hCat"><div class="dot ${c.pdf ? 'ok' : ''}"></div><b>Catalog</b><span>${c.pdf ? esc(c.name) + ' · ' + c.pages + ' pages' + (c.index ? ' · ' + Object.keys(c.index).length.toLocaleString() + ' items indexed' : '') : 'Add this quarter\'s catalog PDF once.'}</span></button>
+      <div class="hc"><div class="dot ok"></div><b>Saved emails</b><span>${all.length} email${all.length === 1 ? '' : 's'}${all[0] ? ' · last edited ' + new Date(all[0].updated).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}</span></div>
+    </div>
+    ${all.length ? `<div class="row" style="margin:28px 0 10px"><b style="font-size:15px;flex:1">Recent emails</b><button class="btn sm" id="hAll">See all</button></div>
+    <div class="saved">${all.slice(0, 6).map(r => `<div class="sv"><div class="im">${r.assets && r.assets.hero ? `<img src="${r.assets.hero}" alt="">` : ''}</div><div class="b"><b>${esc(r.name)}</b><span>${new Date(r.updated).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span><div class="row" style="margin-top:8px"><button class="btn sm pri" data-hopen="${r.id}">Open</button><button class="btn sm" data-hcopy="${r.id}">Use as starting point</button></div></div></div>`).join('')}</div>` : ''}
+  </div>`;
+  $('#hImg').onclick = () => $('#chipImg').click(); $('#hCat').onclick = openCatalog; const ha = $('#hAll'); if (ha) ha.onclick = openSaved;
+  cv.onclick = async ev => { const t = ev.target.closest('button'); if (!t) return;
+    if (t.dataset.hopen) { st.email = await DB.one(t.dataset.hopen); st.sel = null; st.undo = []; await DB.set('current', st.email.id); render(); fillMissingPhotos(); }
+    if (t.dataset.hcopy) { const r = await DB.one(t.dataset.hcopy); const cp = { ...clone(r), id: uid(), name: r.name + ' (copy)', hosted: {}, created: Date.now() }; cp.code = newEmail().code; await DB.put(cp); st.email = cp; st.sel = null; st.undo = []; render(); toast('Copied. Swap the products and words for this week.'); } };
+}
 // ================= undo / save =================
 function pushUndo() { if (!st.email) return; st.undo.push(JSON.stringify(st.email)); if (st.undo.length > 40) st.undo.shift(); }
 function undo() { const s = st.undo.pop(); if (!s) return toast('Nothing to undo.'); st.email = JSON.parse(s); save(); render(); }
 let saveT;
-function save() { if (!st.email) return; st.email.updated = Date.now(); clearTimeout(saveT); saveT = setTimeout(async () => { try { await DB.put(st.email); await DB.set('current', st.email.id); } catch (e) { toast('Could not save. The browser may be out of space.'); } }, 500); }
+function save() { if (!st.email) return; st.email.updated = Date.now(); clearTimeout(saveT); saveT = setTimeout(async () => { try { await DB.put(st.email); await DB.set('current', st.email.id); const si = $('#saveInd'); if (si) si.textContent = 'Saved ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); } catch (e) { toast('Could not save. The browser may be out of space.'); } }, 500); }
 let heroT;
-function scheduleHero() { clearTimeout(heroT); heroT = setTimeout(async () => { await renderHero(); save(); paint(); }, 400); }
+function scheduleHero() { clearTimeout(heroT); heroT = setTimeout(async () => { const h = $('#stageHint'), old = 'Click any text in the email to edit it. Click a product to change it.'; h.textContent = 'Updating the banner…'; await renderHero(); h.textContent = old; save(); paint(); renderSide(); }, 600); }
 // ================= side events =================
 function bindSide() {
   const side = $('#side');
@@ -1011,6 +1973,7 @@ function bindSide() {
     ds.ondragover = e => { e.preventDefault(); ds.classList.add('over'); }; ds.ondragleave = () => ds.classList.remove('over');
     ds.ondrop = e => { e.preventDefault(); ds.classList.remove('over'); addStartFiles([...e.dataTransfer.files]); };
     $('#sNums').oninput = e => st.start.nums = e.target.value; $('#sPages').oninput = e => st.start.pages = e.target.value;
+    $('#sNotes').oninput = e => st.start.notes = e.target.value; $('#sMsg').oninput = e => st.start.message = e.target.value;
     $('#bBuild').onclick = () => buildFromStart().catch(err => { busy(''); console.error(err); toast('Something went wrong: ' + err.message); });
   }
   side.onclick = async ev => {
@@ -1018,6 +1981,8 @@ function bindSide() {
     const d = t.dataset;
     if (d.rmfile != null) { st.start.files.splice(+d.rmfile, 1); return renderSide(); }
     if (d.tpl) { st.start.tpl = d.tpl; return renderSide(); }
+    if (d.hm) { st.start.heroMode = d.hm; return renderSide(); }
+    if (d.look && !st.email) { st.start.look = d.look; return renderSide(); }
     if (!st.email) return;
     const B = st.email.blocks;
     if (d.mv) { ev.stopPropagation(); const [i, dir] = d.mv.split(',').map(Number), j = i + dir; if (j < 0 || j >= B.length) return; pushUndo(); [B[i], B[j]] = [B[j], B[i]]; st.sel = { b: j }; save(); return render(); }
@@ -1031,9 +1996,10 @@ function bindSide() {
     if (d.itmv) { const [p, dir] = d.itmv.split(','); const [b, i] = p.split('.').map(Number), j = i + +dir, its = B[b].items; if (j < 0 || j >= its.length) return; pushUndo(); [its[i], its[j]] = [its[j], its[i]]; st.sel = { b, i: j }; save(); render(); if (b === firstProductsBlock()) scheduleHero(); return; }
     if (d.nextph) { const it = itemAt(d.nextph); pushUndo(); await loadItemPhoto(it, (it.alt || 0) + 1); scheduleHero(); return; }
     if (d.upph) { const f = (await pickFiles('image/*', false))[0]; if (!f) return; const img = await decodeImage(f); if (!img) return toast('Could not open that picture.'); pushUndo(); const it = itemAt(d.upph), k = 'p' + (it.num || uid().slice(0, 5)); st.email.assets[k] = makeTile(img); delete st.email.hosted[k]; it.img = k; it.total = 0; save(); render(); scheduleHero(); return; }
-    if (d.heromode) { pushUndo(); const b = B.find(x => x.type === 'hero'); b.mode = d.heromode; if (b.mode === 'auto') { await renderHero(); } else if (!st.email.assets.hero || b.img !== 'hero') { /* keep */ } save(); render(); if (b.mode === 'image') pickHeroImg(); return; }
+    if (d.heromode) { pushUndo(); const b = B.find(x => x.type === 'hero'); b.mode = d.heromode; if (b.mode !== 'image') { busy(b.mode === 'gif' ? 'Animating the banner…' : 'Drawing the banner…'); await renderHero(); busy(''); } save(); render(); if (b.mode === 'image') pickHeroImg(); return; }
+    if (d.look) { pushUndo(); st.email.look = d.look; save(); render(); scheduleHero(); return; }
     if (d.heroimg) return pickHeroImg();
-    if (d.redraw) { await renderHero(); save(); return paint(); }
+    if (d.redraw) { busy('Redrawing the banner…'); await renderHero(); busy(''); save(); return render(); }
     if (d.bannerimg) return pickBannerImg(+d.bannerimg);
     if (d.setpages) { const i = +d.setpages; const pages = $('#pg' + i).value.split(/[\s,;]+/).flatMap(x => { const m = x.match(/^(\d+)(?:-(\d+))?$/); if (!m) return []; const a = +m[1], b2 = +(m[2] || m[1]); return Array.from({ length: Math.min(20, b2 - a + 1) }, (_, k) => a + k); }); pushUndo(); B[i].pages = pages.map(p => ({ page: p, img: null })); busy('Adding catalog pages…'); await renderPages(); busy(''); save(); return render(); }
     if (t.closest('[data-item]') && !t.closest('button.ib')) { const p = t.closest('[data-item]').dataset.item.split('.'); return selectItem(+p[0], p[1] === 's' ? 's' : +p[1]); }
@@ -1042,6 +2008,8 @@ function bindSide() {
   side.querySelectorAll('[data-f]').forEach(inp => inp.onchange = () => { pushUndo(); st.email[inp.dataset.f] = inp.value; save(); paint(); renderSide(); });
   const en = $('#eName', side); if (en) en.onchange = () => { st.email.name = en.value; save(); };
   const det = $('#detInfo', side); if (det) det.ontoggle = () => st.email._detOpen = det.open;
+  const dn = $('#detNotes', side); if (dn) dn.ontoggle = () => st.email._notesOpen = dn.open;
+  const en2 = $('#eNotes', side); if (en2) en2.onchange = () => { st.email.notes = en2.value; save(); };
   side.querySelectorAll('[data-bf]').forEach(inp => inp.onchange = () => { pushUndo(); const [i, ...k] = inp.dataset.bf.split('.'); st.email.blocks[+i][k.join('.')] = inp.value; save(); paint(); if (st.email.blocks[+i].type === 'hero') scheduleHero(); });
   side.querySelectorAll('[data-bchk]').forEach(inp => inp.onchange = () => { pushUndo(); const [i, k] = inp.dataset.bchk.split('.'); st.email.blocks[+i][k] = inp.checked; save(); paint(); });
   side.querySelectorAll('[data-itf]').forEach(inp => inp.onchange = async () => {
