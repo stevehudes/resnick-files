@@ -220,7 +220,8 @@ const DEFAULTS = {
   flipbook: 'https://resnickdistributors.cld.bz/Resnick-Fall-2026-Book',
   footer: 'Resnick Distributors · 25 Van Dyke Avenue, New Brunswick, NJ 08901',
   ccLibrary: 'https://app.constantcontact.com/pages/legacy/mlui/home',
-  logoData: ''
+  logoData: '',
+  radar: 'https://new.radarorders.com/mio-messaging'
 };
 let S = { ...DEFAULTS };
 async function loadSettings() { try { const s = await DB.get('settings'); if (s) S = { ...DEFAULTS, ...s }; } catch (e) {} }
@@ -724,7 +725,7 @@ ${b.button ? button(b.label, bi + '.label') : ''}
       const card = (it, ii) => `<div class="col${cols === 2 ? ' c2' : ''}" style="display:inline-block;width:100%;max-width:${cw}px;vertical-align:top;"${P ? ` data-card="${bi}.${ii}"` : ''}>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:6px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${C.line};border-radius:10px;background-color:#FFFFFF;">
-<tr><td align="center" style="padding:12px 12px 4px 12px;"><a href="${esc(it.link || A)}" target="_blank" style="text-decoration:none;">${it.img ? `<img src="${src(it.img)}" width="${iw}" alt="${esc(it.name)}" style="display:block;width:100%;max-width:${iw}px;height:auto;border:0;font-family:${FONT};font-size:12px;color:${C.mut};">` : (P ? `<div style="width:${iw}px;max-width:100%;height:${iw}px;background:#F4F3EF;border-radius:8px;font-family:${FONT};font-size:12px;color:#B44;line-height:${iw}px;text-align:center;">No photo yet</div>` : '')}</a></td></tr>
+<tr><td align="center" style="padding:12px 12px 4px 12px;"><a href="${esc(itemLink(e, it))}" target="_blank" style="text-decoration:none;">${it.img ? `<img src="${src(it.img)}" width="${iw}" alt="${esc(it.name)}" style="display:block;width:100%;max-width:${iw}px;height:auto;border:0;font-family:${FONT};font-size:12px;color:${C.mut};">` : (P ? `<div style="width:${iw}px;max-width:100%;height:${iw}px;background:#F4F3EF;border-radius:8px;font-family:${FONT};font-size:12px;color:#B44;line-height:${iw}px;text-align:center;">No photo yet</div>` : '')}</a></td></tr>
 <tr><td style="padding:6px 12px 14px 12px;font-family:${FONT};">
 <p style="margin:0 0 4px 0;font-size:14px;line-height:18px;font-weight:bold;color:${C.ink};min-height:36px;"${ed(bi + '.items.' + ii + '.name')}>${esc(it.name || ('Item #' + it.num))}</p>
 ${it.deal ? `<p style="margin:0 0 4px 0;font-size:15px;line-height:19px;font-weight:bold;color:${C.red};"${ed(bi + '.items.' + ii + '.deal')}>${esc(it.deal)}</p>` : ''}
@@ -751,14 +752,14 @@ ${b.linkLabel ? `<a href="${A}" target="_blank" style="font-size:14px;line-heigh
       const it = b.item;
       rows.push(`<tr${bAttr(bi)}><td class="px" style="padding:${prevSection ? 34 : 10}px 40px 6px 40px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${C.line};border-radius:14px;background-color:#FFFFFF;"><tr>
-<td class="stack" width="46%" align="center" valign="middle" style="padding:22px;"${P ? ` data-card="${bi}.s"` : ''}><a href="${A}" target="_blank">${it.img ? `<img src="${src(it.img)}" width="220" alt="${esc(it.name)}" style="display:block;width:100%;max-width:220px;height:auto;border:0;">` : (P ? `<div style="width:200px;height:200px;background:#F4F3EF;border-radius:10px;font-family:${FONT};font-size:12px;color:#B44;line-height:200px;text-align:center;">No photo yet</div>` : '')}</a></td>
+<td class="stack" width="46%" align="center" valign="middle" style="padding:22px;"${P ? ` data-card="${bi}.s"` : ''}><a href="${esc(itemLink(e, it))}" target="_blank">${it.img ? `<img src="${src(it.img)}" width="220" alt="${esc(it.name)}" style="display:block;width:100%;max-width:220px;height:auto;border:0;">` : (P ? `<div style="width:200px;height:200px;background:#F4F3EF;border-radius:10px;font-family:${FONT};font-size:12px;color:#B44;line-height:200px;text-align:center;">No photo yet</div>` : '')}</a></td>
 <td class="stack" width="54%" valign="middle" style="padding:22px 24px 22px 6px;font-family:${FONT};">
 <p style="margin:0 0 8px 0;font-size:12px;line-height:16px;letter-spacing:2px;font-weight:bold;color:${C.red};"${ed(bi + '.eyebrow')}>${esc(b.eyebrow)}</p>
 <p style="margin:0 0 8px 0;font-size:24px;line-height:29px;font-weight:bold;color:${C.ink};"${ed(bi + '.item.name')}>${esc(it.name || ('Item #' + it.num))}</p>
 ${it.deal || P ? `<p style="margin:0 0 8px 0;font-size:26px;line-height:30px;font-weight:bold;color:${C.red};"${ed(bi + '.item.deal')}>${esc(it.deal)}</p>` : ''}
 <p style="margin:0 0 14px 0;font-size:15px;line-height:22px;color:${C.mut};"${ed(bi + '.body', 1)}>${txt(b.body)}</p>
 ${it.num ? `<p style="margin:0 0 14px 0;font-size:12px;line-height:16px;color:${C.mut};">Item #${esc(it.num)}</p>` : ''}
-<a href="${A}" target="_blank" style="font-size:15px;line-height:19px;font-weight:bold;color:${C.g};text-decoration:underline;"><span${ed(bi + '.label')}>${esc(b.label)}</span> &rarr;</a>
+<a href="${esc(itemLink(e, it))}" target="_blank" style="font-size:15px;line-height:19px;font-weight:bold;color:${C.g};text-decoration:underline;"><span${ed(bi + '.label')}>${esc(b.label)}</span> &rarr;</a>
 </td></tr></table></td></tr>`);
       prevSection = true;
     } else if (b.type === 'banner') {
@@ -913,7 +914,7 @@ function itemRow(it, path, selected) {
   const th = it.img ? st.email.assets[it.img] : '';
   return `<div class="it ${selected ? 'sel' : ''}" data-item="${path}">
   <div class="th">${th ? `<img src="${th}" alt="">` : '<span style="font-size:10px;color:#B44;text-align:center">No photo</span>'}${it.busy ? '<div class="ld">Loading…</div>' : ''}</div>
-  <div style="min-width:0"><div class="nm">${esc(it.name || 'Unnamed')}</div><div class="no">#${esc(it.num || '—')}${it.total > 1 ? ` · photo ${it.alt + 1} of ${it.total}` : ''}${!it.img && !it.busy ? ' · <span class="miss">no photo</span>' : ''}</div></div>
+  <div style="min-width:0"><div class="nm">${esc(it.name || 'Unnamed')}</div><div class="no">#${esc(it.num || '—')}${it.total > 1 ? ` · photo ${it.alt + 1} of ${it.total}` : ''}${!it.img && !it.busy ? ' · <span class="miss">no photo</span>' : ''}${(st.email.appLinks || {})[it.num] ? ' · <span style="color:#2E9D4E;font-weight:600">app link</span>' : ''}</div></div>
   <div class="act">${it.total > 1 ? `<button class="ib" data-nextph="${path}" title="Try the next photo">⟳</button>` : ''}<button class="ib" data-upph="${path}" title="Use my own photo">⇪</button>${path.includes('.s') ? '' : `<button class="ib" data-itmv="${path},-1" title="Move left">←</button><button class="ib" data-itmv="${path},1" title="Move right">→</button><button class="ib" data-itdel="${path}" title="Remove" style="color:#C33">×</button>`}</div>
 </div>${selected ? `<div style="padding:8px 4px 6px;display:grid;grid-template-columns:90px 1fr;gap:6px">
   <input class="in" data-itf="${path}.num" value="${esc(it.num)}" placeholder="Item #" style="height:32px">
@@ -1070,6 +1071,127 @@ async function addStartFiles(files) {
   renderSide();
 }
 
+// ================= Radar deep links (per-product app links) =================
+function linkItemsList(e) {
+  const m = new Map();
+  e.blocks.forEach(b => { (b.type === 'products' ? b.items : b.type === 'spotlight' ? [b.item] : []).forEach(it => { const n = String(it.num || '').trim(); if (n && !m.has(n)) m.set(n, { num: n, name: String(it.name || '').replace(/\s+/g, ' ').trim() }); }); });
+  return [...m.values()];
+}
+function itemLink(e, it) { return (e.appLinks || {})[String(it.num || '').trim()] || it.link || S.appLink; }
+async function radarStart() {
+  const e = st.email, items = linkItemsList(e);
+  await copyText('RESNICK-ITEMS ' + JSON.stringify({ items }));
+  window.open(S.radar, 'resnick-radar');
+  toast('Item list copied. In Radar, open Messaging, then Deep Link Library, and click "Make Radar links".');
+}
+function applyLinks(t) {
+  let links = {}; if (t && typeof t === 'object') links = t; else { const s = String(t || ''), i = s.indexOf('{'); if (i >= 0) try { links = JSON.parse(s.slice(i)).links || {}; } catch (er) {} }
+  links = Object.fromEntries(Object.entries(links).filter(([k, v]) => /^https?:\/\//.test(String(v))));
+  const n = Object.keys(links).length, e = st.email;
+  if (!n || !e) return toast('No Radar links found. In Radar, click "Copy links" in the helper box, then paste here.');
+  e.appLinks = { ...(e.appLinks || {}), ...links }; save(); paint();
+  toast(`${n} product link${n > 1 ? 's' : ''} added. Each product now opens straight to its page in the app.`);
+  if ($('#modal').classList.contains('on')) openExport();
+}
+window.addEventListener('message', ev => { if (ev.data && ev.data.type === 'resnick-links') applyLinks(ev.data.links || {}); });
+// Runs as a bookmarklet inside Radar's Deep Link Library. Reuses existing item links and creates the missing ones.
+async function radarHelper() {
+  const W = ms => new Promise(r => setTimeout(r, ms));
+  const T = el => ((el && (el.innerText || el.textContent)) || '').replace(/\s+/g, ' ').trim();
+  const H = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const vis = el => !!(el && el.offsetParent !== null);
+  const until = async (fn, ms = 10000) => { const s = Date.now(); while (Date.now() - s < ms) { let v; try { v = fn(); } catch (e) {} if (v) return v; await W(150); } return null; };
+  const clickables = () => [...document.querySelectorAll('button,a,[role=button],input[type=button],input[type=submit]')].filter(vis);
+  const btn = re => clickables().find(b => re.test(T(b) || b.value || ''));
+  const old = document.getElementById('rk-helper'); if (old) old.remove();
+  const box = document.createElement('div'); box.id = 'rk-helper';
+  box.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:2147483647;width:340px;max-height:60vh;overflow:auto;background:#fff;border:2px solid #0E5C2F;border-radius:10px;padding:14px 16px;font:14px/1.45 Arial,sans-serif;color:#1E2230;box-shadow:0 10px 30px rgba(0,0,0,.25)';
+  document.body.appendChild(box);
+  const say = h => { box.innerHTML = '<div style="font-weight:bold;color:#0E5C2F;margin-bottom:6px">Resnick link helper</div>' + h; };
+  say('Reading your item list…');
+  let raw = '';
+  try { raw = await navigator.clipboard.readText(); } catch (e) {}
+  if (/RESNICK-ITEMS/.test(raw)) { try { localStorage.setItem('rk-items', raw); } catch (e) {} }
+  else { let mem = ''; try { mem = localStorage.getItem('rk-items') || ''; } catch (e) {} if (mem) raw = mem; }
+  if (!/RESNICK-ITEMS/.test(raw)) raw = prompt('Paste the item list from Email Studio (click "Copy item list & open Radar" there first).') || '';
+  let items = [];
+  try { items = JSON.parse(raw.slice(raw.indexOf('{'))).items || []; } catch (e) {}
+  if (!items.length) { say('No item list found. In Email Studio click <b>Copy item list &amp; open Radar</b>, then click this bookmark again.'); setTimeout(() => box.remove(), 10000); return; }
+  let last = '';
+  const cb = navigator.clipboard, orig = cb && cb.writeText ? cb.writeText.bind(cb) : null;
+  try { if (cb) cb.writeText = t => { last = String(t); return orig ? orig(t).catch(() => {}) : Promise.resolve(); }; } catch (e) {}
+  const onCopy = () => { const a = document.activeElement; let s = ''; if (a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT')) s = a.value.substring(a.selectionStart, a.selectionEnd); if (!s) s = String(getSelection() || ''); if (s) last = s; };
+  document.addEventListener('copy', onCopy, true);
+  const cleanup = () => { document.removeEventListener('copy', onCopy, true); try { delete cb.writeText; } catch (e) {} };
+  const isCopy = x => /^copy link$/i.test(T(x));
+  const libReady = () => clickables().some(isCopy);
+  const toLibrary = async () => { if (libReady()) return true; const cx = btn(/^cancel$/i); if (cx) { cx.click(); if (await until(libReady, 4000)) return true; } const back = btn(/deep link library/i); if (back) back.click(); return !!(await until(libReady, 12000)); };
+  if (!(await toLibrary())) { cleanup(); say('Open <b>Messaging &rarr; Deep Link Library</b> in Radar, then click this bookmark again.'); return; }
+  const rowOf = b => { let r = b; while (r.parentElement && r.parentElement !== document.body) { const p = r.parentElement; if ([...p.querySelectorAll('button,a,[role=button]')].filter(isCopy).length > 1) break; r = p; } return r; };
+  const findRow = key => { for (const b of clickables().filter(isCopy)) if (key.test(T(rowOf(b)))) return b; return null; };
+  const grab = async b => { last = ''; b.click(); const u = await until(() => /https?:\/\//.test(last) && last, 5000); return u ? u.trim() : ''; };
+  const setVal = (el, v) => { const proto = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype; el.focus(); Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, v); ['input', 'change'].forEach(t => el.dispatchEvent(new Event(t, { bubbles: true }))); el.blur(); };
+  const field = re => {
+    const ins = [...document.querySelectorAll('input:not([type=radio]):not([type=checkbox]):not([type=hidden]),textarea')].filter(vis);
+    for (const i of ins) { const l = i.id && document.querySelector('label[for="' + i.id + '"]'); if (re.test((i.placeholder || '').trim()) || re.test((i.getAttribute('aria-label') || '').trim()) || (l && re.test(T(l)))) return i; }
+    for (const i of ins) { let p = i.parentElement; for (let k = 0; k < 3 && p; k++, p = p.parentElement) { const t = T(p); if (t.length < 40 && re.test(t)) return i; } }
+    return null;
+  };
+  const fire = el => { const r = el.getBoundingClientRect(), o = { bubbles: true, cancelable: true, view: window, clientX: r.left + 8, clientY: r.top + 8, button: 0 }; try { el.dispatchEvent(new PointerEvent('pointerdown', o)); } catch (e) {} el.dispatchEvent(new MouseEvent('mousedown', o)); try { el.dispatchEvent(new PointerEvent('pointerup', o)); } catch (e) {} el.dispatchEvent(new MouseEvent('mouseup', o)); el.dispatchEvent(new MouseEvent('click', o)); };
+  const itemCard = () => { let best = null; for (const el of document.querySelectorAll('div,label,li,section,article,button,span')) { if (!vis(el)) continue; const t = T(el); if (/^item\b/i.test(t) && /present a single item/i.test(t) && !/item set/i.test(t) && (!best || t.length < T(best).length || best.contains(el))) best = el; } return best; };
+  const pickItem = async () => {
+    const card = itemCard(); if (!card) return false;
+    const title = [...card.querySelectorAll('*')].find(e => /^item$/i.test(T(e)) && vis(e));
+    const cands = [...card.querySelectorAll('input[type=radio],[role=radio],label')];
+    if (title) cands.push(title);
+    cands.push(card); if (card.parentElement) cands.push(card.parentElement);
+    for (const c of cands) {
+      if (c.tagName === 'INPUT') { c.click(); if (!c.checked) { c.checked = true; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); } }
+      else fire(c);
+      if (await until(() => field(/^item number\b/i), 1200)) return true;
+    }
+    return false;
+  };
+  const out = {}, fail = []; let made = 0, reused = 0;
+  for (let n = 0; n < items.length; n++) {
+    const it = items[n], num = String(it.num || '').trim(); if (!num) continue;
+    const key = new RegExp('#' + num.replace(/[^\w-]/g, '') + '(?![\\w])', 'i');
+    say('Working on ' + (n + 1) + ' of ' + items.length + ':<br><b>' + H(it.name || 'Item') + '</b> #' + H(num));
+    try {
+      await toLibrary();
+      let b = findRow(key);
+      if (b) reused++;
+      else {
+        const nb = clickables().find(x => /deep link/i.test(T(x)) && !/save|library|copy/i.test(T(x)));
+        if (!nb) { fail.push(num + ' (no New Deep Link button)'); continue; }
+        nb.click();
+        const nameF = await until(() => field(/^name\b/i)); if (!nameF) { fail.push(num + ' (form did not open)'); continue; }
+        const label = (it.name || 'Item').slice(0, 60) + ' #' + num;
+        setVal(nameF, label);
+        const dF = field(/^description\b/i); if (dF) setVal(dF, label);
+        const lF = field(/^link text\b/i); if (lF) setVal(lF, it.name || label);
+        if (!(await pickItem())) { fail.push(num + ' (could not pick Item)'); continue; }
+        const inF = field(/^item number\b/i);
+        setVal(inF, num); await W(300);
+        const sv = await until(() => { const s = btn(/^save deep link$/i); return s && !s.disabled && s; }, 6000); if (!sv) { fail.push(num + ' (Save stayed grey)'); continue; }
+        sv.click();
+        await until(libReady, 12000);
+        b = await until(() => findRow(key), 8000); if (!b) { fail.push(num + ' (saved but not found in list)'); continue; }
+        made++;
+      }
+      const u = await grab(b); if (u) out[num] = u; else fail.push(num + ' (Copy Link gave nothing)');
+    } catch (e) { fail.push(num + ' (' + (e && e.message || 'error') + ')'); }
+  }
+  cleanup();
+  const payload = 'RESNICK-LINKS ' + JSON.stringify({ links: out }), count = Object.keys(out).length;
+  let sent = false; try { if (window.opener) { window.opener.postMessage({ type: 'resnick-links', links: out }, '*'); sent = true; } } catch (e) {}
+  let copied = false; try { await navigator.clipboard.writeText(payload); copied = true; } catch (e) {}
+  say('<div><b>' + count + '</b> link' + (count === 1 ? '' : 's') + ' ready (' + made + ' new, ' + reused + ' already in Radar).</div>' + (fail.length ? '<div style="color:#D9262C;margin-top:6px">Could not do:<br>#' + fail.map(H).join('<br>#') + '</div>' : '') + '<div style="margin-top:8px">' + (sent ? 'Sent to Email Studio. ' : '') + (copied ? 'Also copied: if they did not show up, click <b>Paste links</b> in Email Studio.' : 'Click Copy links, then <b>Paste links</b> in Email Studio.') + '</div><div style="display:flex;gap:8px;margin-top:10px"><button id="rk-copy" style="height:32px;padding:0 12px;border:0;border-radius:6px;background:#0E5C2F;color:#fff;font-weight:bold;cursor:pointer">Copy links</button><button id="rk-close" style="height:32px;padding:0 12px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer">Close</button></div>');
+  box.querySelector('#rk-copy').onclick = async () => { try { await navigator.clipboard.writeText(payload); box.querySelector('#rk-copy').textContent = 'Copied'; } catch (e) { prompt('Copy this, then paste it in Email Studio:', payload); } };
+  box.querySelector('#rk-close').onclick = () => box.remove();
+}
+function radarBookmarklet() { return 'javascript:' + encodeURIComponent('(' + radarHelper.toString() + ')();void 0'); }
+
 // ================= modals =================
 function openModal(html, bind) { $('#mbox').innerHTML = html; $('#modal').classList.add('on'); if (bind) bind($('#mbox')); }
 function closeModal() { $('#modal').classList.remove('on'); }
@@ -1095,6 +1217,8 @@ function checks(e) {
   out.push([!noNm, noNm ? `${noNm} product${noNm > 1 ? 's have' : ' has'} no name` : 'Every product has a name']);
   out.push([!!e.subject, e.subject ? 'Subject line is set' : 'Add a subject line (left panel, top)']);
   out.push([!!e.preheader && e.preheader.length <= 90, !e.preheader ? 'Add inbox preview text' : e.preheader.length > 90 ? 'Inbox preview text is over 90 characters' : 'Inbox preview text is set']);
+  const li = linkItemsList(e), lk = li.filter(x => (e.appLinks || {})[x.num]).length;
+  if (li.length) out.push([lk === li.length, lk === li.length ? 'Every product opens straight to its page in the app' : `${lk} of ${li.length} products link straight to the app (the rest open the app home page)`]);
   out.push([!host, host ? `${host} of ${keys.length} images still need a Constant Contact link` : 'All images are hosted in Constant Contact']);
   return out;
 }
@@ -1113,12 +1237,25 @@ function openExport() {
     </details>
     <div class="assets">${keys.map(k => `<div class="as ${e.hosted[k] ? 'ok' : ''}"><img src="${e.assets[k]}" alt=""><div class="s">${esc(fileName(e, k))}</div></div>`).join('')}</div>
   </div></div>
-  <div class="step"><div class="n">2</div><div><h3>Copy the email into Constant Contact</h3>
+  <div class="step"><div class="n ${linkItemsList(e).every(x => (e.appLinks || {})[x.num]) ? 'done' : ''}">2</div><div><h3>Link each product to its page in the app</h3>
+    <p>Makes the Radar deep links for every product (reuses ones you already have), so tapping a product opens it in the app. ${linkItemsList(e).filter(x => (e.appLinks || {})[x.num]).length} of ${linkItemsList(e).length} linked.</p>
+    <div class="row" style="flex-wrap:wrap"><button class="btn pri" id="xRadar">Copy item list &amp; open Radar</button><button class="btn" id="xRPaste">Paste links</button></div>
+    <div id="rPasteBox" style="display:none;margin-top:10px"><textarea class="in" id="rPasteIn" rows="2" placeholder="Click here and press Ctrl+V to paste the links from Radar"></textarea></div>
+    <details style="margin-top:10px"><summary style="cursor:pointer;font-size:12.5px;font-weight:600;color:var(--g)">How it works (one-time setup)</summary>
+      <p style="font-size:12.5px;margin:8px 0">Drag this button to your bookmarks bar: <a class="bm" id="bmRadar" href="#">Make Radar links</a></p>
+      <p style="font-size:12.5px;margin:0">Click <b>Copy item list &amp; open Radar</b>. In Radar go to <b>Messaging</b>, then <b>Deep Link Library</b>, and click <b>Make Radar links</b> in your bookmarks bar. Leave the tab alone while it works. The links come back here by themselves. If not, click <b>Paste links</b>.</p>
+    </details>
+  </div></div>
+  <div class="step"><div class="n">3</div><div><h3>Copy the email into Constant Contact</h3>
     <p>Create a new email in Constant Contact, choose <b>Custom Code</b>, and paste.${hosted < keys.length ? ' <b style="color:#B26A00">Some images are not linked yet, so they won\'t show.</b>' : ''}</p>
     <div class="row" style="flex-wrap:wrap"><button class="btn red" id="xCopy">Copy HTML</button><button class="btn" id="xDl">Download .html</button><button class="btn" id="xSubj">Copy subject line</button><button class="btn" id="xPre">Copy preview text</button></div>
   </div></div>`, box => {
     $('#bmCC', box).href = ccBookmarklet(); $('#bmCC', box).onclick = ev => { ev.preventDefault(); toast('Drag this button up to your bookmarks bar.'); };
     $('#xZip', box).onclick = () => zipImages();
+    $('#bmRadar', box).href = radarBookmarklet(); $('#bmRadar', box).onclick = ev => { ev.preventDefault(); toast('Drag this button up to your bookmarks bar.'); };
+    $('#xRadar', box).onclick = () => radarStart();
+    $('#xRPaste', box).onclick = async () => { let t = ''; try { t = await navigator.clipboard.readText(); } catch (er) {} if (/RESNICK-LINKS/.test(t)) return applyLinks(t); $('#rPasteBox', box).style.display = 'block'; $('#rPasteIn', box).focus(); };
+    $('#rPasteIn', box).onpaste = ev => { ev.preventDefault(); applyLinks((ev.clipboardData || window.clipboardData).getData('text')); };
     $('#xCC', box).onclick = async () => { await copyText('RESNICK-FILES ' + JSON.stringify({ files: keys.map(k => fileName(e, k)) })); window.open(S.ccLibrary, 'resnick-cc'); toast('Upload the images, open Recently Added, then click "Grab CC links".'); };
     $('#xPaste', box).onclick = async () => { let t = ''; try { t = await navigator.clipboard.readText(); } catch (er) {} if (/RESNICK-CC/.test(t)) return applyCc(t); $('#pasteBox', box).style.display = 'block'; $('#pasteIn', box).focus(); };
     $('#pasteIn', box).onpaste = ev => { ev.preventDefault(); applyCc((ev.clipboardData || window.clipboardData).getData('text')); };
@@ -1206,6 +1343,7 @@ function openSettings() {
   ${f('flipbook', 'Catalog flipbook link', 'catalog page links open here')}
   ${f('footer', 'Footer line')}
   ${f('ccLibrary', 'Constant Contact Library link')}
+  ${f('radar', 'Radar messaging link', 'where the Deep Link Library is')}
   <div class="row" style="margin-top:18px"><button class="btn pri" id="sSave">Save</button><button class="btn" id="sReset">Reset to defaults</button><div class="sp"></div><button class="btn" id="sFolder">Change images folder</button></div>`, box => {
     $('#sSave', box).onclick = async () => { box.querySelectorAll('[data-s]').forEach(i => S[i.dataset.s] = i.value.trim()); await saveSettings(); closeModal(); paint(); toast('Settings saved.'); };
     $('#sReset', box).onclick = async () => { S = { ...DEFAULTS }; await saveSettings(); openSettings(); };
@@ -1246,7 +1384,7 @@ document.addEventListener('drop', e => { if (e.target.closest('.drop')) return; 
   await Promise.all([restoreFolder(), restoreCatalog()]);
   render();
 })();
-window.__studio = { st, S, fallbackFolder, setCatalog, analyzeFlyer, emailHtml, buildFromStart, addStartFiles, applyCc, DB };
+window.__studio = { applyLinks, st, S, fallbackFolder, setCatalog, analyzeFlyer, emailHtml, buildFromStart, addStartFiles, applyCc, DB };
 
 
 </script>
